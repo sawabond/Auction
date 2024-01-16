@@ -1,13 +1,22 @@
+using Auth.Application.User;
 using Auth.Core.User.Entities;
 using Auth.Infrastructure;
-using Microsoft.AspNetCore.Identity;
+using Auth.Infrastructure.User;
+using Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
-builder.Services.AddAuthorizationBuilder();
+builder.Services.AddSerilogLogging(builder.Configuration);
+
+builder.Services.AddControllers();
+
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddUserInfrastructure();
+builder.Services.AddUserFeature();
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
 {
@@ -15,8 +24,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 });
 
 builder.Services.AddIdentityCore<AppUser>()
-    .AddEntityFrameworkStores<AuthDbContext>()
-    .AddApiEndpoints();
+    .AddEntityFrameworkStores<AuthDbContext>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x =>
@@ -46,12 +54,7 @@ builder.Services.AddSwaggerGen(x =>
     });
 });
 
-
-
 var app = builder.Build();
-
-app.MapGroup("/api")
-    .MapIdentityApi<AppUser>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -59,6 +62,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints => endpoints.MapControllers());
+
 app.UseHttpsRedirection();
+
+app.UseSerilogRequestLogging();
 
 app.Run();
