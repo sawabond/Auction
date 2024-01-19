@@ -1,9 +1,28 @@
+using System.Security.Claims;
+using Auction.Application.Auction;
+using Auction.Application.Auction.Create;
+using Auction.Core.Common;
+using Auction.Infrastructure;
+using Auction.Web.Auction;
+using Auction.Web.Auction.Get;
+using Auction.Web.Common.Extensions;
 using Logging;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuctionFeature();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+builder.Services.AddDbContext<AuctionDbContext>(x =>
+{
+    x.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 builder.Services.AddSerilogLogging(builder.Configuration);
 
@@ -49,30 +68,26 @@ app.UseHttpsRedirection();
 
 app.UseSerilogRequestLogging();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+app.MapPost("/api/auctions", async (
+        AuctionCreateCommand request,
+        ClaimsPrincipal user,
+        IAuctionService auctionService) =>
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionService.Create(request, userId);
+
+        return result.ToResponse();
     })
     .RequireAuthorization()
-    .WithName("GetWeatherForecast")
+    .WithOpenApi();
+
+app.MapGet("/api/auctions", async ([AsParameters] GetAuctionsRequest request, [FromServices] IAuctionService auctionService) =>
+    {
+        var result = await auctionService.Get(request.ToQuery());
+
+        return result.ToResponse();
+    })
+    .RequireAuthorization()
     .WithOpenApi();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
