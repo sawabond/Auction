@@ -1,8 +1,12 @@
 using System.Security.Claims;
 using Auction.Application.Auction;
+using Auction.Application.Auction.AuctionItem;
+using Auction.Application.Auction.AuctionItem.Create;
 using Auction.Application.Auction.Create;
+using Auction.Application.Common;
 using Auction.Core.Common;
 using Auction.Infrastructure;
+using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
@@ -18,6 +22,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuctionFeature();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IBlobService, AzureBlobService>();
+builder.Services.AddScoped<IAuctionItemService, AuctionItemService>();
 
 builder.Services.AddDbContext<AuctionDbContext>(x =>
 {
@@ -87,7 +93,21 @@ app.MapGet("/api/auctions", async ([AsParameters] GetAuctionsRequest request, [F
 
         return result.ToResponse();
     })
+    .WithOpenApi();
+
+app.MapPost("/api/auctions/{auctionId:guid}/items", async (
+        Guid auctionId,
+        ClaimsPrincipal user,
+        [FromForm] AuctionItemCreateCommand request,
+        [FromServices] IAuctionItemService auctionItemService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionItemService.AddItem(auctionId, request, userId);
+
+        return result.ToResponse();
+    })
     .RequireAuthorization()
+    .DisableAntiforgery()
     .WithOpenApi();
 
 app.Run();

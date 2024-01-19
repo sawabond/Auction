@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Auction.Application\Auction.Application.csproj" />
+      <ProjectReference Include="..\Auction.Infrastructure\Auction.Infrastructure.csproj" />
       <ProjectReference Include="..\Auth.Common\Auth.Common.csproj" />
       <ProjectReference Include="..\Shared\Logging\Logging.csproj" />
     </ItemGroup>

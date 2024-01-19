@@ -2,9 +2,9 @@
 
 namespace Auction.Application.Auction.Specifications;
 
-public class FilteredPaginatedAuctionSpec : Specification<Core.Auction.Entities.Auction>
+public class FilteredPaginatedAuctionWithItemsSpec : Specification<Core.Auction.Entities.Auction>
 {
-    public FilteredPaginatedAuctionSpec(
+    public FilteredPaginatedAuctionWithItemsSpec(
         string? name, 
         string? descriptionSubstring,
         DateTime? cursor,
@@ -21,5 +21,7 @@ public class FilteredPaginatedAuctionSpec : Specification<Core.Auction.Entities.
 
         if (take.HasValue)
             Query.Take(take.Value);
+
+        Query.Include(x => x.AuctionItems);
     }
 }

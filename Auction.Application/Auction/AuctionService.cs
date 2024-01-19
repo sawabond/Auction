@@ -20,7 +20,7 @@ public class AuctionService(
 {
     public async Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query)
     {
-        var spec = new FilteredPaginatedAuctionSpec(
+        var spec = new FilteredPaginatedAuctionWithItemsSpec(
             query.NameStartsWith, 
             query.DescriptionContains,
             query.Cursor.ToDateTimeCursor(),

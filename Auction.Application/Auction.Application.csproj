@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Auction.Core\Auction.Core.csproj" />
-      <ProjectReference Include="..\Auction.Infrastructure\Auction.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -16,6 +15,12 @@
       <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
       <PackageReference Include="FluentResults" Version="3.15.2" />
       <PackageReference Include="Riok.Mapperly" Version="3.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Http.Features">
+        <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.1\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

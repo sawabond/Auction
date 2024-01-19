@@ -13,7 +13,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Auction.Application\Auction.Application.csproj" />
       <ProjectReference Include="..\Auction.Core\Auction.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Http.Features">
+        <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.1\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
