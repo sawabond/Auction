@@ -3,9 +3,11 @@ using Core;
 
 namespace Auction.Contracts.Auction.AuctionItem;
 
-public class AuctionItemAdded : IEvent
+public record AuctionItemAddedEvent : IEvent
 {
     public Guid Id { get; set; }
+    
+    public Guid AuctionId { get; set; }
     
     public decimal StartingPrice { get; set; }
 

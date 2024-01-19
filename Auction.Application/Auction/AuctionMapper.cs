@@ -12,5 +12,5 @@ public static partial class AuctionMapper
     
     public static partial AuctionCreatedEvent ToEvent(this Core.Auction.Entities.Auction model);
     
-    public static partial AuctionItemAdded ToEvent(this Core.Auction.Entities.AuctionItem model);
+    public static partial AuctionItemAddedEvent ToEvent(this Core.Auction.Entities.AuctionItem model);
 }

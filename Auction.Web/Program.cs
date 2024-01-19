@@ -31,11 +31,13 @@ builder.AddKafkaInfrastructure(
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBlobService, AzureBlobService>();
-builder.Services.AddScoped<IAuctionItemService, AuctionItemService>();
 
 builder.Services.AddHangfire((sp, config) =>
 {
-    config.UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"));
+    config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddHangfireServer();
 
