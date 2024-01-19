@@ -4,12 +4,16 @@ using Auction.Application.Auction.AuctionItem;
 using Auction.Application.Auction.AuctionItem.Create;
 using Auction.Application.Auction.Create;
 using Auction.Application.Common;
+using Auction.Contracts;
 using Auction.Core.Common;
 using Auction.Infrastructure;
 using Auction.Infrastructure.Common;
+using Auction.Infrastructure.Common.Messaging;
 using Auction.Web.Auction;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +25,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuctionFeature();
 
+builder.AddKafkaInfrastructure(
+    handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
+    eventsAssemblies: typeof(AuctionContractsAssemblyReference).Assembly);
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBlobService, AzureBlobService>();
 builder.Services.AddScoped<IAuctionItemService, AuctionItemService>();
+
+builder.Services.AddHangfire((sp, config) =>
+{
+    config.UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+builder.Services.AddHangfireServer();
 
 builder.Services.AddDbContext<AuctionDbContext>(x =>
 {

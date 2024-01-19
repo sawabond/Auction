@@ -16,11 +16,12 @@ public interface IAuctionService
 
 public class AuctionService(
     ILogger<AuctionService> _logger, 
-    IRepository<Core.Auction.Entities.Auction> _repository) : IAuctionService
+    IRepository<Core.Auction.Entities.Auction> _repository, 
+    IPublisher _publisher) : IAuctionService
 {
     public async Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query)
     {
-        var spec = new FilteredPaginatedAuctionWithItemsSpec(
+        var spec = new FilteredPaginatedAuctionAggregateSpec(
             query.NameStartsWith, 
             query.DescriptionContains,
             query.Cursor.ToDateTimeCursor(),
@@ -59,7 +60,8 @@ public class AuctionService(
         auction.UserId = userId;
         
         var result = await _repository.AddAsync(auction);
-
+        await _publisher.Publish(auction.Id, auction.ToEvent());
+        
         _logger.LogInformation("Auction with Id {AuctionId} created", auction.Id);
 
         return Result.Ok(result.Id);

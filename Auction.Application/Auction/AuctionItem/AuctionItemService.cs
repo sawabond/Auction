@@ -15,7 +15,8 @@ public interface IAuctionItemService
 
 public class AuctionItemService(
     IRepository<Core.Auction.Entities.Auction> _repository,
-    IBlobService _blobService) : IAuctionItemService
+    IBlobService _blobService,
+    IPublisher _publisher) : IAuctionItemService
 {
     public async Task<Result<Guid>> AddItem(Guid auctionId, AuctionItemCreateCommand command, Guid ownerId)
     {
@@ -34,8 +35,8 @@ public class AuctionItemService(
         await FillItemPhotos(command.Photos, auctionId, auctionItem);
 
         auction.AuctionItems.Add(auctionItem);
-
         await _repository.SaveChangesAsync();
+        await _publisher.Publish(auctionItem.Id, auctionItem.ToEvent());
 
         return Result.Ok(auctionItem.Id);
     }
