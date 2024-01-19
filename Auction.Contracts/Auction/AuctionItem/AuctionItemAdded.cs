@@ -1,5 +1,5 @@
 ﻿using Auction.Core.Auction.Entities;
-using Auction.Core.Common;
+using Core;
 
 namespace Auction.Contracts.Auction.AuctionItem;
 

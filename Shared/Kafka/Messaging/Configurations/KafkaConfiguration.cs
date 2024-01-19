@@ -1,4 +1,4 @@
-﻿namespace Auction.Infrastructure.Common.Messaging.Configurations;
+﻿namespace Kafka.Messaging.Configurations;
 
 public class KafkaConfiguration
 {

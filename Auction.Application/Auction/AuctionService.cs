@@ -3,6 +3,7 @@ using Auction.Application.Auction.Get;
 using Auction.Application.Auction.Helpers;
 using Auction.Application.Auction.Specifications;
 using Auction.Core.Common;
+using Core;
 using FluentResults;
 using Microsoft.Extensions.Logging;
 

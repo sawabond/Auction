@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
-using Auction.Core.Common;
-using Auction.Infrastructure.Common.Messaging.Configurations;
+using Core;
+using Kafka.Messaging.Configurations;
 using KafkaFlow;
 using KafkaFlow.Serializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using IEvent = Auction.Core.Common.IEvent;
+using IEvent = KafkaFlow.IEvent;
 
-namespace Auction.Infrastructure.Common.Messaging;
+namespace Kafka.Messaging;
 
 public static class ServiceCollectionExtensions
 {

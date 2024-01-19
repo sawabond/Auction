@@ -1,4 +1,4 @@
-﻿namespace Auction.Core.Common;
+﻿namespace Core;
 
 public interface IPublisher
 {

@@ -1,5 +1,5 @@
 ﻿using Auction.Core.Auction.Enums;
-using Auction.Core.Common;
+using Core;
 
 namespace Auction.Contracts.Auction;
 

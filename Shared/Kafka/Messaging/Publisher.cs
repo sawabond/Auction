@@ -1,8 +1,8 @@
-﻿using Auction.Core.Common;
+﻿using Core;
 using KafkaFlow.Producers;
 using Newtonsoft.Json;
 
-namespace Auction.Infrastructure.Common.Messaging;
+namespace Kafka.Messaging;
 
 public class Publisher(IProducerAccessor _producerAccessor) : IPublisher
 {
