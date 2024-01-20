@@ -18,7 +18,7 @@ public class Auction
 
     public AuctionType AuctionType { get; set; }
 
-    public ICollection<AuctionItem> AuctionItems { get; set; }
+    public ICollection<AuctionItem> AuctionItems { get; set; } = new HashSet<AuctionItem>();
 
     public AuctionItem? GetFirstItem() => AuctionItems?.MinBy(x => x.Name);
 }

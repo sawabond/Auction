@@ -1,6 +1,6 @@
 ﻿using Core;
 
-namespace Auction.Contracts.Auction.AuctionItem;
+namespace Auction.Contracts.Auction;
 
 public class AuctionStartedEvent : IEvent
 {

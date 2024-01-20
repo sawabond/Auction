@@ -6,7 +6,7 @@ using KafkaFlow.Serializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using IEvent = KafkaFlow.IEvent;
+using IEvent = Core.IEvent;
 
 namespace Kafka.Messaging;
 
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
                 
                 foreach (var @event in events)
                 {
-                    configurationBuilder.CreateTopicIfNotExists(@event.Name, 3, 3);
+                    configurationBuilder.CreateTopicIfNotExists(@event.Name, 3, 1);
                     
                     configurationBuilder.AddProducer(
                         @event.Name,
