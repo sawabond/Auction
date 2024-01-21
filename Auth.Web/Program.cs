@@ -10,6 +10,17 @@ using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(x =>
+{
+    x.AddPolicy("DefaultPolicy", policy =>
+    {
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+        policy.AllowAnyMethod();
+        policy.SetIsOriginAllowed(_ => true);
+    });
+});
+
 builder.Services.AddSerilogLogging(builder.Configuration);
 
 builder.Services.AddControllers();
@@ -55,6 +66,8 @@ builder.Services.AddSwaggerGen(x =>
 });
 
 var app = builder.Build();
+
+app.UseCors("DefaultPolicy");
 
 if (app.Environment.IsDevelopment())
 {

@@ -1,26 +1,26 @@
 ﻿using Ardalis.Specification;
+using Auction.Application.Auction.Get;
+using Auction.Application.Auction.Helpers;
 
 namespace Auction.Application.Auction.Specifications;
 
 public class FilteredPaginatedAuctionAggregateSpec : Specification<Core.Auction.Entities.Auction>
 {
-    public FilteredPaginatedAuctionAggregateSpec(
-        string? name, 
-        string? descriptionSubstring,
-        DateTime? cursor,
-        int? take)
+    public FilteredPaginatedAuctionAggregateSpec(GetAuctionsQuery query)
     {
-        if (!string.IsNullOrWhiteSpace(name))
-            Query.Where(x => x.Name.StartsWith(name));
+        if (!string.IsNullOrWhiteSpace(query.NameStartsWith))
+            Query.Where(x => x.Name.StartsWith(query.NameStartsWith));
         
-        if (!string.IsNullOrWhiteSpace(descriptionSubstring))
-            Query.Where(x => x.Description.Contains(descriptionSubstring));
-        
+        if (!string.IsNullOrWhiteSpace(query.DescriptionContains))
+            Query.Where(x => x.Description.Contains(query.DescriptionContains));
+
+        var cursor = query.Cursor.ToDateTimeCursor();
         if (cursor.HasValue)
             Query.Where(x => x.StartTime > cursor);
 
-        if (take.HasValue)
-            Query.Take(take.Value);
+        Query.Take(query.PageSize + 1);
+
+        Query.Where(x => x.AuctionItems.Any(x => x.IsSellingNow));
 
         Query.Include(x => x.AuctionItems)
             .ThenInclude(x => x.Photos);

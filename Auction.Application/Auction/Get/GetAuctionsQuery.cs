@@ -9,4 +9,6 @@ public class GetAuctionsQuery
     public string? NameStartsWith { get; set; }
 
     public string? DescriptionContains { get; set; }
+
+    public bool OnlyActive { get; set; }
 }

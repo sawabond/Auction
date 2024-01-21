@@ -30,6 +30,25 @@ public static class ServiceCollectionExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authOptions.SecurityKey)),
                     ValidateIssuerSigningKey = true,
                 };
+                options.Events = new()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"].FirstOrDefault();
+        
+                        if (!string.IsNullOrEmpty(accessToken))
+                        {
+                            var path = context.HttpContext.Request.Path;
+
+                            if (path.StartsWithSegments("/auction-hub"))
+                            {
+                                context.Token = accessToken;
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
         @this.AddAuthorization();
         

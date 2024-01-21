@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1688915320320" clover="3.2.0">
+  <project timestamp="1688915320320" name="All files">
+    <metrics statements="13" coveredstatements="10" conditionals="1" coveredconditionals="1" methods="2" coveredmethods="1" elements="16" coveredelements="12" complexity="0" loc="13" ncloc="13" packages="1" files="2" classes="2"/>
+    <file name="App.tsx" path="C:\Users\ddo20\Desktop\Profile\OnlineAuction\src\ui\src\App.tsx">
+      <metrics statements="8" coveredstatements="5" conditionals="1" coveredconditionals="1" methods="2" coveredmethods="1"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="0" type="stmt"/>
+      <line num="4" count="0" type="stmt"/>
+      <line num="5" count="0" type="stmt"/>
+      <line num="6" count="1" type="cond" truecount="1" falsecount="0"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="8" count="1" type="stmt"/>
+    </file>
+    <file name="setupTests.ts" path="C:\Users\ddo20\Desktop\Profile\OnlineAuction\src\ui\src\setupTests.ts">
+      <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>

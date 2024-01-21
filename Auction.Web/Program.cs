@@ -12,8 +12,7 @@ using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
-using Hangfire;
-using Hangfire.PostgreSql;
+using Auction.Web.Hubs;
 using Jobs.Extensions;
 using Kafka.Messaging;
 using Logging;
@@ -21,10 +20,20 @@ using Logging.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Serilog;
 using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(x =>
+{
+    x.AddPolicy("DefaultPolicy", options =>
+    {
+        options.SetIsOriginAllowed(_ => true)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
 
 builder.Services.AddAuctionFeature();
 builder.Services.AddScheduler(builder.Configuration);
@@ -69,23 +78,29 @@ builder.Services.AddSwaggerGen(x =>
 });
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddSignalR();
 
 builder.AddKafkaInfrastructure(
     handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
     eventsAssemblies: typeof(AuctionContractsAssemblyReference).Assembly);
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseCors("DefaultPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseLoggingMiddleware();
 //app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
+
+app.MapHub<AuctionHub>("/auction-hub").RequireCors("DefaultPolicy");
 
 app.MapPost("/api/auctions", async (
         AuctionCreateCommand request,

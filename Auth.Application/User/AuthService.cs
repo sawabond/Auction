@@ -15,6 +15,8 @@ public class AuthService(IUserManagerDecorator _userManager, ITokenProvider _tok
         }
 
         var user = registerUserRequest.ToEntity();
+        user.UserName = registerUserRequest.Email;
+        
         var result = await _userManager.CreateAsync(user, registerUserRequest.Password);
 
         if (!result.Succeeded)
