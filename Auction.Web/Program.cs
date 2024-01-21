@@ -17,6 +17,7 @@ using Hangfire.PostgreSql;
 using Jobs.Extensions;
 using Kafka.Messaging;
 using Logging;
+using Logging.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -81,9 +82,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.UseLoggingMiddleware();
 //app.UseSerilogRequestLogging();
+
+app.UseHttpsRedirection();
 
 app.MapPost("/api/auctions", async (
         AuctionCreateCommand request,
