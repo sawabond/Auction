@@ -1,16 +1,19 @@
-﻿using Auction.Contracts.Auction;
+﻿using Auction.Application.AuctionHosting;
+using Auction.Contracts.Auction;
 using KafkaFlow;
 using Microsoft.Extensions.Logging;
 
 namespace Auction.Infrastructure.Auction.Start;
 
-public class AuctionStartedEventHandler(ILogger<AuctionStartedEventHandler> _logger) 
+public class AuctionStartedEventHandler(
+    ILogger<AuctionStartedEventHandler> _logger,
+    IAuctionsHost _host) 
     : IMessageHandler<AuctionStartedEvent>
 {
-    public Task Handle(IMessageContext context, AuctionStartedEvent message)
+    public async Task Handle(IMessageContext context, AuctionStartedEvent message)
     {
-        _logger.LogInformation($"Auction with id {message.Id} has started at {message.StartTime}.");
+        _logger.LogInformation("Auction started event received {@Event}", message);
 
-        return Task.CompletedTask;
+        await _host.StartAuctionById(message.Id);
     }
 }

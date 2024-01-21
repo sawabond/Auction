@@ -19,6 +19,8 @@ public class AuctionItem
     public bool IsSellingNow { get; set; }
 
     public bool IsSold { get; set; }
+    
+    public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(30);
 
     public ICollection<AuctionItemPhoto> Photos { get; set; }
 

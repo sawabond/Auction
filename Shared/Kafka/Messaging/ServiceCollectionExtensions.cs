@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
         @this.Services.AddScoped(typeof(IPublisher), typeof(Publisher));
 
         @this.Services.AddKafka(kafka => kafka
-            .UseConsoleLog()
+            //.UseConsoleLog()
             .AddCluster(cluster =>
             {
                 var configurationBuilder = cluster.WithBrokers(kafkaConfig.BootstrapServers);
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
                 
                 foreach (var @event in events)
                 {
-                    configurationBuilder.CreateTopicIfNotExists(@event.Name, 3, 1);
+                    configurationBuilder.CreateTopicIfNotExists(@event.Name, 1, 1);
                     
                     configurationBuilder.AddProducer(
                         @event.Name,
@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
                         .WithGroupId(kafkaConfig.ConsumerGroupId)
                         .WithBufferSize(100)
                         .WithWorkersCount(3)
-                        .WithAutoOffsetReset(AutoOffsetReset.Earliest)
+                        .WithAutoOffsetReset(AutoOffsetReset.Latest)
                         .AddMiddlewares(middlewares =>
                         {
                             middlewares.AddDeserializer<JsonCoreDeserializer>();

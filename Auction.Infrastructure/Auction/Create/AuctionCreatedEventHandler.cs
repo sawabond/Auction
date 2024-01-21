@@ -9,17 +9,19 @@ namespace Auction.Infrastructure.Auction.Create;
 
 public class AuctionCreatedEventHandler(
     ILogger<AuctionCreatedEventHandler> _logger,
-    IServiceScopeFactory _factory)
+    IServiceScopeFactory _factory,
+    IScheduler _scheduler)
     : IMessageHandler<AuctionCreatedEvent>
 {
     public async Task Handle(IMessageContext context, AuctionCreatedEvent message)
     {
+        _logger.LogInformation("Auction created event received {@Event}.", message);
         var timeLeftToAuctionStartSinceNow = message.StartTime - DateTime.UtcNow;
 
-        BackgroundJob.Schedule(() => PublishAuctionStartedEvent(message), timeLeftToAuctionStartSinceNow);
+        _logger.LogInformation("Scheduling auction {AuctionId} to run in {@TimeLeftToAuctionStartSinceNow}.", message.Id, timeLeftToAuctionStartSinceNow);
+        await _scheduler.Schedule(() => PublishAuctionStartedEvent(message), timeLeftToAuctionStartSinceNow);
     }
     
-    [AutomaticRetry(Attempts = 3)]
     public async Task PublishAuctionStartedEvent(AuctionCreatedEvent message)
     {
         using var scope = _factory.CreateScope();
@@ -30,6 +32,8 @@ public class AuctionCreatedEventHandler(
             Id = message.Id,
             StartTime = message.StartTime,
         };
+
+        _logger.LogInformation("Publishing auction started event for auction {AuctionId}", message.Id);
 
         await publisher.Publish(auctionStartedEvent.Id, auctionStartedEvent);
     }

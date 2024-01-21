@@ -16,6 +16,8 @@ public class AuctionCreatedEvent : IEvent
     public DateTime StartTime { get; set; }
 
     public DateTime? EndTime { get; set; }
+    
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public AuctionType AuctionType { get; set; }
 }

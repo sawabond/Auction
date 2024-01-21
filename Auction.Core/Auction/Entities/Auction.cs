@@ -18,7 +18,39 @@ public class Auction
 
     public AuctionType AuctionType { get; set; }
 
-    public ICollection<AuctionItem> AuctionItems { get; set; } = new HashSet<AuctionItem>();
+    public List<AuctionItem> AuctionItems { get; set; } = new();
 
-    public AuctionItem? GetFirstItem() => AuctionItems?.MinBy(x => x.Name);
+    public AuctionItem? GetFirstItem() => AuctionItems[0];
+    public AuctionItem? CurrentlySellingItem => AuctionItems.FirstOrDefault(x => x.IsSellingNow);
+    
+    public bool SetNextItem()
+    {
+        var currentItem = CurrentlySellingItem;
+        if (currentItem is null)
+        {
+            return false;
+        }
+
+        var itemWasSet = false;
+        var currentItemIndex = AuctionItems.IndexOf(currentItem);
+        
+        CurrentlySellingItem.IsSold = true;
+        if (currentItemIndex < AuctionItems.Count - 1)
+        {
+            itemWasSet = true;
+            currentItem.IsSellingNow = false;
+            AuctionItems[currentItemIndex + 1].IsSellingNow = true;
+            
+            return itemWasSet;
+        }
+        else if (currentItemIndex == AuctionItems.Count - 1)
+        {
+            itemWasSet = true;
+            currentItem.IsSellingNow = false;
+            
+            return itemWasSet;
+        }
+        
+        return itemWasSet;
+    }
 }

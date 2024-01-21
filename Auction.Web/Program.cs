@@ -3,6 +3,7 @@ using Auction.Application.Auction;
 using Auction.Application.Auction.AuctionItem;
 using Auction.Application.Auction.AuctionItem.Create;
 using Auction.Application.Auction.Create;
+using Auction.Application.AuctionHosting.Extensions;
 using Auction.Application.Common;
 using Auction.Contracts;
 using Auction.Core.Common;
@@ -13,6 +14,7 @@ using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
 using Hangfire;
 using Hangfire.PostgreSql;
+using Jobs.Extensions;
 using Kafka.Messaging;
 using Logging;
 using Microsoft.AspNetCore.Mvc;
@@ -24,27 +26,16 @@ using Shared;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuctionFeature();
-
-builder.AddKafkaInfrastructure(
-    handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
-    eventsAssemblies: typeof(AuctionContractsAssemblyReference).Assembly);
-
+builder.Services.AddScheduler(builder.Configuration);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBlobService, AzureBlobService>();
-
-builder.Services.AddHangfire((sp, config) =>
-{
-    config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-        .UseSimpleAssemblyNameTypeSerializer()
-        .UseRecommendedSerializerSettings()
-        .UsePostgreSqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-builder.Services.AddHangfireServer();
 
 builder.Services.AddDbContext<AuctionDbContext>(x =>
 {
     x.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddAuctionHosting();
 
 builder.Services.AddSerilogLogging(builder.Configuration);
 
@@ -78,6 +69,10 @@ builder.Services.AddSwaggerGen(x =>
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
+builder.AddKafkaInfrastructure(
+    handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
+    eventsAssemblies: typeof(AuctionContractsAssemblyReference).Assembly);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -88,7 +83,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseSerilogRequestLogging();
+//app.UseSerilogRequestLogging();
 
 app.MapPost("/api/auctions", async (
         AuctionCreateCommand request,

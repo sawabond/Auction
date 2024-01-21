@@ -60,6 +60,51 @@ public class AuctionService(
         var auction = command.ToEntity();
         auction.UserId = userId;
         
+        // TODO: REMOVE
+        auction.AuctionItems.Add(
+            new Core.Auction.Entities.AuctionItem
+            {
+                Id = Guid.NewGuid(),
+                ActualPrice = 222m,
+                Description = "Test item2222222222222", 
+                IsSellingNow = false,
+                MinimalBid = 222m,
+                Name = "222222222222222222222222222222222222222222222222222",
+                StartingPrice = 222m,
+                SellingPeriod = TimeSpan.FromSeconds(15),
+                Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
+                {
+                    new()
+                    {
+                        Id = 0,
+                        Name = "Test photo",
+                        PhotoUrl = "https://picsum.photos/200/300"
+                    }
+                }
+            });
+        auction.AuctionItems.Add(
+            new Core.Auction.Entities.AuctionItem
+            {
+                Id = Guid.NewGuid(),
+                ActualPrice = 111m,
+                Description = "Test item", 
+                IsSellingNow = false,
+                MinimalBid = 111m,
+                Name = "111111111111111111111111111111111111111111",
+                StartingPrice = 10m,
+                SellingPeriod = TimeSpan.FromSeconds(15),
+                Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
+                {
+                    new()
+                    {
+                        Id = 0,
+                        Name = "Test photo",
+                        PhotoUrl = "https://picsum.photos/200/300"
+                    }
+                }
+                });
+        auction.StartTime = DateTime.UtcNow.AddSeconds(10);
+        
         var result = await _repository.AddAsync(auction);
         await _publisher.Publish(auction.Id, auction.ToEvent());
         
