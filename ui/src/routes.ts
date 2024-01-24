@@ -27,9 +27,9 @@ const routes: IRoute[] = [
     component: AuthPage,
   },
   {
-    key: 'auction-messaging',
-    title: 'AuctionMessaging',
-    path: '/auction-messaging',
+    key: 'auction',
+    title: 'Auction',
+    path: '/auction/:auctionId',
     enabled: true,
     component: AuctionMessaging,
   },

@@ -10,6 +10,8 @@ public class Bid
         Date = date;
         ActualPrice = actualPrice;
     }
+    
+    public static Bid NullBid => new(Guid.Empty, Guid.Empty, 0, DateTime.MinValue, 0);
 
     public int Id { get; private set; }
 

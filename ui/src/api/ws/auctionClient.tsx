@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import Cookies from 'js-cookie';
+import { useParams } from 'react-router-dom';
+import Auction from './Auction';
+import { TextField, Button, Container } from '@material-ui/core';
 
-// TODO: Use this logic as example for future SignalR interactions
 const AuctionMessaging: React.FC = () => {
-  const [connection, setConnection] = useState<signalR.HubConnection | null>(
-    null
-  );
+  const { auctionId } = useParams<{ auctionId: string }>();
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+  const [bidAmount, setBidAmount] = useState<number>(0);
+  const [auction, setAuction] = useState<any>(null);
 
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
@@ -18,32 +21,65 @@ const AuctionMessaging: React.FC = () => {
       .build();
 
     setConnection(newConnection);
-  }, []);
+
+    const startConnection = async () => {
+      try {
+        await newConnection.start();
+        await newConnection.invoke("JoinGroup", auctionId);
+      } catch (err) {
+        console.error('Connection failed: ', err);
+      }
+    };
+
+    startConnection();
+
+    return () => {
+      newConnection.stop();
+    };
+  }, [auctionId]);
+
+  useEffect(() => {
+    const updateBid = (bid: any) => {
+      const updatedAuction = { ...auction };
+      const itemIndex = updatedAuction.auctionItems.findIndex((x: any) => x.isSellingNow);
+      if (itemIndex !== -1) {
+        updatedAuction.auctionItems[itemIndex] = {
+          ...updatedAuction.auctionItems[itemIndex],
+          actualPrice: bid.actualPrice
+        };
+        setAuction(updatedAuction);
+      }
+    };
+
+    if (connection) {
+      connection.on('BidMade', updateBid);
+    }
+
+    return () => {
+      if (connection) {
+        connection.off('BidMade', updateBid);
+      }
+    };
+  }, [connection, auction]);
 
   useEffect(() => {
     if (connection) {
-      connection.on('BidMade', (productId: string, newPrice: number) => {
-        console.log(
-          'Received from AuctionHub productId and newPrice:',
-          productId,
-          newPrice
-        );
+      connection.on('OnAuctionRunning', (updatedAuction: any) => {
+        setAuction(updatedAuction);
       });
     }
+
+    return () => {
+      if (connection) {
+        connection.off('OnAuctionRunning');
+      }
+    };
   }, [connection]);
 
   const sendMessage = async () => {
     if (connection) {
       try {
-        await connection.start();
-
-        await connection.invoke(
-          'MakeBid',
-          'd1541691-fe13-4b15-aa72-a10b25e50e8c',
-          1.75
-        );
-
-        await connection.stop();
+        await connection.invoke('MakeBid', auctionId, bidAmount);
       } catch (error) {
         console.error(error);
       }
@@ -51,9 +87,26 @@ const AuctionMessaging: React.FC = () => {
   };
 
   return (
-    <div>
-      <button onClick={sendMessage}>Send Message</button>
-    </div>
+    <Container maxWidth="sm" style={{ marginTop: '20px' }}>
+      <TextField
+        label="Enter your bid"
+        type="number"
+        value={bidAmount}
+        onChange={(e) => setBidAmount(Number(e.target.value))}
+        variant="outlined"
+        fullWidth
+        margin="normal"
+      />
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={sendMessage}
+        style={{ marginBottom: '20px' }}
+      >
+        Send Bid
+      </Button>
+      {auction && <Auction data={auction} />}
+    </Container>
   );
 };
 

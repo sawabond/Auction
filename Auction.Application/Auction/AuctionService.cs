@@ -102,7 +102,7 @@ public class AuctionService(
         auction.StartTime = DateTime.UtcNow.AddSeconds(10);
         
         var result = await _repository.AddAsync(auction);
-        await _publisher.Publish(auction.Id, auction.ToEvent());
+        await _publisher.Publish(auction.Id, auction.ToAuctionCreatedEvent());
         
         _logger.LogInformation("Auction with Id {AuctionId} created", auction.Id);
 
