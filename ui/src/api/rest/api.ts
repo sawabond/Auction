@@ -9,7 +9,7 @@ export interface APIClient {
   register: (values: IRegisterFormValues) => Promise<IRegisterResponse>;
 }
 
-const gatewayURL = `${import.meta.env.VITE_AUTH_URL!}/api/auth`;
+const gatewayURL = `${import.meta.env.VITE_GATEWAY_URL!}/api/auth`;
 
 const apiClient: APIClient = {
   async login(values: ILoginFormValues) {

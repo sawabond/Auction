@@ -1,0 +1,323 @@
+{
+	"info": {
+		"_postman_id": "c5be06b4-1213-4566-8c64-3a37325819f3",
+		"name": "Auction REST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31461386"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJson = pm.response.json();\r",
+							"if (responseJson.id !== null) {\r",
+							"    pm.environment.set(\"CurrentUserId\", responseJson.id);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{UserEmail}}\",\r\n  \"surname\": \"{{UserEmail}}\",\r\n  \"email\": \"{{UserEmail}}\",\r\n  \"password\": \"{{Password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/auth/register",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJson = pm.response.json();\r",
+							"if (responseJson.token !== null) {\r",
+							"    pm.environment.set(\"UserAuthToken\", responseJson.token);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"{{UserEmail}}\",\r\n  \"password\": \"{{Password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/auth/login",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get auctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJson = pm.response.json();\r",
+							"if (responseJson.cursor !== null) {\r",
+							"    pm.environment.set(\"AuctionNextCursor\", responseJson.cursor);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserAuthToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/auctions?pageSize=5&cursor={{AuctionNextCursor}}&name.[sw]&description.[contains]",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"auctions"
+					],
+					"query": [
+						{
+							"key": "pageSize",
+							"value": "5",
+							"description": "Page size"
+						},
+						{
+							"key": "cursor",
+							"value": "{{AuctionNextCursor}}",
+							"description": "Cursor used for cursor pagination. Returns null if no next page is available. Returns cursor which must be sent with next request to get next page"
+						},
+						{
+							"key": "name.[sw]",
+							"value": null,
+							"description": "Name 'starts with' filter"
+						},
+						{
+							"key": "description.[contains]",
+							"value": null,
+							"description": "'Description contains' filter"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.json() !== null) {\r",
+							"    pm.environment.set(\"CurrentAuctionId\", pm.response.json());\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let counter = pm.environment.get(\"AuctionCounter\") || 0;\r",
+							"counter = parseInt(counter, 10) + 1;\r",
+							"\r",
+							"pm.environment.set(\"AuctionCounter\", counter);\r",
+							"\r",
+							"const currentDate = (new Date()).toISOString();\r",
+							"const requestBody = {\r",
+							"    name: \"auction_name_\" + counter,\r",
+							"    description: \"description_\" + counter,\r",
+							"    startTime: currentDate,\r",
+							"    auctionType: 0\r",
+							"};\r",
+							"\r",
+							"pm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\r",
+							"pm.request.body.update({ mode: 'raw', raw: JSON.stringify(requestBody) });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserAuthToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"string\",\r\n    \"description\": \"string\",\r\n    \"startTime\": \"2024-01-24T15:58:12.323Z\",\r\n    \"auctionType\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/auctions",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"auctions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let counter = pm.environment.get(\"AuctionItemCounter\") || 0;\r",
+							"counter = parseInt(counter, 10) + 1;\r",
+							"\r",
+							"pm.environment.set(\"AuctionItemCounter\", counter);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserAuthToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "startingPrice",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "minimalBid",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Name_{{AuctionCounter}}",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Description_{{AuctionCounter}}",
+							"type": "text"
+						},
+						{
+							"key": "photos",
+							"type": "file",
+							"src": "/C:/Users/oleksandr.bondarenko/Downloads/image.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/auctions/{{CurrentAuctionId}}/items",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"auctions",
+						"{{CurrentAuctionId}}",
+						"items"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
