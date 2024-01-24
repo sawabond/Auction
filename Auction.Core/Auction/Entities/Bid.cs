@@ -2,7 +2,7 @@ namespace Auction.Core.Auction.Entities;
 
 public class Bid
 {
-    internal Bid(Guid auctionItemId, Guid userId, decimal amount, DateTimeOffset date, decimal actualPrice)
+    internal Bid(Guid auctionItemId, Guid userId, decimal amount, DateTime date, decimal actualPrice)
     {
         AuctionItemId = auctionItemId;
         UserId = userId;
@@ -10,6 +10,8 @@ public class Bid
         Date = date;
         ActualPrice = actualPrice;
     }
+    
+    public static Bid NullBid => new(Guid.Empty, Guid.Empty, 0, DateTime.MinValue, 0);
 
     public int Id { get; private set; }
 
@@ -19,7 +21,7 @@ public class Bid
 
     public decimal Amount { get; private set; }
 
-    public DateTimeOffset Date { get; private set; }
+    public DateTime Date { get; private set; }
 
     public decimal ActualPrice { get; private set; }
 }

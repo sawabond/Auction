@@ -26,7 +26,7 @@ public class AuctionItem
 
     public IReadOnlyCollection<Bid> Bids => _bids;
 
-    public Bid AddBid(Guid userId, decimal amount, DateTimeOffset date)
+    public Bid AddBid(Guid userId, decimal amount, DateTime date)
     {
         var updatedPrice = ActualPrice + amount;
         

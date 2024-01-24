@@ -37,7 +37,7 @@ public class AuctionItemService(
 
         auction.AuctionItems.Add(auctionItem);
         await _repository.SaveChangesAsync();
-        await _publisher.Publish(auctionItem.Id, auctionItem.ToEvent() with
+        await _publisher.Publish(auctionItem.Id, auctionItem.ToItemAddedEvent() with
         {
             AuctionId = auctionId
         });

@@ -22,11 +22,7 @@ public class AuctionService(
 {
     public async Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query)
     {
-        var spec = new FilteredPaginatedAuctionAggregateSpec(
-            query.NameStartsWith, 
-            query.DescriptionContains,
-            query.Cursor.ToDateTimeCursor(),
-            query.PageSize + 1);
+        var spec = new FilteredPaginatedAuctionAggregateSpec(query);
         
         var auctions = await _repository.ListAsync(spec);
         
@@ -71,7 +67,7 @@ public class AuctionService(
                 MinimalBid = 222m,
                 Name = "222222222222222222222222222222222222222222222222222",
                 StartingPrice = 222m,
-                SellingPeriod = TimeSpan.FromSeconds(15),
+                SellingPeriod = TimeSpan.FromSeconds(600),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()
@@ -92,7 +88,7 @@ public class AuctionService(
                 MinimalBid = 111m,
                 Name = "111111111111111111111111111111111111111111",
                 StartingPrice = 10m,
-                SellingPeriod = TimeSpan.FromSeconds(15),
+                SellingPeriod = TimeSpan.FromSeconds(600),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()
@@ -106,7 +102,7 @@ public class AuctionService(
         auction.StartTime = DateTime.UtcNow.AddSeconds(10);
         
         var result = await _repository.AddAsync(auction);
-        await _publisher.Publish(auction.Id, auction.ToEvent());
+        await _publisher.Publish(auction.Id, auction.ToAuctionCreatedEvent());
         
         _logger.LogInformation("Auction with Id {AuctionId} created", auction.Id);
 
