@@ -11,7 +11,7 @@ namespace Auction.Infrastructure.Auction.Close;
 public class AuctionClosedEventHandler(
     ILogger<AuctionItemSoldEventHandler> _logger,
     IActiveAuctionsStorage _activeAuctionsStorage,
-    IServiceScopeFactory _scopeFactory)
+    Ibuilder.ServicescopeFactory _scopeFactory)
     : IMessageHandler<AuctionClosedEvent>
 {
     public async Task Handle(IMessageContext context, AuctionClosedEvent message)

@@ -24,7 +24,7 @@ using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(x =>
+builder.builder.Services.AddCors(x =>
 {
     x.AddPolicy("DefaultPolicy", options =>
     {
@@ -35,22 +35,22 @@ builder.Services.AddCors(x =>
     });
 });
 
-builder.Services.AddAuctionFeature();
-builder.Services.AddScheduler(builder.Configuration);
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IBlobService, AzureBlobService>();
+builder.builder.Services.AddAuctionFeature();
+builder.builder.Services.AddScheduler(builder.Configuration);
+builder.builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.builder.Services.AddScoped<IBlobService, AzureBlobService>();
 
-builder.Services.AddDbContext<AuctionDbContext>(x =>
+builder.builder.Services.AddDbContext<AuctionDbContext>(x =>
 {
     x.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddAuctionHosting();
+builder.builder.Services.AddAuctionHosting();
 
-builder.Services.AddSerilogLogging(builder.Configuration);
+builder.builder.Services.AddSerilogLogging(builder.Configuration);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(x =>
+builder.builder.Services.AddEndpointsApiExplorer();
+builder.builder.Services.AddSwaggerGen(x =>
 {
     x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -77,8 +77,8 @@ builder.Services.AddSwaggerGen(x =>
     });
 });
 
-builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddSignalR();
+builder.builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.builder.Services.AddSignalR();
 
 builder.AddKafkaInfrastructure(
     handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
@@ -115,7 +115,7 @@ app.MapPost("/api/auctions", async (
     .RequireAuthorization()
     .WithOpenApi();
 
-app.MapGet("/api/auctions", async ([AsParameters] GetAuctionsRequest request, [FromServices] IAuctionService auctionService) =>
+app.MapGet("/api/auctions", async ([AsParameters] GetAuctionsRequest request, [Frombuilder.Services] IAuctionService auctionService) =>
     {
         var result = await auctionService.Get(request.ToQuery());
 
@@ -127,7 +127,7 @@ app.MapPost("/api/auctions/{auctionId:guid}/items", async (
         Guid auctionId,
         ClaimsPrincipal user,
         [FromForm] AuctionItemCreateCommand request,
-        [FromServices] IAuctionItemService auctionItemService) =>
+        [Frombuilder.Services] IAuctionItemService auctionItemService) =>
     {
         var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
         var result = await auctionItemService.AddItem(auctionId, request, userId);

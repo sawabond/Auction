@@ -15,7 +15,7 @@ public interface IAuctionsHost
 public class AuctionsHost(
     ILogger<AuctionsHost> _logger,
     IActiveAuctionsStorage _activeAuctionsStorage,
-    IServiceScopeFactory _scopeFactory) : IAuctionsHost
+    Ibuilder.ServicescopeFactory _scopeFactory) : IAuctionsHost
 {
     public async Task StartAuctionById(Guid auctionId)
     { 

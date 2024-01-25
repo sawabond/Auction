@@ -10,7 +10,7 @@ using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(x =>
+builder.builder.Services.AddCors(x =>
 {
     x.AddPolicy("DefaultPolicy", policy =>
     {
@@ -21,24 +21,24 @@ builder.Services.AddCors(x =>
     });
 });
 
-builder.Services.AddSerilogLogging(builder.Configuration);
+builder.builder.Services.AddSerilogLogging(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.builder.Services.AddControllers();
 
-builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddUserInfrastructure();
-builder.Services.AddUserFeature();
+builder.builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.builder.Services.AddUserInfrastructure();
+builder.builder.Services.AddUserFeature();
 
-builder.Services.AddDbContext<AuthDbContext>(options =>
+builder.builder.Services.AddDbContext<AuthDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddIdentityCore<AppUser>()
+builder.builder.Services.AddIdentityCore<AppUser>()
     .AddEntityFrameworkStores<AuthDbContext>();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(x =>
+builder.builder.Services.AddEndpointsApiExplorer();
+builder.builder.Services.AddSwaggerGen(x =>
 {
     x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
