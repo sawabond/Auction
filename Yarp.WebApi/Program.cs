@@ -2,9 +2,9 @@ using Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.builder.Services.AddSerilogLogging(builder.Configuration);
+builder.Services.AddSerilogLogging(builder.Configuration);
 
-builder.builder.Services.AddCors(x =>
+builder.Services.AddCors(x =>
 {
     x.AddPolicy("DefaultPolicy", options =>
     {
@@ -15,7 +15,7 @@ builder.builder.Services.AddCors(x =>
     });
 });
 
-builder.builder.Services.AddReverseProxy()
+builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.Build();

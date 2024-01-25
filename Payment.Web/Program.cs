@@ -1,9 +1,21 @@
+using Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Payment.Application;
+using Payment.Infrastructure;
 using Payment.Web;
 using Stripe;
 using Stripe.Checkout;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSerilogLogging(builder.Configuration);
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+builder.Services.AddDbContext<PaymentDbContext>(x =>
+{
+    x.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection("Stripe"));
@@ -33,20 +45,19 @@ var app = builder.Build();
 
 app.MapPost("/api/top-up", async (
     HttpRequest request,
+    [FromBody] TopUpRequest topUpRequest,
+    [FromQuery] string returnUrl,
     [FromServices] IStripeClient stripeClient) =>
 {
-    var baseUrl = $"{request.Scheme}://{request.Host}";
-
     var sessionCreateOptions = new SessionCreateOptions
     {
         LineItems = new()
         {
             new SessionLineItemOptions()
             {
-                // Assuming topUpRequest.Amount is the amount to be topped up
                 PriceData = new SessionLineItemPriceDataOptions
                 {
-                    UnitAmount = 2244, // Amount in smallest currency unit, e.g., cents for USD
+                    UnitAmount = topUpRequest.Amount,
                     Currency = "UAH",
                     ProductData = new SessionLineItemPriceDataProductDataOptions
                     {
@@ -57,8 +68,8 @@ app.MapPost("/api/top-up", async (
             }
         },
         Mode = "payment",
-        SuccessUrl = $"{baseUrl}/success?session_id={{CHECKOUT_SESSION_ID}}",
-        CancelUrl = $"{baseUrl}/cancel"
+        SuccessUrl = $"{returnUrl}/api/success?userId={topUpRequest.UserId}&session_id={{CHECKOUT_SESSION_ID}}",
+        CancelUrl = $"{returnUrl}/cancel"
     };
 
     var sessionService = new SessionService(stripeClient);
@@ -67,4 +78,24 @@ app.MapPost("/api/top-up", async (
     return Results.Ok(new { session.Url });
 });
 
+app.MapGet("/api/success", async (
+    [FromQuery(Name="session_id")] string sessionId,
+    [FromQuery] Guid userId,
+    [FromServices] IPaymentService paymentService) =>
+{
+    var result = await paymentService.CreatePaymentAsync(userId, sessionId);
+    if (result.IsSuccess)
+    {
+        return Results.Ok();
+    }
+
+    return Results.BadRequest();
+});
+
 app.Run();
+
+public record TopUpRequest
+{
+    public Guid UserId { get; set; }
+    public int Amount { get; set; }
+}

@@ -9,7 +9,7 @@ namespace Auction.Infrastructure.Auction.Create;
 
 public class AuctionCreatedEventHandler(
     ILogger<AuctionCreatedEventHandler> _logger,
-    Ibuilder.ServicescopeFactory _factory,
+    IServiceScopeFactory _factory,
     IScheduler _scheduler)
     : IMessageHandler<AuctionCreatedEvent>
 {

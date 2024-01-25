@@ -12,7 +12,7 @@ namespace Auction.Infrastructure.Auction.AuctionItem;
 public class AuctionItemSoldEventHandler(
     ILogger<AuctionItemSoldEventHandler> logger,
     IActiveAuctionsStorage activeAuctionsStorage,
-    Ibuilder.ServicescopeFactory scopeFactory)
+    IServiceScopeFactory scopeFactory)
     : IMessageHandler<AuctionItemSoldEvent>
 {
     public async Task Handle(IMessageContext context, AuctionItemSoldEvent message)
