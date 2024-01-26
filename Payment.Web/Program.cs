@@ -1,16 +1,22 @@
+using System.Security.Claims;
 using Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Payment.Application;
+using Payment.Application.Balance;
+using Payment.Application.Payment;
 using Payment.Infrastructure;
 using Payment.Web;
+using Shared;
 using Stripe;
 using Stripe.Checkout;
+using BalanceService = Payment.Application.Balance.BalanceService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSerilogLogging(builder.Configuration);
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IBalanceService, BalanceService>();
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 builder.Services.AddDbContext<PaymentDbContext>(x =>
 {
@@ -44,8 +50,7 @@ builder.Services.AddTransient<IStripeClient, StripeClient>(s =>
 var app = builder.Build();
 
 app.MapPost("/api/top-up", async (
-    HttpRequest request,
-    [FromBody] TopUpRequest topUpRequest,
+    [FromBody] TopUpCommand topUpRequest,
     [FromQuery] string returnUrl,
     [FromServices] IStripeClient stripeClient) =>
 {
@@ -92,10 +97,18 @@ app.MapGet("/api/success", async (
     return Results.BadRequest();
 });
 
-app.Run();
-
-public record TopUpRequest
+app.MapGet("/api/balances", async (
+    ClaimsPrincipal user,
+    [FromServices] IBalanceService balanceService) =>
 {
-    public Guid UserId { get; set; }
-    public int Amount { get; set; }
-}
+    var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+    var balance = await balanceService.GetUserBalance(userId);
+    if (balance is not null)
+    {
+        return Results.Ok(balance);
+    }
+
+    return Results.BadRequest();
+});
+
+app.Run();

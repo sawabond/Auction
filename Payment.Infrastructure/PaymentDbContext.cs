@@ -9,7 +9,7 @@ public class PaymentDbContext : DbContext
     }
 
     public DbSet<Core.Payment> Payments { get; set; }
-    public DbSet<Core.Balance> Balances { get; set; }
+    public DbSet<Core.Balance?> Balances { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
