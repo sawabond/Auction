@@ -8,6 +8,8 @@ public class AuctionItemSoldEvent : IEvent
     
     public Guid AuctionId { get; set; }
     
+    public Guid AuctionOwnerId { get; set; }
+    
     public Guid? UserId { get; set; }
     
     public decimal LastPrice { get; set; }

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using Auction.Application.Auction;
 using Auction.Application.Auction.AuctionItem;
 using Auction.Application.Auction.AuctionItem.Create;
@@ -24,6 +25,11 @@ using Payment.Contracts.Clients;
 using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // Changed from IgnoreCycles to Preserve
+});
 
 builder.Services.AddCors(x =>
 {
@@ -121,8 +127,14 @@ app.MapPost("/api/auctions", async (
 app.MapGet("/api/auctions", async ([AsParameters] GetAuctionsRequest request, [FromServices] IAuctionService auctionService) =>
     {
         var result = await auctionService.Get(request.ToQuery());
+        if (result.IsFailed)
+        {
+            return Results.BadRequest();
+        }
+        
+        var resultVm = result.Value.Auctions.Select(x => x.ToViewModel()).ToList();
 
-        return result.ToResponse();
+        return Results.Ok(new { result.Value.Cursor, Auctions = resultVm });
     })
     .WithOpenApi();
 
@@ -136,6 +148,24 @@ app.MapPost("/api/auctions/{auctionId:guid}/items", async (
         var result = await auctionItemService.AddItem(auctionId, request, userId);
 
         return result.ToResponse();
+    })
+    .RequireAuthorization()
+    .DisableAntiforgery()
+    .WithOpenApi();
+
+app.MapDelete("/api/auctions/{auctionId:guid}", async (
+        Guid auctionId,
+        ClaimsPrincipal user,
+        [FromServices] IAuctionService auctionService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionService.Delete(userId, auctionId);
+        if (result.IsFailed)
+        {
+            return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+        }
+
+        return Results.NoContent();
     })
     .RequireAuthorization()
     .DisableAntiforgery()

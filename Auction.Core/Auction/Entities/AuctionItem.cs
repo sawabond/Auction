@@ -25,6 +25,8 @@ public class AuctionItem
     public ICollection<AuctionItemPhoto> Photos { get; set; }
 
     public IReadOnlyCollection<Bid> Bids => _bids;
+    
+    public Auction Auction { get; set; }
 
     public Bid AddBid(Guid userId, decimal amount, DateTime date)
     {
