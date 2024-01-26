@@ -17,5 +17,9 @@ public class AuctionConfiguration : IEntityTypeConfiguration<Core.Auction.Entiti
         builder.Property(x => x.UserId).IsRequired();
 
         builder.Property(x => x.Description).HasMaxLength(200);
+        
+        builder.HasMany(x => x.AuctionItems)
+            .WithOne(x => x.Auction)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -2,6 +2,7 @@
 using Auction.Application.Auction.Get;
 using Auction.Application.Auction.Helpers;
 using Auction.Application.Auction.Specifications;
+using Auction.Contracts.Auction;
 using Core;
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -12,11 +13,12 @@ public interface IAuctionService
 {
     Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query);
     Task<Result<Guid>> Create(AuctionCreateCommand command, Guid userId);
+    Task<Result> Delete(Guid userId, Guid id);
 }
 
 public class AuctionService(
     ILogger<AuctionService> _logger, 
-    IRepository<Core.Auction.Entities.Auction> _repository, 
+    IRepository<Core.Auction.Entities.Auction> _repository,
     IPublisher _publisher) : IAuctionService
 {
     public async Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query)
@@ -98,7 +100,7 @@ public class AuctionService(
                     }
                 }
                 });
-        auction.StartTime = DateTime.UtcNow.AddSeconds(10);
+        auction.StartTime = DateTime.UtcNow.AddSeconds(300);
         
         var result = await _repository.AddAsync(auction);
         await _publisher.Publish(auction.Id, auction.ToAuctionCreatedEvent());
@@ -106,5 +108,32 @@ public class AuctionService(
         _logger.LogInformation("Auction with Id {AuctionId} created", auction.Id);
 
         return Result.Ok(result.Id);
+    }
+    
+    public async Task<Result> Delete(Guid userId, Guid id)
+    {
+        var auction = await _repository.GetByIdAsync(id);
+        if (auction is null)
+        {
+            return Result.Fail("Auction not found");
+        }
+        if (auction.UserId != userId)
+        {
+            return Result.Fail("You are not the owner of this auction");
+        }
+        if (auction.StartTime < DateTime.UtcNow)
+        {
+            return Result.Fail("Auction already started");
+        }
+
+        await _repository.DeleteAsync(auction);
+        await _publisher.Publish(auction.Id, new AuctionRemovedEvent
+        {
+            Id = auction.Id,
+            UserId = auction.UserId,
+            RemovedAt = DateTime.UtcNow
+        });
+
+        return Result.Ok();
     }
 }

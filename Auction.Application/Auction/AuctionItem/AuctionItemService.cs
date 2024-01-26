@@ -29,6 +29,10 @@ public class AuctionItemService(
         {
             return Result.Fail($"User with id {ownerId} is not owner of this auction");
         }
+        if (auction.EndTime is not null)
+        {
+            return Result.Fail($"Auction with id {auctionId} is already finished");
+        }
 
         var auctionItem = command.ToEntity();
         

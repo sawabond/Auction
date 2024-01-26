@@ -48,6 +48,7 @@ public class AuctionItemStartedSellingEventHandler(
             AuctionId = auction.Id,
             LastPrice = soldItem.ActualPrice,
             UserId = soldItem.Bids?.LastOrDefault()?.UserId,
+            AuctionOwnerId = auction.UserId,
             SoldAt = DateTime.UtcNow
         });
         _logger.LogInformation("Publishing AuctionItemSoldEvent for item {ItemId}", soldItem.Id);
