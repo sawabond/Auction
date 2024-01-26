@@ -2,7 +2,6 @@
 using Auction.Application.Auction.Specifications;
 using Auction.Application.Common;
 using Auction.Core.Auction.Entities;
-using Auction.Core.Common;
 using Core;
 using FluentResults;
 using Microsoft.AspNetCore.Http;

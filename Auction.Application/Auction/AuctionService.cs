@@ -2,7 +2,6 @@
 using Auction.Application.Auction.Get;
 using Auction.Application.Auction.Helpers;
 using Auction.Application.Auction.Specifications;
-using Auction.Core.Common;
 using Core;
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -61,13 +60,13 @@ public class AuctionService(
             new Core.Auction.Entities.AuctionItem
             {
                 Id = Guid.NewGuid(),
-                ActualPrice = 222m,
-                Description = "Test item2222222222222", 
+                ActualPrice = 100m,
+                Description = "Gucci Jeans", 
                 IsSellingNow = false,
-                MinimalBid = 222m,
-                Name = "222222222222222222222222222222222222222222222222222",
-                StartingPrice = 222m,
-                SellingPeriod = TimeSpan.FromSeconds(600),
+                MinimalBid = 20m,
+                Name = "Gucci Jeans",
+                StartingPrice = 100,
+                SellingPeriod = TimeSpan.FromSeconds(60),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()
@@ -82,13 +81,13 @@ public class AuctionService(
             new Core.Auction.Entities.AuctionItem
             {
                 Id = Guid.NewGuid(),
-                ActualPrice = 111m,
-                Description = "Test item", 
+                ActualPrice = 100m,
+                Description = "Luis Vuitton T-Shirt", 
                 IsSellingNow = false,
-                MinimalBid = 111m,
-                Name = "111111111111111111111111111111111111111111",
-                StartingPrice = 10m,
-                SellingPeriod = TimeSpan.FromSeconds(600),
+                MinimalBid = 30m,
+                Name = "Luis Vuitton T-Shirt",
+                StartingPrice = 100m,
+                SellingPeriod = TimeSpan.FromSeconds(30),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()

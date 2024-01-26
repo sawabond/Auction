@@ -6,13 +6,13 @@ using Auction.Application.Auction.Create;
 using Auction.Application.AuctionHosting.Extensions;
 using Auction.Application.Common;
 using Auction.Contracts;
-using Auction.Core.Common;
 using Auction.Infrastructure;
+using Auction.Infrastructure.Auction.Hubs;
 using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
-using Auction.Web.Hubs;
+using Core;
 using Jobs.Extensions;
 using Kafka.Messaging;
 using Logging;
@@ -20,6 +20,7 @@ using Logging.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Payment.Contracts.Clients;
 using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,8 @@ builder.Services.AddCors(x =>
             .AllowCredentials();
     });
 });
+
+builder.Services.AddPaymentClients(builder.Configuration);
 
 builder.Services.AddAuctionFeature();
 builder.Services.AddScheduler(builder.Configuration);

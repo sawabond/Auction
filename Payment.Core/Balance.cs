@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Payment.Core;
+﻿namespace Payment.Core;
 
 public class Balance
 {

@@ -30,6 +30,7 @@
       <ProjectReference Include="..\Auth.Common\Auth.Common.csproj" />
       <ProjectReference Include="..\Payment.Application\Payment.Application.csproj" />
       <ProjectReference Include="..\Payment.Infrastructure\Payment.Infrastructure.csproj" />
+      <ProjectReference Include="..\Shared\Kafka\Kafka.csproj" />
       <ProjectReference Include="..\Shared\Logging\Logging.csproj" />
     </ItemGroup>
 

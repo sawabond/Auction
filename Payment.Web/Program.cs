@@ -1,9 +1,13 @@
 using System.Security.Claims;
+using Auction.Contracts;
+using Core;
+using Kafka.Messaging;
 using Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Payment.Application.Balance;
 using Payment.Application.Payment;
+using Payment.Contracts;
 using Payment.Infrastructure;
 using Payment.Web;
 using Shared;
@@ -16,6 +20,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSerilogLogging(builder.Configuration);
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IBalanceService, BalanceService>();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 builder.Services.AddDbContext<PaymentDbContext>(x =>
@@ -46,6 +53,11 @@ builder.Services.AddTransient<IStripeClient, StripeClient>(s =>
 
     return new StripeClient(apiKey: StripeConfiguration.ApiKey, httpClient: httpClient);
 });
+
+builder.AddKafkaInfrastructure(
+    handlersAssembly: typeof(PaymentInfrastructureAssemblyReference).Assembly,
+    typeof(AuctionContractsAssemblyReference).Assembly,
+    typeof(PaymentContractsAssemblyReference).Assembly);
 
 var app = builder.Build();
 
@@ -102,6 +114,19 @@ app.MapGet("/api/balances", async (
     [FromServices] IBalanceService balanceService) =>
 {
     var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+    var balance = await balanceService.GetUserBalance(userId);
+    if (balance is not null)
+    {
+        return Results.Ok(balance);
+    }
+
+    return Results.BadRequest();
+});
+
+app.MapGet("/api/balances/{userId}", async (
+    Guid userId,
+    [FromServices] IBalanceService balanceService) =>
+{
     var balance = await balanceService.GetUserBalance(userId);
     if (balance is not null)
     {

@@ -1,6 +1,6 @@
-﻿using FluentResults;
-using Microsoft.EntityFrameworkCore;
-using Payment.Infrastructure;
+﻿using Core;
+using FluentResults;
+using Payment.Contracts.Balance;
 using Stripe;
 using Stripe.Checkout;
 
@@ -11,7 +11,11 @@ public interface IPaymentService
     Task<Result> CreatePaymentAsync(Guid userId, string sessionId);
 }
 
-public class PaymentService(PaymentDbContext _context, IStripeClient _stripeClient) : IPaymentService
+public class PaymentService(
+    IRepository<Core.Payment> _paymentRepository,
+    IRepository<Core.Balance> _balanceRepository,
+    IPublisher _publisher,
+    IStripeClient _stripeClient) : IPaymentService
 {
     // TODO: refactor this method to user repositories
     public async Task<Result> CreatePaymentAsync(Guid userId, string sessionId)
@@ -25,9 +29,9 @@ public class PaymentService(PaymentDbContext _context, IStripeClient _stripeClie
         
         var decimalAmount = session.AmountTotal!.Value / 100;
         
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        // TODO: refactor repository to use transactions
         
-        _context.Payments.Add(new()
+        await _paymentRepository.AddAsync(new()
         {
             Amount = decimalAmount,
             CreatedAt = DateTime.UtcNow,
@@ -35,26 +39,33 @@ public class PaymentService(PaymentDbContext _context, IStripeClient _stripeClie
             SessionId = sessionId
         });
         
-        var balanceExists = await _context.Balances.AnyAsync(x => x.UserId == userId);
-        if (balanceExists)
+        var balance = await _balanceRepository.GetByIdAsync(userId);
+        if (balance is not null)
         {
-            await _context.Balances
-                .Where(x => x.UserId == userId)
-                .ExecuteUpdateAsync(x => x.SetProperty(
-                    b => b.Amount, b => b.Amount + decimalAmount));
+            balance.Amount += decimalAmount;
+            await _balanceRepository.UpdateAsync(balance);
         }
         else
         {
-            _context.Balances.Add(new()
+            await _balanceRepository.AddAsync(new()
             {
                 UserId = userId,
                 Amount = decimalAmount
             });
         }
         
-        await _context.SaveChangesAsync();
+        await _paymentRepository.SaveChangesAsync();
+        await _balanceRepository.SaveChangesAsync();
 
-        await transaction.CommitAsync();
+        //await transaction.CommitAsync();
+        await _publisher.Publish(userId, new BalanceChangedEvent
+        {
+            UserId = userId,
+            CurrentBalance = balance?.Amount + decimalAmount ?? decimalAmount,
+            Reason = "Top-Up",
+            Delta = decimalAmount,
+            CreatedAt = DateTime.UtcNow,
+        });
 
         return Result.Ok();
     }

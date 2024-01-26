@@ -28,11 +28,9 @@ public class AuctionItem
 
     public Bid AddBid(Guid userId, decimal amount, DateTime date)
     {
-        var updatedPrice = ActualPrice + amount;
+        ActualPrice = amount;
         
-        ActualPrice = updatedPrice;
-        
-        var bid = new Bid(Id, userId, amount, date, updatedPrice);
+        var bid = new Bid(Id, userId, amount, date, amount);
         
         _bids.Add(bid);
 

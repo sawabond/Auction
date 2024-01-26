@@ -1,8 +1,11 @@
-﻿using Auction.Application.AuctionHosting;
+﻿using Auction.Application.Auction.AuctionItem.Bid;
+using Auction.Application.AuctionHosting;
 using Auction.Contracts.Auction;
-using Auction.Core.Common;
 using Auction.Infrastructure.Auction.AuctionItem;
+using Auction.Infrastructure.Auction.Hubs;
+using Core;
 using KafkaFlow;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +14,8 @@ namespace Auction.Infrastructure.Auction.Close;
 public class AuctionClosedEventHandler(
     ILogger<AuctionItemSoldEventHandler> _logger,
     IActiveAuctionsStorage _activeAuctionsStorage,
-    IServiceScopeFactory _scopeFactory)
+    IServiceScopeFactory _scopeFactory,
+    IHubContext<AuctionHub, IAuctionSubscriber> _hubContext)
     : IMessageHandler<AuctionClosedEvent>
 {
     public async Task Handle(IMessageContext context, AuctionClosedEvent message)
@@ -26,5 +30,8 @@ public class AuctionClosedEventHandler(
         await repository.UpdateAsync(auction);
         
         await _activeAuctionsStorage.Remove(message.Id);
+        await _hubContext.Clients
+            .Groups(message.Id.ToString())
+            .AuctionClosed(message);
     }
 }

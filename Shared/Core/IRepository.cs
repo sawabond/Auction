@@ -1,6 +1,6 @@
 ﻿using Ardalis.Specification;
 
-namespace Auction.Core.Common;
+namespace Core;
 
 public interface IRepository<T> : IRepositoryBase<T> where T : class
 {
