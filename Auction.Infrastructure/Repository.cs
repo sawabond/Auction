@@ -1,5 +1,5 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
-using Auction.Core.Common;
+using Core;
 
 namespace Auction.Infrastructure;
 

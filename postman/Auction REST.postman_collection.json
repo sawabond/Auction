@@ -318,6 +318,118 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Top up account",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"{{CurrentUserId}}\",\r\n    \"amount\": 772233\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/top-up?returnUrl={{GATEWAY_URL}}",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"top-up"
+					],
+					"query": [
+						{
+							"key": "returnUrl",
+							"value": "{{GATEWAY_URL}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get my balance",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserAuthToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"{{CurrentUserId}}\",\r\n    \"amount\": 772233\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/balances",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"balances"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user balance",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserAuthToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"{{CurrentUserId}}\",\r\n    \"amount\": 772233\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/balances/:userId",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"balances",
+						":userId"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "2bddb113-bf2d-4d84-b192-e61421089191"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
