@@ -1,0 +1,30 @@
+name: Build .NET Microservices
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.x'
+
+      - name: Build and Test Auth.Web
+        working-directory: Auth.Web
+        run: |
+          dotnet build
+
+      - name: Build and Test Auction.Web
+        working-directory: Auction.Web
+        run: |
+          dotnet build
