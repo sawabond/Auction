@@ -1,9 +1,9 @@
-name: Build and Test .NET Microservices
+name: Build and Push Docker Image
 
 on:
-  push:
-    branches:
-      - dev
+#  push:
+#    branches:
+#      - dev
   workflow_dispatch: {} # Allow manual triggering
 
 jobs:
@@ -26,7 +26,10 @@ jobs:
 
       - name: Build Docker Image for Auth.Web
         run: |
+          version=$GITHUB_RUN_NUMBER
           docker build -t auth-web -f Auth.Web/Dockerfile .
+          echo "::set-output name=image_version::$version"
+        id: build_auth_web
 
   build_auction_web:
     runs-on: ubuntu-latest
@@ -47,4 +50,20 @@ jobs:
 
       - name: Build Docker Image for Auction.Web
         run: |
+          version=$GITHUB_RUN_NUMBER
           docker build -t auction-web -f Auction.Web/Dockerfile .
+          echo "::set-output name=image_version::$version"
+        id: build_auction_web
+
+  push_docker_hub:
+    needs: [build_auth_web, build_auction_web]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push Docker Images to Docker Hub
+        run: |
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+          docker push yourusername/auth-web:$BUILD_AUTH_WEB_IMAGE_VERSION
+          docker push yourusername/auction-web:$BUILD_AUCTION_WEB_IMAGE_VERSION
+        env:
+          BUILD_AUTH_WEB_IMAGE_VERSION: ${{ needs.build_auth_web.outputs.image_version }}
+          BUILD_AUCTION_WEB_IMAGE_VERSION: ${{ needs.build_auction_web.outputs.image_version }}
