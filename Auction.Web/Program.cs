@@ -47,7 +47,7 @@ builder.Services.AddPaymentClients(builder.Configuration);
 builder.Services.AddAuctionFeature();
 builder.Services.AddScheduler(builder.Configuration);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IBlobService, AzureBlobService>();
+builder.Services.AddScoped<IBlobService, AwsS3BucketService>();
 
 builder.Services.AddDbContext<AuctionDbContext>(x =>
 {
