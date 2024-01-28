@@ -9,7 +9,7 @@ on:
 jobs:
   build_auth_web:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -27,3 +27,9 @@ jobs:
       - name: Build Docker Image for Auth.Web
         run: |
           docker build -t auth-web -f Auth.Web/Dockerfile .
+
+      - name: Publish Docker Image to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          docker tag auth-web ${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:latest
