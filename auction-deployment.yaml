@@ -17,4 +17,10 @@ spec:
         - name: auction-auth
           image: oleksandrdotnet777/auth-web:latest
           ports:
-            - containerPort: 5190
+            - containerPort: 7265
+            - containerPort: 5248
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ASPNETCORE_URLS
+              value: "https://localhost:7265;http://localhost:5248"

@@ -1,7 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 80
+EXPOSE 7265
+EXPOSE 5248
 
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build

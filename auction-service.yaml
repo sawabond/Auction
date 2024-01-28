@@ -3,13 +3,12 @@ kind: Service
 metadata:
   name: auction-service
   namespace: auction-namespace
-  labels:
-    app: auction-deployment
 spec:
-  type: LoadBalancer  # Use LoadBalancer type
+  type: LoadBalancer
   selector:
     app: auction-deployment
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 5248
