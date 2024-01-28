@@ -1,15 +1,22 @@
-name: Build and Test .NET Microservices
+name: Build and Push Docker Images
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
-  workflow_dispatch: {} # Allow manual triggering
 
 jobs:
-  build_auth_web:
+  build_and_push_images:
     runs-on: ubuntu-latest
-    
+
+    strategy:
+      matrix:
+        service: [auth-web, auction-web]
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ matrix.service }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -17,26 +24,26 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '8.x' # Use the desired .NET Core 8 version
 
-      - name: Build and Test Auth.Web
-        working-directory: Auth.Web
+      - name: Build ${{ matrix.service }}
         run: |
+          cd ${{ matrix.service }}
           dotnet build
 
-  build_auction_web:
+      - name: Build Docker Image for ${{ matrix.service }}
+        run: |
+          version=$GITHUB_RUN_NUMBER
+          docker build -t ${{secrets.DOCKER_HUB_USERNAME}}/${{ matrix.service }}:$version -f ${{ matrix.service }}/Dockerfile .
+          echo "::set-output name=image_version::$version"
+        id: build_${{ matrix.service }}
+
+  push_docker_hub:
+    needs: [build_and_push_images]
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '8.x'
-
-      - name: Build and Test Auction.Web
-        working-directory: Auction.Web
+      - name: Push Docker Images to Docker Hub
         run: |
-          dotnet build
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+          docker push yourusername/auth-web:${{ needs.build_and_push_images.outputs.build_auth-web.image_version }}
+          docker push yourusername/auction-web:${{ needs.build_and_push_images.outputs.build_auction-web.image_version }}
