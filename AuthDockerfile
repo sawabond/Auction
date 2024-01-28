@@ -4,19 +4,24 @@ WORKDIR /app
 EXPOSE 5190
 EXPOSE 7134
 
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Auth.Web/Auth.Web.csproj", "Auth.Web/"]
+COPY ["Auth.Application/Auth.Application.csproj", "Auth.Application/"]
+COPY ["Auth.Infrastructure/Auth.Infrastructure.csproj", "Auth.Infrastructure/"]
+COPY ["Auth.Common/Auth.Common.csproj", "Auth.Common/"]
+COPY ["Shared/Logging/Logging.csproj", "Shared/Logging/"]
 RUN dotnet restore "Auth.Web/Auth.Web.csproj"
 COPY . .
 WORKDIR "/src/Auth.Web"
-RUN dotnet build "Auth.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "Auth.Web.csproj" -c Release -o /app/build
 
+# Publish stage
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "Auth.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Auth.Web.csproj" -c Release -o /app/publish
 
+# Final image
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
