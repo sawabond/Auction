@@ -1,0 +1,29 @@
+name: Auth service
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch: {} # Allow manual triggering
+
+jobs:
+  build_auth_web:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.x' # Use the desired .NET Core 8 version
+
+      - name: Build Auth.Web
+        run: |
+          cd Auth.Web # Set the working directory to Auth.Web
+          dotnet build # Use appropriate build command for Auth.Web
+
+      - name: Build Docker Image for Auth.Web
+        run: |
+          docker build -t auth-web -f Auth.Web/Dockerfile .
