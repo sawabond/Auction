@@ -26,7 +26,7 @@ jobs:
 
       - name: Build Docker Image for Auth.Web
         run: |
-          docker build -t auth-web -f Auth.Web/Dockerfile .
+          docker build -t auth-web -f AuthDockerfile .
 
       - name: Publish Docker Image to Docker Hub
         run: |
