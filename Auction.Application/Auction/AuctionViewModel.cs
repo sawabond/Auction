@@ -1,6 +1,6 @@
 ﻿using Auction.Core.Auction.Enums;
 
-namespace Auction.Web.Auction.Get;
+namespace Auction.Application.Auction;
 
 public class AuctionViewModel
 {
@@ -20,14 +20,12 @@ public class AuctionViewModel
 
     public List<AuctionItemViewModel> AuctionItems { get; set; } = new();
 
-    public AuctionItemViewModel? GetFirstItem() => AuctionItems[0];
+    public AuctionItemViewModel? GetFirstItem() => AuctionItems.Any() ? AuctionItems[0] : null;
     public AuctionItemViewModel? CurrentlySellingItem => AuctionItems.FirstOrDefault(x => x.IsSellingNow);
 }
 
 public class AuctionItemViewModel
 {
-    private readonly List<BidViewModel> _bids = new();
-    
     public Guid Id { get; set; }
     
     public decimal StartingPrice { get; set; }
@@ -46,9 +44,9 @@ public class AuctionItemViewModel
     
     public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(30);
 
-    public ICollection<AuctionItemPhotoViewModel> Photos { get; set; }
+    public List<AuctionItemPhotoViewModel> Photos { get; set; } = new();
 
-    public IReadOnlyCollection<BidViewModel> Bids => _bids;
+    public List<BidViewModel> Bids { get; set; } = new();
 }
 
 public class AuctionItemPhotoViewModel

@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
                         .WithGroupId(kafkaConfig.ConsumerGroupId)
                         .WithBufferSize(100)
                         .WithWorkersCount(3)
-                        .WithAutoOffsetReset(AutoOffsetReset.Latest)
+                        .WithAutoOffsetReset(AutoOffsetReset.Earliest)
                         .AddMiddlewares(middlewares =>
                         {
                             middlewares.AddDeserializer<JsonCoreDeserializer>();

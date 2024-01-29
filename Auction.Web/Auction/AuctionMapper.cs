@@ -1,4 +1,5 @@
-﻿using Auction.Application.Auction.Get;
+﻿using Auction.Application.Auction;
+using Auction.Application.Auction.Get;
 using Auction.Web.Auction.Get;
 using Riok.Mapperly.Abstractions;
 
@@ -8,5 +9,4 @@ namespace Auction.Web.Auction;
 public static partial class AuctionMapper
 {
     public static partial GetAuctionsQuery ToQuery(this GetAuctionsRequest model);
-    public static partial AuctionViewModel ToViewModel(this Core.Auction.Entities.Auction model);
 }

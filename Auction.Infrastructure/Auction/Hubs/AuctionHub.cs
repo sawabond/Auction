@@ -1,4 +1,5 @@
-﻿using Auction.Application.Auction.AuctionItem.Bid;
+﻿using Auction.Application.Auction;
+using Auction.Application.Auction.AuctionItem.Bid;
 using Auction.Application.AuctionHosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -19,7 +20,7 @@ public class AuctionHub(
             return;
         }
         
-        await Clients.Groups(auctionId).BidMade(lastBid.Value);
+        await Clients.Groups(auctionId).BidMade(lastBid.Value.ToViewModel());
     }
 
     public async Task JoinGroup(string auctionId)
@@ -27,6 +28,11 @@ public class AuctionHub(
         await Groups.AddToGroupAsync(Context.ConnectionId, auctionId);
         
         var auction = await _activeAuctionsStorage.GetAsync(Guid.Parse(auctionId));
-        await Clients.Groups(auctionId).OnAuctionRunning(auction);
+        if (auction is null || auction.CurrentlySellingItem is null)
+        {
+            return;
+        }
+        
+        await Clients.Groups(auctionId).OnAuctionRunning(auction?.ToViewModel());
     }
 }
