@@ -3,6 +3,7 @@ import { IRoute } from './interfaces/Routes/IRoute';
 import AuthPage from './pages/AuthPage/AuthPage';
 import Home from './pages/Home/Home';
 import Welcome from './pages/Welcome/Welcome';
+import CreateAuctionPage from './pages/CreateAuctionPage/CreateAuctionPage';
 
 const routes: IRoute[] = [
   {
@@ -32,6 +33,13 @@ const routes: IRoute[] = [
     path: '/auction/:auctionId',
     enabled: true,
     component: AuctionMessaging,
+  },
+  {
+    key: 'auction',
+    title: 'Auction',
+    path: '/create-auction',
+    enabled: true,
+    component: CreateAuctionPage,
   },
 ];
 
