@@ -1,10 +1,10 @@
 ﻿using Auction.Application.AuctionHosting;
 using Auction.Contracts.Auction;
 using Auction.Contracts.Auction.AuctionItem;
-using Auction.Core.Common;
 using Core;
 using Hangfire;
 using KafkaFlow;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -48,6 +48,7 @@ public class AuctionItemStartedSellingEventHandler(
             AuctionId = auction.Id,
             LastPrice = soldItem.ActualPrice,
             UserId = soldItem.Bids?.LastOrDefault()?.UserId,
+            AuctionOwnerId = auction.UserId,
             SoldAt = DateTime.UtcNow
         });
         _logger.LogInformation("Publishing AuctionItemSoldEvent for item {ItemId}", soldItem.Id);

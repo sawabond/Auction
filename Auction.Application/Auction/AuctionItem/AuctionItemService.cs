@@ -2,7 +2,6 @@
 using Auction.Application.Auction.Specifications;
 using Auction.Application.Common;
 using Auction.Core.Auction.Entities;
-using Auction.Core.Common;
 using Core;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +28,10 @@ public class AuctionItemService(
         if (auction.UserId != ownerId)
         {
             return Result.Fail($"User with id {ownerId} is not owner of this auction");
+        }
+        if (auction.EndTime is not null)
+        {
+            return Result.Fail($"Auction with id {auctionId} is already finished");
         }
 
         var auctionItem = command.ToEntity();

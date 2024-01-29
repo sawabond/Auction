@@ -2,7 +2,7 @@
 using Auction.Application.Auction.Get;
 using Auction.Application.Auction.Helpers;
 using Auction.Application.Auction.Specifications;
-using Auction.Core.Common;
+using Auction.Contracts.Auction;
 using Core;
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -13,11 +13,12 @@ public interface IAuctionService
 {
     Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query);
     Task<Result<Guid>> Create(AuctionCreateCommand command, Guid userId);
+    Task<Result> Delete(Guid userId, Guid id);
 }
 
 public class AuctionService(
     ILogger<AuctionService> _logger, 
-    IRepository<Core.Auction.Entities.Auction> _repository, 
+    IRepository<Core.Auction.Entities.Auction> _repository,
     IPublisher _publisher) : IAuctionService
 {
     public async Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query)
@@ -61,13 +62,13 @@ public class AuctionService(
             new Core.Auction.Entities.AuctionItem
             {
                 Id = Guid.NewGuid(),
-                ActualPrice = 222m,
-                Description = "Test item2222222222222", 
+                ActualPrice = 100m,
+                Description = "Gucci Jeans", 
                 IsSellingNow = false,
-                MinimalBid = 222m,
-                Name = "222222222222222222222222222222222222222222222222222",
-                StartingPrice = 222m,
-                SellingPeriod = TimeSpan.FromSeconds(600),
+                MinimalBid = 20m,
+                Name = "Gucci Jeans",
+                StartingPrice = 100,
+                SellingPeriod = TimeSpan.FromSeconds(60),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()
@@ -82,13 +83,13 @@ public class AuctionService(
             new Core.Auction.Entities.AuctionItem
             {
                 Id = Guid.NewGuid(),
-                ActualPrice = 111m,
-                Description = "Test item", 
+                ActualPrice = 100m,
+                Description = "Luis Vuitton T-Shirt", 
                 IsSellingNow = false,
-                MinimalBid = 111m,
-                Name = "111111111111111111111111111111111111111111",
-                StartingPrice = 10m,
-                SellingPeriod = TimeSpan.FromSeconds(600),
+                MinimalBid = 30m,
+                Name = "Luis Vuitton T-Shirt",
+                StartingPrice = 100m,
+                SellingPeriod = TimeSpan.FromSeconds(30),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()
@@ -99,7 +100,7 @@ public class AuctionService(
                     }
                 }
                 });
-        auction.StartTime = DateTime.UtcNow.AddSeconds(10);
+        auction.StartTime = DateTime.UtcNow.AddSeconds(300);
         
         var result = await _repository.AddAsync(auction);
         await _publisher.Publish(auction.Id, auction.ToAuctionCreatedEvent());
@@ -107,5 +108,32 @@ public class AuctionService(
         _logger.LogInformation("Auction with Id {AuctionId} created", auction.Id);
 
         return Result.Ok(result.Id);
+    }
+    
+    public async Task<Result> Delete(Guid userId, Guid id)
+    {
+        var auction = await _repository.GetByIdAsync(id);
+        if (auction is null)
+        {
+            return Result.Fail("Auction not found");
+        }
+        if (auction.UserId != userId)
+        {
+            return Result.Fail("You are not the owner of this auction");
+        }
+        if (auction.StartTime < DateTime.UtcNow)
+        {
+            return Result.Fail("Auction already started");
+        }
+
+        await _repository.DeleteAsync(auction);
+        await _publisher.Publish(auction.Id, new AuctionRemovedEvent
+        {
+            Id = auction.Id,
+            UserId = auction.UserId,
+            RemovedAt = DateTime.UtcNow
+        });
+
+        return Result.Ok();
     }
 }

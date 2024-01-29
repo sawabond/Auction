@@ -1,0 +1,31 @@
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER $APP_UID
+WORKDIR /app
+EXPOSE 7265
+EXPOSE 5248
+
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY ["Auth.Web/Auth.Web.csproj", "Auth.Web/"]
+COPY ["Auth.Application/Auth.Application.csproj", "Auth.Application/"]
+COPY ["Auth.Infrastructure/Auth.Infrastructure.csproj", "Auth.Infrastructure/"]
+COPY ["Auth.Common/Auth.Common.csproj", "Auth.Common/"]
+COPY ["Auth.Core/Auth.Core.csproj", "Auth.Core/"]
+COPY ["Shared/Logging/Logging.csproj", "Shared/Logging/"]
+
+RUN dotnet restore "Auth.Web/Auth.Web.csproj"
+COPY . .
+WORKDIR "/src/Auth.Web"
+RUN dotnet build "Auth.Web.csproj" -c Release -o /app/build
+
+# Publish stage
+FROM build AS publish
+RUN dotnet publish "Auth.Web.csproj" -c Release -o /app/publish
+
+# Final image
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Auth.Web.dll"]
