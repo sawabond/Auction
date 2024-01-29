@@ -23,4 +23,9 @@ spec:
             - name: ASPNETCORE_ENVIRONMENT
               value: "Development"
             - name: ASPNETCORE_URLS
-              value: "https://localhost:7265;http://localhost:5248"
+              value: "http://+:5248"
+            - name: ConnectionStrings__DefaultConnection  # Using double underscore for hierarchical config
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: PostgresConnectionString
