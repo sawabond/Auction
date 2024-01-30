@@ -20,6 +20,9 @@ public class FilteredPaginatedAuctionAggregateSpec : Specification<Core.Auction.
         if (cursor.HasValue)
             Query.Where(x => x.StartTime < cursor);
 
+        if (query.UserIds.Any())
+            Query.Where(x => query.UserIds.Contains(x.UserId));
+
         Query.Take(query.PageSize + 1);
 
         Query.Where(x => x.AuctionItems.Any(x => x.IsSellingNow == query.OnlyActive));
