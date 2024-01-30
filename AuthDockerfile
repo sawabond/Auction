@@ -13,7 +13,9 @@ COPY ["Auth.Application/Auth.Application.csproj", "Auth.Application/"]
 COPY ["Auth.Infrastructure/Auth.Infrastructure.csproj", "Auth.Infrastructure/"]
 COPY ["Auth.Common/Auth.Common.csproj", "Auth.Common/"]
 COPY ["Auth.Core/Auth.Core.csproj", "Auth.Core/"]
+COPY ["Auth.Contracts/Auth.Contracts.csproj", "Auth.Contracts/"]
 COPY ["Shared/Logging/Logging.csproj", "Shared/Logging/"]
+COPY ["Shared/Kafka/Kafka.csproj", "Shared/Kafka/"]
 
 RUN dotnet restore "Auth.Web/Auth.Web.csproj"
 COPY . .

@@ -1,7 +1,9 @@
 using Auth.Application.User;
+using Auth.Contracts;
 using Auth.Core.User.Entities;
 using Auth.Infrastructure;
 using Auth.Infrastructure.User;
+using Kafka.Messaging;
 using Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -36,6 +38,10 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 
 builder.Services.AddIdentityCore<AppUser>()
     .AddEntityFrameworkStores<AuthDbContext>();
+
+builder.AddKafkaInfrastructure(
+    handlersAssembly: typeof(AuthInfrastructureAssemblyReference).Assembly,
+    eventsAssemblies: typeof(AuthContractsAssemblyReference).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x =>

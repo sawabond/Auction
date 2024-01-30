@@ -28,8 +28,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Auth.Application\Auth.Application.csproj" />
+      <ProjectReference Include="..\Auth.Contracts\Auth.Contracts.csproj" />
       <ProjectReference Include="..\Auth.Infrastructure\Auth.Infrastructure.csproj" />
       <ProjectReference Include="..\Auth.Common\Auth.Common.csproj" />
+      <ProjectReference Include="..\Shared\Kafka\Kafka.csproj" />
       <ProjectReference Include="..\Shared\Logging\Logging.csproj" />
     </ItemGroup>
 

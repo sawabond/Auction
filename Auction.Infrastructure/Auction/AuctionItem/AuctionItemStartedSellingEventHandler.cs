@@ -26,7 +26,6 @@ public class AuctionItemStartedSellingEventHandler(
         await scheduler.Schedule(() => SellItem(message.AuctionId), message.SellingPeriod);
     }
 
-    [AutomaticRetry(Attempts = 0)]
     public async Task SellItem(Guid auctionId)
     {
         using var scope = _scopeFactory.CreateScope();

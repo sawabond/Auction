@@ -22,7 +22,7 @@ public class AuctionItem
     
     public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(30);
 
-    public ICollection<AuctionItemPhoto> Photos { get; set; }
+    public ICollection<AuctionItemPhoto> Photos { get; set; } = new List<AuctionItemPhoto>();
 
     public IReadOnlyCollection<Bid> Bids => _bids;
     

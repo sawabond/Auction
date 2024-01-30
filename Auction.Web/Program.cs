@@ -4,6 +4,7 @@ using Auction.Application.Auction;
 using Auction.Application.Auction.AuctionItem;
 using Auction.Application.Auction.AuctionItem.Create;
 using Auction.Application.Auction.Create;
+using Auction.Application.Auction.Get;
 using Auction.Application.AuctionHosting.Extensions;
 using Auction.Application.Common;
 using Auction.Contracts;
@@ -120,6 +121,24 @@ app.MapPost("/api/auctions", async (
         var result = await auctionService.Create(request, userId);
 
         return result.ToResponse();
+    })
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapGet("/api/user/auctions", async (
+        [AsParameters] GetAuctionsRequest request,
+        ClaimsPrincipal user,
+        IAuctionService auctionService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionService.Get(request.ToQuery() with
+        {
+            UserIds = new List<Guid>{ userId }
+        });
+
+        var resultVm = result.Value.Auctions.Select(x => x.ToViewModel()).ToList();
+
+        return Results.Ok(new { result.Value.Cursor, Auctions = resultVm });
     })
     .RequireAuthorization()
     .WithOpenApi();
