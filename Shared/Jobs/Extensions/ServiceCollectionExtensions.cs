@@ -17,10 +17,10 @@ public static class ServiceCollectionExtensions
             config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(configuration.GetConnectionString("DefaultConnection"));
+                .UsePostgreSqlStorage(configuration.GetConnectionString("DefaultConnection"))
+                .UseFilter(new AutomaticRetryAttribute { Attempts = 10 } );
         });
         @this.AddHangfireServer(x => x.SchedulePollingInterval = TimeSpan.FromSeconds(3));
-        
         
         return @this;
     }

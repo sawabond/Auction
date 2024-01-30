@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Auction.Contracts;
+using Auth.Contracts;
 using Core;
 using Kafka.Messaging;
 using Logging;
@@ -57,7 +58,8 @@ builder.Services.AddTransient<IStripeClient, StripeClient>(s =>
 builder.AddKafkaInfrastructure(
     handlersAssembly: typeof(PaymentInfrastructureAssemblyReference).Assembly,
     typeof(AuctionContractsAssemblyReference).Assembly,
-    typeof(PaymentContractsAssemblyReference).Assembly);
+    typeof(PaymentContractsAssemblyReference).Assembly,
+    typeof(AuthContractsAssemblyReference).Assembly);
 
 var app = builder.Build();
 

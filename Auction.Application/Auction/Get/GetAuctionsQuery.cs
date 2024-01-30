@@ -1,6 +1,6 @@
 ﻿namespace Auction.Application.Auction.Get;
 
-public class GetAuctionsQuery
+public record GetAuctionsQuery
 {
     public int PageSize { get; set; }
 
@@ -11,4 +11,6 @@ public class GetAuctionsQuery
     public string? DescriptionContains { get; set; }
 
     public bool OnlyActive { get; set; }
+
+    public List<Guid> UserIds { get; set; } = new();
 }

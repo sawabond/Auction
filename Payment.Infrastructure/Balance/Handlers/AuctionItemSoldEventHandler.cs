@@ -1,9 +1,7 @@
 ﻿using Auction.Contracts.Auction.AuctionItem;
-using Core;
 using KafkaFlow;
 using Microsoft.Extensions.DependencyInjection;
 using Payment.Application.Balance;
-using Payment.Contracts.Balance;
 
 namespace Payment.Infrastructure.Balance.Handlers;
 

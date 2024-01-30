@@ -68,6 +68,22 @@
 							"var responseJson = pm.response.json();\r",
 							"if (responseJson.token !== null) {\r",
 							"    pm.environment.set(\"UserAuthToken\", responseJson.token);\r",
+							"\r",
+							"    if (responseJson.token) {\r",
+							"    let parts = responseJson.token.split('.');\r",
+							"    \r",
+							"    if (parts.length === 3) {\r",
+							"        let payload = parts[1];\r",
+							"\r",
+							"        let base64 = payload.replace(/-/g, '+').replace(/_/g, '/');\r",
+							"        let jsonPayload = atob(base64);\r",
+							"\r",
+							"        let decoded = JSON.parse(jsonPayload);\r",
+							"\r",
+							"        let userId = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']; // or the appropriate claim field for the user ID\r",
+							"        pm.environment.set(\"CurrentUserId\", userId);\r",
+							"    }\r",
+							"}\r",
 							"}\r",
 							""
 						],
@@ -137,7 +153,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{GATEWAY_URL}}/api/auctions?pageSize=5&cursor={{AuctionNextCursor}}&name.[sw]&description.[contains]",
+					"raw": "{{GATEWAY_URL}}/api/auctions?pageSize=2&cursor={{AuctionNextCursor}}",
 					"host": [
 						"{{GATEWAY_URL}}"
 					],
@@ -148,7 +164,7 @@
 					"query": [
 						{
 							"key": "pageSize",
-							"value": "5",
+							"value": "2",
 							"description": "Page size"
 						},
 						{
@@ -158,13 +174,80 @@
 						},
 						{
 							"key": "name.[sw]",
-							"value": null,
-							"description": "Name 'starts with' filter"
+							"value": "",
+							"description": "Name 'starts with' filter",
+							"disabled": true
 						},
 						{
 							"key": "description.[contains]",
-							"value": null,
-							"description": "'Description contains' filter"
+							"value": "",
+							"description": "'Description contains' filter",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get my auctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJson = pm.response.json();\r",
+							"if (responseJson.cursor !== null) {\r",
+							"    pm.environment.set(\"AuctionNextCursor\", responseJson.cursor);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserAuthToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/user/auctions?pageSize=10",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"auctions"
+					],
+					"query": [
+						{
+							"key": "pageSize",
+							"value": "10",
+							"description": "Page size"
+						},
+						{
+							"key": "cursor",
+							"value": "{{AuctionNextCursor}}",
+							"description": "Cursor used for cursor pagination. Returns null if no next page is available. Returns cursor which must be sent with next request to get next page",
+							"disabled": true
+						},
+						{
+							"key": "name.[sw]",
+							"value": "",
+							"description": "Name 'starts with' filter",
+							"disabled": true
+						},
+						{
+							"key": "description.[contains]",
+							"value": "",
+							"description": "'Description contains' filter",
+							"disabled": true
 						}
 					]
 				}
@@ -235,6 +318,82 @@
 					"path": [
 						"api",
 						"auctions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.json() !== null) {\r",
+							"    pm.environment.set(\"CurrentAuctionId\", pm.response.json());\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let counter = pm.environment.get(\"AuctionCounter\") || 0;\r",
+							"counter = parseInt(counter, 10) + 1;\r",
+							"\r",
+							"pm.environment.set(\"AuctionCounter\", counter);\r",
+							"\r",
+							"const currentDate = (new Date()).toISOString();\r",
+							"const requestBody = {\r",
+							"    name: \"auction_name_\" + counter,\r",
+							"    description: \"description_\" + counter,\r",
+							"    startTime: currentDate,\r",
+							"    auctionType: 0\r",
+							"};\r",
+							"\r",
+							"pm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });\r",
+							"pm.request.body.update({ mode: 'raw', raw: JSON.stringify(requestBody) });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{UserAuthToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"string\",\r\n    \"description\": \"string\",\r\n    \"startTime\": \"2024-01-24T15:58:12.323Z\",\r\n    \"auctionType\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GATEWAY_URL}}/api/auctions/:auctionId",
+					"host": [
+						"{{GATEWAY_URL}}"
+					],
+					"path": [
+						"api",
+						"auctions",
+						":auctionId"
+					],
+					"variable": [
+						{
+							"key": "auctionId",
+							"value": "8ea06973-8ae3-4b38-99d4-420c9bf40d6d"
+						}
 					]
 				}
 			},

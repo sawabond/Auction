@@ -9,6 +9,7 @@ public interface IBalanceService
 {
     Task<Core.Balance?> GetUserBalance(Guid id);
     Task<(Core.Balance Source, Core.Balance Target)> Transfer(Guid sourceUserId, Guid targetUserId, decimal amount);
+    Task<Core.Balance> CreateNewBalance(Guid userId);
 }
 
 public class BalanceService(
@@ -20,6 +21,18 @@ public class BalanceService(
     {
         // TODO: Add caching
         return await _repository.GetByIdAsync(id);
+    }
+    
+    public async Task<Core.Balance> CreateNewBalance(Guid userId)
+    {
+        var balance = new Core.Balance
+        {
+            UserId = userId,
+            Amount = 0
+        };
+        await _repository.AddAsync(balance);
+        await _repository.SaveChangesAsync();
+        return balance;
     }
 
     public async Task<(Core.Balance Source, Core.Balance Target)> Transfer(Guid sourceUserId, Guid targetUserId, decimal amount)

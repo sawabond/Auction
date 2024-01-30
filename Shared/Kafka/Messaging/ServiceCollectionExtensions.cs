@@ -55,8 +55,8 @@ public static class ServiceCollectionExtensions
                     configurationBuilder.AddConsumer(consumer => consumer
                         .Topic(@event.Name)
                         .WithGroupId(kafkaConfig.ConsumerGroupId)
-                        .WithBufferSize(100)
-                        .WithWorkersCount(3)
+                        .WithBufferSize(10)
+                        .WithWorkersCount(10)
                         .WithAutoOffsetReset(AutoOffsetReset.Earliest)
                         .AddMiddlewares(middlewares =>
                         {
