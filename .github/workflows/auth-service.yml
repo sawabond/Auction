@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - dev
-  workflow_dispatch: {} # Allow manual triggering
+    paths:
+      - 'Auction*/**'
+      - 'infrastructure/auction-deployment.yaml'
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy to EKS (yes/no)'
+        required: true
+        default: 'no'
 
 jobs:
   build_auth_web:
@@ -28,8 +36,34 @@ jobs:
         run: |
           docker build -t auth-web -f AuthDockerfile .
 
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+      - name: Tagging
+        id: tagging
+        run: |
+          echo "::set-output name=version::$(date +'%Y%m%d%H%M%S')"
+
       - name: Publish Docker Image to Docker Hub
         run: |
-          echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-          docker tag auth-web ${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:latest
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:latest
+          docker tag auth-web ${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:${{ steps.tagging.outputs.version }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:${{ steps.tagging.outputs.version }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_auth_web
+    if: ${{ github.event.inputs.deploy == 'yes' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Update Kubernetes Deployment
+        run: |
+          kubectl set image deployment/auction-auth auction-auth=${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:${{ needs.build_auth_web.outputs.version }} --namespace=auction-namespace
