@@ -3,6 +3,7 @@ using Auction.Application.Auction.AuctionItem.Bid;
 using Auction.Application.AuctionHosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Localization;
 
 namespace Auction.Infrastructure.Auction.Hubs;
 
@@ -25,6 +26,9 @@ public class AuctionHub(
 
     public async Task JoinGroup(string auctionId)
     {
+        if (string.IsNullOrWhiteSpace(auctionId))
+            return;
+        
         await Groups.AddToGroupAsync(Context.ConnectionId, auctionId);
         
         var auction = await _activeAuctionsStorage.GetAsync(Guid.Parse(auctionId));
