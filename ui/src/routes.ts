@@ -43,9 +43,9 @@ const routes: IRoute[] = [
     component: CreateAuctionPage,
   },
   {
-    key: 'create-auction-item',
-    title: 'Create auction item',
-    path: '/auction/:auctionId/create-auction-item',
+    key: 'add-auction-item',
+    title: 'Add auction item',
+    path: '/auction/:auctionId/add-auction-item',
     enabled: true,
     component: AddAuctionItemPage,
   },
