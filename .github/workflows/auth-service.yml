@@ -11,6 +11,8 @@ on:
 jobs:
   build_auth_web:
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.tagging.outputs.version }}
 
     steps:
       - name: Checkout Code
@@ -36,7 +38,9 @@ jobs:
       - name: Tagging
         id: tagging
         run: |
-          echo "::set-output name=version::$(date +'%Y%m%d%H%M%S')"
+          VERSION=$(date +'%Y%m%d%H%M%S')
+          echo "::set-output name=version::$VERSION"
+          echo "Image tag: $VERSION"
 
       - name: Publish Docker Image to Docker Hub
         run: |
@@ -64,4 +68,4 @@ jobs:
 
       - name: Update Kubernetes Deployment
         run: |
-          kubectl set image deployment/auction-auth-deployment auction-auth=${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:${{ needs.build_auth_web.outputs.version }} --namespace=auction-namespace
+          kubectl set image deployment/auction-auth-deployment auction-auth=${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:${{ needs.build_auth_web.outputs.image_tag }} --namespace=auction-namespace
