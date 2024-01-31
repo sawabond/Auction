@@ -58,6 +58,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Set up Kubeconfig
+        run: |
+          aws eks --region us-east-1 update-kubeconfig --name auction
+
       - name: Update Kubernetes Deployment
         run: |
           kubectl set image deployment/auction-auth auction-auth=${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:${{ needs.build_auth_web.outputs.version }} --namespace=auction-namespace
