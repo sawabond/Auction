@@ -1,4 +1,4 @@
-import getTokenFromCookies from '../utils/getTokenFromCookies';
+import getTokenFromCookies from '../../../components/utils/getTokenFromCookies';
 
 const createAuction = async (values: any) => {
   const token = getTokenFromCookies();
