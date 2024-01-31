@@ -26,6 +26,8 @@ spec:
               value: "Development"
             - name: ASPNETCORE_URLS
               value: "http://+:5248"
+            - name: "BaseAddress__PaymentClient"
+              value: "http://payment-service:5225"
             - name: ConnectionStrings__DefaultConnection
               valueFrom:
                 secretKeyRef:

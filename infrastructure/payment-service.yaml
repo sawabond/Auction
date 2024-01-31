@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: payment-service
+  namespace: auction-namespace
+spec:
+  type: NodePort
+  ports:
+    - name: web
+      port: 5225
+      nodePort: 30013
+  selector:
+    app: payment-service
