@@ -28,3 +28,9 @@ spec:
               value: "Development"
             - name: ASPNETCORE_URLS
               value: "http://+:5167"
+            - name: ReverseProxy__Clusters__auth-cluster__Destinations__auth-destination__Address
+              value: "http://auction-auth:5190"
+            - name: ReverseProxy__Clusters__auction-cluster__Destinations__auction-destination__Address
+              value: "http://auction-service:5248"
+            - name: ReverseProxy__Clusters__payment-cluster__Destinations__auth-destination__Address
+              value: "http://payment-service:5225"  # Update this if you have a different service for payments

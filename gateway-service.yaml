@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: auction-gateway
+  namespace: auction-namespace
+spec:
+  type: NodePort
+  ports:
+    - name: web
+      port: 5167
+      nodePort: 30012
+  selector:
+    app: auction-gateway
