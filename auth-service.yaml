@@ -1,13 +1,13 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: auction-service
+  name: auction-auth
   namespace: auction-namespace
 spec:
   type: NodePort
   ports:
     - name: web
-      port: 5248
-      nodePort: 30010
+      port: 5190
+      nodePort: 30011
   selector:
-    app: auction-service
+    app: auction-auth

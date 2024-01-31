@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auction-gateway
+  namespace: auction-namespace
+  labels:
+    app: auction-gateway
+    app-group: auction-apps  # Common label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-gateway
+  template:
+    metadata:
+      labels:
+        app: auction-gateway
+        app-group: auction-apps  # Common label
+    spec:
+      containers:
+        - name: auction-gateway
+          image: oleksandrdotnet777/auction-gateway:latest
+          ports:
+            - containerPort: 7112
+            - containerPort: 5167
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ASPNETCORE_URLS
+              value: "http://+:5167"

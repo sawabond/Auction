@@ -1,31 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auction-service
+  name: auction-auth
   namespace: auction-namespace
   labels:
-    app: auction-service
+    app: auction-auth
+    app-group: auction-apps  # Common label
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auction-service
+      app: auction-auth
   template:
     metadata:
       labels:
-        app: auction-service
+        app: auction-auth
+        app-group: auction-apps  # Common label
     spec:
       containers:
-        - name: auction-service
-          image: oleksandrdotnet777/auction-web:latest
+        - name: auction-auth
+          image: oleksandrdotnet777/auth-web:latest
           ports:
-            - containerPort: 7265
-            - containerPort: 5248
+            - containerPort: 7134
+            - containerPort: 5190
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: "Development"
             - name: ASPNETCORE_URLS
-              value: "http://+:5248"
+              value: "http://+:5190"
             - name: ConnectionStrings__DefaultConnection
               valueFrom:
                 secretKeyRef:
