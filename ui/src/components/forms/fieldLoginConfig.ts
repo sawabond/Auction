@@ -1,5 +1,5 @@
 import { ILoginFormValues } from '../../interfaces/Forms/ILoginFormValues';
-import { IFieldConfig } from './CustomTextField';
+import { IFieldConfig } from '../../interfaces/Forms/IFieldConfig';
 
 const fieldLoginConfig: IFieldConfig<ILoginFormValues>[] = [
   {
