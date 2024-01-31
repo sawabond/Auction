@@ -1,5 +1,5 @@
 ﻿using Auction.Application.Auction.Specifications;
-using Auction.Core.Common;
+using Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Auction.Application.AuctionHosting.Extensions;

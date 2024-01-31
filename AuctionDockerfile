@@ -1,0 +1,36 @@
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER $APP_UID
+WORKDIR /app
+EXPOSE 7265
+EXPOSE 5248
+
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project references from solution
+COPY ["Auction.Web/Auction.Web.csproj", "Auction.Web/"]
+COPY ["Auction.Application/Auction.Application.csproj", "Auction.Application/"]
+COPY ["Auction.Infrastructure/Auction.Infrastructure.csproj", "Auction.Infrastructure/"]
+COPY ["Auction.Core/Auction.Core.csproj", "Auction.Core/"]
+
+COPY ["Auth.Common/Auth.Common.csproj", "Auth.Common/"]
+COPY ["Payment.Contracts/Payment.Contracts.csproj", "Payment.Contracts/"]
+COPY ["Shared/Jobs/Jobs.csproj", "Shared/Jobs/"]
+COPY ["Shared/Kafka/Kafka.csproj", "Shared/Kafka/"]
+COPY ["Shared/Logging/Logging.csproj", "Shared/Logging/"]
+
+RUN dotnet restore "Auction.Web/Auction.Web.csproj"
+COPY . .
+WORKDIR "/src/Auction.Web"
+RUN dotnet build "Auction.Web.csproj" -c Release -o /app/build
+
+# Publish stage
+FROM build AS publish
+RUN dotnet publish "Auction.Web.csproj" -c Release -o /app/publish
+
+# Final image
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Auction.Web.dll"]

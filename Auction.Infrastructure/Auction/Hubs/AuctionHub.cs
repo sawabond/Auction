@@ -1,10 +1,10 @@
-﻿using Auction.Application.Auction.AuctionItem.Bid;
+﻿using Auction.Application.Auction;
+using Auction.Application.Auction.AuctionItem.Bid;
 using Auction.Application.AuctionHosting;
-using Auction.Core.Auction.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Auction.Web.Hubs;
+namespace Auction.Infrastructure.Auction.Hubs;
 
 [Authorize]
 public class AuctionHub(
@@ -14,12 +14,13 @@ public class AuctionHub(
     public async Task MakeBid(string auctionId, decimal bid)
     {
         var lastBid = await _bidService.MakeBid(Guid.Parse(auctionId), Guid.Parse(Context.UserIdentifier!), bid);
-        if (lastBid.Equals(Bid.NullBid))
+        if (lastBid.IsFailed)
         {
+            await Clients.User(Context.UserIdentifier!).BidFailed(string.Join(Environment.NewLine, lastBid.Errors.Select(x => x.Message)));
             return;
         }
         
-        await Clients.Groups(auctionId).BidMade(lastBid);
+        await Clients.Groups(auctionId).BidMade(lastBid.Value.ToViewModel());
     }
 
     public async Task JoinGroup(string auctionId)
@@ -27,6 +28,11 @@ public class AuctionHub(
         await Groups.AddToGroupAsync(Context.ConnectionId, auctionId);
         
         var auction = await _activeAuctionsStorage.GetAsync(Guid.Parse(auctionId));
-        await Clients.Groups(auctionId).OnAuctionRunning(auction);
+        if (auction is null || auction.CurrentlySellingItem is null)
+        {
+            return;
+        }
+        
+        await Clients.Groups(auctionId).OnAuctionRunning(auction?.ToViewModel());
     }
 }

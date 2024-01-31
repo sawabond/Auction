@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
+      <PackageReference Include="AWSSDK.S3" Version="3.7.305.17" />
       <PackageReference Include="Hangfire" Version="1.8.7" />
       <PackageReference Include="Hangfire.PostgreSql" Version="1.20.5" />
       <PackageReference Include="KafkaFlow" Version="3.0.3" />
@@ -22,12 +23,7 @@
       <ProjectReference Include="..\Auction.Application\Auction.Application.csproj" />
       <ProjectReference Include="..\Auction.Contracts\Auction.Contracts.csproj" />
       <ProjectReference Include="..\Auction.Core\Auction.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore.Http.Features">
-        <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.1\Microsoft.AspNetCore.Http.Features.dll</HintPath>
-      </Reference>
+      <PackageReference Include="Microsoft.AspNetCore.App" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

@@ -12,6 +12,7 @@
         <PackageReference Include="KafkaFlow.LogHandler.Console" Version="3.0.3" />
         <PackageReference Include="KafkaFlow.Microsoft.DependencyInjection" Version="3.0.3" />
         <PackageReference Include="KafkaFlow.Serializer.JsonCore" Version="3.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1"/>
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
@@ -31,6 +32,7 @@
       <ProjectReference Include="..\Auction.Application\Auction.Application.csproj" />
       <ProjectReference Include="..\Auction.Infrastructure\Auction.Infrastructure.csproj" />
       <ProjectReference Include="..\Auth.Common\Auth.Common.csproj" />
+      <ProjectReference Include="..\Payment.Contracts\Payment.Contracts.csproj" />
       <ProjectReference Include="..\Shared\Jobs\Jobs.csproj" />
       <ProjectReference Include="..\Shared\Kafka\Kafka.csproj" />
       <ProjectReference Include="..\Shared\Logging\Logging.csproj" />

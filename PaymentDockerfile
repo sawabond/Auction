@@ -1,0 +1,35 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER $APP_UID
+WORKDIR /app
+EXPOSE 7235
+EXPOSE 5225
+
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project references from solution
+COPY ["Payment.Web/Payment.Web.csproj", "Payment.Web/"]
+COPY ["Payment.Application/Payment.Application.csproj", "Payment.Application/"]
+COPY ["Payment.Infrastructure/Payment.Infrastructure.csproj", "Payment.Infrastructure/"]
+COPY ["Payment.Core/Payment.Core.csproj", "Payment.Core/"]
+COPY ["Payment.Contracts/Payment.Contracts.csproj", "Payment.Contracts/"]
+
+COPY ["Auth.Common/Auth.Common.csproj", "Auth.Common/"]
+COPY ["Shared/Kafka/Kafka.csproj", "Shared/Kafka/"]
+COPY ["Shared/Logging/Logging.csproj", "Shared/Logging/"]
+
+RUN dotnet restore "Payment.Web/Payment.Web.csproj"
+COPY . .
+WORKDIR "/src/Payment.Web"
+RUN dotnet build "Payment.Web.csproj" -c Release -o /app/build
+
+# Publish stage
+FROM build AS publish
+RUN dotnet publish "Payment.Web.csproj" -c Release -o /app/publish
+
+# Final image
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Payment.Web.dll"]

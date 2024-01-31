@@ -22,17 +22,17 @@ public class AuctionItem
     
     public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(30);
 
-    public ICollection<AuctionItemPhoto> Photos { get; set; }
+    public ICollection<AuctionItemPhoto> Photos { get; set; } = new List<AuctionItemPhoto>();
 
     public IReadOnlyCollection<Bid> Bids => _bids;
+    
+    public Auction Auction { get; set; }
 
     public Bid AddBid(Guid userId, decimal amount, DateTime date)
     {
-        var updatedPrice = ActualPrice + amount;
+        ActualPrice = amount;
         
-        ActualPrice = updatedPrice;
-        
-        var bid = new Bid(Id, userId, amount, date, updatedPrice);
+        var bid = new Bid(Id, userId, amount, date, amount);
         
         _bids.Add(bid);
 

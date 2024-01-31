@@ -1,6 +1,5 @@
 ﻿using Auction.Application.Auction.Specifications;
 using Auction.Contracts.Auction.AuctionItem;
-using Auction.Core.Common;
 using Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

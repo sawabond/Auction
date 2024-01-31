@@ -71,7 +71,7 @@ namespace Auction.Infrastructure.Migrations
                     b.Property<decimal>("ActualPrice")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid?>("AuctionId")
+                    b.Property<Guid>("AuctionId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
@@ -112,7 +112,7 @@ namespace Auction.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid?>("AuctionItemId")
+                    b.Property<Guid>("AuctionItemId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -147,7 +147,7 @@ namespace Auction.Infrastructure.Migrations
                     b.Property<Guid>("AuctionItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTimeOffset>("Date")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
@@ -162,25 +162,35 @@ namespace Auction.Infrastructure.Migrations
 
             modelBuilder.Entity("Auction.Core.Auction.Entities.AuctionItem", b =>
                 {
-                    b.HasOne("Auction.Core.Auction.Entities.Auction", null)
+                    b.HasOne("Auction.Core.Auction.Entities.Auction", "Auction")
                         .WithMany("AuctionItems")
-                        .HasForeignKey("AuctionId");
+                        .HasForeignKey("AuctionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Auction");
                 });
 
             modelBuilder.Entity("Auction.Core.Auction.Entities.AuctionItemPhoto", b =>
                 {
-                    b.HasOne("Auction.Core.Auction.Entities.AuctionItem", null)
+                    b.HasOne("Auction.Core.Auction.Entities.AuctionItem", "AuctionItem")
                         .WithMany("Photos")
-                        .HasForeignKey("AuctionItemId");
+                        .HasForeignKey("AuctionItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AuctionItem");
                 });
 
             modelBuilder.Entity("Auction.Core.Auction.Entities.Bid", b =>
                 {
-                    b.HasOne("Auction.Core.Auction.Entities.AuctionItem", null)
+                    b.HasOne("Auction.Core.Auction.Entities.AuctionItem", "AuctionItem")
                         .WithMany("Bids")
                         .HasForeignKey("AuctionItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AuctionItem");
                 });
 
             modelBuilder.Entity("Auction.Core.Auction.Entities.Auction", b =>

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auction-service
+  namespace: auction-namespace
+  labels:
+    app: auction-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-service
+  template:
+    metadata:
+      labels:
+        app: auction-service
+    spec:
+      containers:
+        - name: auction-service
+          image: oleksandrdotnet777/auction-web:latest
+          ports:
+            - containerPort: 7265
+            - containerPort: 5248
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ASPNETCORE_URLS
+              value: "http://+:5248"
+            - name: "BaseAddress__PaymentClient"
+              value: "http://payment-service:5225"
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: PostgresConnectionString

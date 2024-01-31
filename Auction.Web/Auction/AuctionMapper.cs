@@ -1,4 +1,5 @@
-﻿using Auction.Application.Auction.Get;
+﻿using Auction.Application.Auction;
+using Auction.Application.Auction.Get;
 using Auction.Web.Auction.Get;
 using Riok.Mapperly.Abstractions;
 

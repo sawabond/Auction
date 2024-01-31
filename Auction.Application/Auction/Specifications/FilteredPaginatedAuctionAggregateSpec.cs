@@ -8,6 +8,8 @@ public class FilteredPaginatedAuctionAggregateSpec : Specification<Core.Auction.
 {
     public FilteredPaginatedAuctionAggregateSpec(GetAuctionsQuery query)
     {
+        Query.OrderByDescending(x => x.StartTime);
+        
         if (!string.IsNullOrWhiteSpace(query.NameStartsWith))
             Query.Where(x => x.Name.StartsWith(query.NameStartsWith));
         
@@ -16,11 +18,14 @@ public class FilteredPaginatedAuctionAggregateSpec : Specification<Core.Auction.
 
         var cursor = query.Cursor.ToDateTimeCursor();
         if (cursor.HasValue)
-            Query.Where(x => x.StartTime > cursor);
+            Query.Where(x => x.StartTime < cursor);
+
+        if (query.UserIds.Any())
+            Query.Where(x => query.UserIds.Contains(x.UserId));
 
         Query.Take(query.PageSize + 1);
 
-        Query.Where(x => x.AuctionItems.Any(x => x.IsSellingNow));
+        Query.Where(x => x.AuctionItems.Any(x => x.IsSellingNow == query.OnlyActive));
 
         Query.Include(x => x.AuctionItems)
             .ThenInclude(x => x.Photos);

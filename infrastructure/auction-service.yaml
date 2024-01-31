@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: auction-service
+  namespace: auction-namespace
+spec:
+  type: NodePort
+  ports:
+    - name: web
+      port: 5248
+      nodePort: 30010
+  selector:
+    app: auction-service

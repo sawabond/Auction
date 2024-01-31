@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
 using Core;
-using Kafka.Messaging.Configurations;
 using KafkaFlow;
+using KafkaFlow.Configuration;
 using KafkaFlow.Serializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IEvent = Core.IEvent;
+using KafkaConfiguration = Kafka.Messaging.Configurations.KafkaConfiguration;
 
 namespace Kafka.Messaging;
 
@@ -27,7 +28,14 @@ public static class ServiceCollectionExtensions
             //.UseConsoleLog()
             .AddCluster(cluster =>
             {
-                var configurationBuilder = cluster.WithBrokers(kafkaConfig.BootstrapServers);
+                var configurationBuilder = cluster.WithBrokers(kafkaConfig.BootstrapServers)
+                    .WithSecurityInformation(x =>
+                    {
+                        x.SaslMechanism = SaslMechanism.Plain;
+                        x.SecurityProtocol = SecurityProtocol.SaslSsl;
+                        x.SaslUsername = "V7XKED2OQRIP4GZ6";
+                        x.SaslPassword = "Eaz/ooixsrf8jG5D61kJ5zd12Qxv777Gsyp9xkVeUzxTkAxCS0AtU+z/pdYSzBWA";
+                    });
                 
                 var events = eventsAssemblies.SelectMany(GetEvents);
                 var handlers = GetHandlers(handlersAssembly);
@@ -55,9 +63,9 @@ public static class ServiceCollectionExtensions
                     configurationBuilder.AddConsumer(consumer => consumer
                         .Topic(@event.Name)
                         .WithGroupId(kafkaConfig.ConsumerGroupId)
-                        .WithBufferSize(100)
-                        .WithWorkersCount(3)
-                        .WithAutoOffsetReset(AutoOffsetReset.Latest)
+                        .WithBufferSize(10)
+                        .WithWorkersCount(10)
+                        .WithAutoOffsetReset(AutoOffsetReset.Earliest)
                         .AddMiddlewares(middlewares =>
                         {
                             middlewares.AddDeserializer<JsonCoreDeserializer>();

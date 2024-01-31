@@ -1,10 +1,15 @@
 ﻿using Auth.Application.User.Login;
 using Auth.Application.User.Register;
+using Auth.Contracts.User;
 using Auth.Core.User.Exceptions;
+using Core;
 
 namespace Auth.Application.User;
 
-public class AuthService(IUserManagerDecorator _userManager, ITokenProvider _tokenProvider)
+public class AuthService(
+    IUserManagerDecorator _userManager,
+    ITokenProvider _tokenProvider,
+    IPublisher _publisher)
 {
     public async Task<RegisterUserResponse> Register(RegisterUserRequest registerUserRequest)
     {
@@ -23,6 +28,11 @@ public class AuthService(IUserManagerDecorator _userManager, ITokenProvider _tok
         {
             throw new CreatingUserException(result.Errors);
         }
+        
+        await _publisher.Publish(user.Id, new UserRegisteredEvent
+        {
+            Id = Guid.Parse(user.Id)
+        });
 
         return user.ToResponse();
     }

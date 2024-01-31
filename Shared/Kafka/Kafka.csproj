@@ -7,15 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore">
-        <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.1\Microsoft.AspNetCore.dll</HintPath>
-      </Reference>
-      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-        <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="KafkaFlow" Version="3.0.3" />
       <PackageReference Include="KafkaFlow.LogHandler.Console" Version="3.0.3" />
       <PackageReference Include="KafkaFlow.Microsoft.DependencyInjection" Version="3.0.3" />
@@ -25,6 +16,7 @@
       <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.1" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
       <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.App" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>
