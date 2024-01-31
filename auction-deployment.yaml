@@ -4,7 +4,7 @@ metadata:
   name: auction-deployment
   namespace: auction-namespace
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: auction-deployment
@@ -16,6 +16,21 @@ spec:
       containers:
         - name: auction-auth
           image: oleksandrdotnet777/auth-web:latest
+          ports:
+            - containerPort: 7134
+            - containerPort: 5190
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ASPNETCORE_URLS
+              value: "http://+:5190"
+            - name: ConnectionStrings__DefaultConnection  # Using double underscore for hierarchical config
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: PostgresConnectionString
+        - name: auction-service
+          image: oleksandrdotnet777/auction-web:latest
           ports:
             - containerPort: 7265
             - containerPort: 5248
