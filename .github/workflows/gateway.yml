@@ -1,0 +1,33 @@
+name: Gateway service
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch: {} # Allow manual triggering
+
+jobs:
+  build_auth_web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.x' # Use the desired .NET Core 8 version
+
+      - name: Build Yarp.WebApi
+        run: |
+          cd Yarp.WebApi # Set the working directory to Yarp.WebApi
+          dotnet build # Use appropriate build command for Yarp.WebApi
+      - name: Build Docker Image for Yarp.WebApi
+        run: |
+          docker build -t auction-gateway -f GatewayDockerfile .
+      - name: Publish Docker Image to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          docker tag auth-web ${{ secrets.DOCKER_HUB_USERNAME }}/auction-gateway:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/auction-gateway:latest
