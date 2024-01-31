@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: react-app-deployment
+  name: react-app
   namespace: auction-namespace
   labels:
     app: react-app
@@ -19,9 +19,9 @@ spec:
     spec:
       containers:
         - name: react-app
-          image: oleksandrdotnet777/react-app:latest  # Replace with your Docker image and tag
+          image: oleksandrdotnet777/react-app:20240131145720  # Replace with your Docker image and tag
           ports:
-            - containerPort: 3000
+            - containerPort: 5167
           env:
             - name: NODE_ENV
               value: "development"
