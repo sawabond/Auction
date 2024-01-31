@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-app-deployment
+  namespace: auction-namespace
+  labels:
+    app: react-app
+    app-group: auction-apps  # Common label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-app
+  template:
+    metadata:
+      labels:
+        app: react-app
+        app-group: auction-apps  # Common label
+    spec:
+      containers:
+        - name: react-app
+          image: oleksandrdotnet777/react-app:latest  # Replace with your Docker image and tag
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "development"
+            - name: VITE_GATEWAY_URL
+              value: "http://auction-gateway:5167"
