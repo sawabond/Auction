@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       deploy:
-        description: 'Deploy to EKS (yes/no)'
+        description: 'Deploy to EKS (y/n)'
         required: true
-        default: 'no'
+        default: 'n'
 
 jobs:
   build_payment_web:
@@ -24,7 +24,7 @@ jobs:
       - name: Build Payment.Web
         run: |
           cd Payment.Web # Set the working directory to Payment.Web
-          dotnet build # Use appropriate build command for Payment.Web
+          dotnet build # Use the appropriate build command for Payment.Web
 
       - name: Build Docker Image for Payment.Web
         run: |
@@ -46,11 +46,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build_payment_web
-    if: ${{ github.event.inputs.deploy == 'yes' }}
+    if: ${{ github.event.inputs.deploy == 'y' }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
