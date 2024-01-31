@@ -11,6 +11,8 @@ on:
 jobs:
   build_auction_web:
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.tagging.outputs.version }}
 
     steps:
       - name: Checkout Code
@@ -25,7 +27,7 @@ jobs:
         run: |
           cd Auction.Web # Set the working directory to Auction.Web
           dotnet build # Use appropriate build command for Auction.Web
-  
+
       - name: Build Docker Image for Auction.Web
         run: |
           docker build -t auction-web -f AuctionDockerfile .
@@ -66,5 +68,4 @@ jobs:
 
       - name: Update Kubernetes Deployment
         run: |
-          kubectl set image deployment/auction-service auction-service=${{ secrets.DOCKER_HUB_USERNAME }}/auction-web:${{ needs.build_auth_web.outputs.image_tag }} --namespace=auction-namespace
-
+          kubectl set image deployment/auction-service auction-service=${{ secrets.DOCKER_HUB_USERNAME }}/auction-web:${{ needs.build_auction_web.outputs.image_tag }} --namespace=auction-namespace
