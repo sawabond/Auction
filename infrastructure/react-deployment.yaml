@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: react-app
-          image: oleksandrdotnet777/react-app:20240131155025  # Replace with your Docker image and tag
+          image: oleksandrdotnet777/react-app:20240131161413  # Replace with your Docker image and tag
           ports:
             - containerPort: 5173
           env:
