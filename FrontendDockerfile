@@ -1,44 +1,19 @@
-FROM node:14
-
-WORKDIR /app
-
-COPY ./ui/package*.json ./
-
-RUN npm install --legacy-peer-deps
-
-COPY ./ui ./
-
-EXPOSE 5173
-
-CMD ["npm", "run", "dev"]
-# Stage 1: Build the application
 FROM node:14 as build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
 COPY ./ui/package*.json ./
 
-# Install dependencies with legacy peer dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy the source code
 COPY ./ui ./
 
-# Build the application
-# Assuming 'npm run build' is the correct command to build your Vite application
 RUN npm run build
 
-# Stage 2: Serve the application using Nginx
 FROM nginx:alpine
 
-# Copy build output from the previous stage to Nginx serve directory
-# Update this path if your build output directory is different
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose port for Nginx
 EXPOSE 80
 
-# Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
