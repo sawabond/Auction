@@ -19,5 +19,14 @@ public record AuctionItemAddedEvent : IEvent
 
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
-    public ICollection<AuctionItemPhoto> Photos { get; set; }
+    public List<AuctionItemPhotoEventModel> Photos { get; set; } = new();
+}
+
+public class AuctionItemPhotoEventModel
+{
+    public int Id { get; set; }
+    
+    public string Name { get; set; }
+    
+    public string PhotoUrl { get; set; }
 }
