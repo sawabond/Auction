@@ -1,4 +1,4 @@
-name: Gateway service
+name: Payment service
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         default: 'no'
 
 jobs:
-  build_gateway_web:
+  build_payment_web:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,14 +21,14 @@ jobs:
         with:
           dotnet-version: '8.x' # Use the desired .NET Core 8 version
 
-      - name: Build Yarp.WebApi
+      - name: Build Payment.Web
         run: |
-          cd Yarp.WebApi # Set the working directory to Yarp.WebApi
-          dotnet build # Use appropriate build command for Yarp.WebApi
+          cd Payment.Web # Set the working directory to Payment.Web
+          dotnet build # Use appropriate build command for Payment.Web
 
-      - name: Build Docker Image for Yarp.WebApi
+      - name: Build Docker Image for Payment.Web
         run: |
-          docker build -t auction-gateway -f GatewayDockerfile .
+          docker build -t payment-web -f PaymentDockerfile .
 
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_HUB_PASSWORD }} | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
@@ -40,12 +40,12 @@ jobs:
 
       - name: Publish Docker Image to Docker Hub
         run: |
-          docker tag auction-gateway ${{ secrets.DOCKER_HUB_USERNAME }}/auction-gateway:${{ steps.tagging.outputs.version }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/auction-gateway:${{ steps.tagging.outputs.version }}
+          docker tag payment-web ${{ secrets.DOCKER_HUB_USERNAME }}/payment-web:${{ steps.tagging.outputs.version }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/payment-web:${{ steps.tagging.outputs.version }}
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build_gateway_web
+    needs: build_payment_web
     if: ${{ github.event.inputs.deploy == 'yes' }}
     steps:
       - name: Checkout Code
@@ -60,4 +60,4 @@ jobs:
 
       - name: Update Kubernetes Deployment
         run: |
-          kubectl set image deployment/auction-gateway auction-gateway=${{ secrets.DOCKER_HUB_USERNAME }}/auction-gateway:${{ needs.build_gateway_web.outputs.version }} --namespace=auction-namespace
+          kubectl set image deployment/payment-service payment-web=${{ secrets.DOCKER_HUB_USERNAME }}/payment-web:${{ needs.build_payment_web.outputs.version }} --namespace=auction-namespace
