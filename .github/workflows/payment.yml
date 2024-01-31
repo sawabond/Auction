@@ -65,4 +65,4 @@ jobs:
   
       - name: Update Kubernetes Deployment
         run: |
-          kubectl set image deployment/payment-service payment-web=${{ secrets.DOCKER_HUB_USERNAME }}/payment-web:${{ needs.build_payment_web.outputs.image_tag }} --namespace=auction-namespace
+          kubectl set image deployment/payment-service payment-service=${{ secrets.DOCKER_HUB_USERNAME }}/payment-web:${{ needs.build_payment_web.outputs.image_tag }} --namespace=auction-namespace
