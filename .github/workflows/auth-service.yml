@@ -64,4 +64,4 @@ jobs:
 
       - name: Update Kubernetes Deployment
         run: |
-          kubectl set image auction-auth-deployment auction-auth=${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:${{ needs.build_auth_web.outputs.version }} --namespace=auction-namespace
+          kubectl set image deployment/auction-auth-deployment auction-auth=${{ secrets.DOCKER_HUB_USERNAME }}/auth-web:${{ needs.build_auth_web.outputs.version }} --namespace=auction-namespace
