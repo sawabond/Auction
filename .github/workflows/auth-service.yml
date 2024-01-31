@@ -1,12 +1,6 @@
 name: Auth service
 
 on:
-  push:
-    branches:
-      - dev
-    paths:
-      - 'Auction*/**'
-      - 'infrastructure/auction-deployment.yaml'
   workflow_dispatch:
     inputs:
       deploy:
