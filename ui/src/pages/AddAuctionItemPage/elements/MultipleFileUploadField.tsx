@@ -18,21 +18,7 @@ interface UploadableFile {
   url?: string;
 }
 
-const useStyles = makeStyles((theme) => ({
-  dropzone: {
-    border: `2px dashed ${theme.palette.primary.main}`,
-    borderRadius: theme.shape.borderRadius,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: theme.palette.background.default,
-    height: theme.spacing(10),
-    outline: 'none',
-  },
-}));
-
 function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { name: string; onFilesChange: Function, isFormSubmitted: boolean }) {
-  const classes = useStyles();
   const [files, setFiles] = useState<UploadableFile[]>([]);
 
   useEffect(() => {
@@ -73,7 +59,7 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { nam
   return (
     <React.Fragment>
       <Grid item>
-        <div {...getRootProps({ className: classes.dropzone })}>
+      <div {...getRootProps({ className: "border-2 border-dashed border-purple-500 rounded flex items-center justify-center bg-white h-20 outline-none" })}>
           <input {...getInputProps()} />
           <p>Drag 'n' drop some files here, or click to select files</p>
         </div>
