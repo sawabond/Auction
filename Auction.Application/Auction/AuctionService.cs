@@ -2,6 +2,7 @@
 using Auction.Application.Auction.Get;
 using Auction.Application.Auction.Helpers;
 using Auction.Application.Auction.Specifications;
+using Auction.Application.Auction.Update;
 using Auction.Contracts.Auction;
 using Core;
 using FluentResults;
@@ -14,6 +15,7 @@ public interface IAuctionService
     Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query);
     Task<Result<Guid>> Create(AuctionCreateCommand command, Guid userId);
     Task<Result> Delete(Guid userId, Guid id);
+    Task<Result> Update(AuctionUpdateCommand command, Guid userId);
 }
 
 public class AuctionService(
@@ -109,7 +111,28 @@ public class AuctionService(
 
         return Result.Ok(result.Id);
     }
-    
+
+    public async Task<Result> Update(AuctionUpdateCommand command, Guid userId)
+    {
+        _logger.LogInformation("Started updating auction with Id {AuctionId} for user {UserId}",
+            command.Id, userId);
+
+        var auction = await _repository.GetByIdAsync(command.Id);
+        if (auction is null)
+        {
+            return Result.Fail("Auction not found");
+        }
+
+        command.UpdateEntity(auction);
+        
+        await _repository.UpdateAsync(auction);
+        await _publisher.Publish(auction.Id, auction.ToAuctionCreatedEvent());
+        
+        _logger.LogInformation("Auction with Id {AuctionId} updated", auction.Id);
+
+        return Result.Ok();
+    }
+
     public async Task<Result> Delete(Guid userId, Guid id)
     {
         var auction = await _repository.GetByIdAsync(id);

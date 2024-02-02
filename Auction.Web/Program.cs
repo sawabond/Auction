@@ -5,6 +5,7 @@ using Auction.Application.Auction.AuctionItem;
 using Auction.Application.Auction.AuctionItem.Create;
 using Auction.Application.Auction.Create;
 using Auction.Application.Auction.Get;
+using Auction.Application.Auction.Update;
 using Auction.Application.AuctionHosting.Extensions;
 using Auction.Application.Common;
 using Auction.Contracts;
@@ -15,6 +16,7 @@ using Auction.Web.Auction;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
 using Core;
+using FluentResults;
 using Jobs.Extensions;
 using Kafka.Messaging;
 using Logging;
@@ -121,6 +123,23 @@ app.MapPost("/api/auctions", async (
         var result = await auctionService.Create(request, userId);
 
         return result.ToResponse();
+    })
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapPut("/api/auctions", async (
+        AuctionUpdateCommand request,
+        ClaimsPrincipal user,
+        IAuctionService auctionService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionService.Update(request, userId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok();
+        }
+
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
     })
     .RequireAuthorization()
     .WithOpenApi();
