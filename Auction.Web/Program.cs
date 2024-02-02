@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Auction.Application.Auction;
 using Auction.Application.Auction.AuctionItem;
 using Auction.Application.Auction.AuctionItem.Create;
+using Auction.Application.Auction.AuctionItem.Update;
 using Auction.Application.Auction.Create;
 using Auction.Application.Auction.Get;
 using Auction.Application.Auction.Update;
@@ -186,6 +187,45 @@ app.MapPost("/api/auctions/{auctionId:guid}/items", async (
         var result = await auctionItemService.AddItem(auctionId, request, userId);
 
         return result.ToResponse();
+    })
+    .RequireAuthorization()
+    .DisableAntiforgery()
+    .WithOpenApi();
+
+app.MapPut("/api/auctions/{auctionId:guid}/items", async (
+        Guid auctionId,
+        ClaimsPrincipal user,
+        [FromForm] AuctionItemUpdateCommand request,
+        [FromServices] IAuctionItemService auctionItemService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionItemService.UpdateItem(auctionId, request, userId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok();
+        }
+        
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .DisableAntiforgery()
+    .WithOpenApi();
+
+app.MapDelete("/api/auctions/{auctionId:guid}/items/{itemId:guid}", async (
+        Guid auctionId,
+        Guid itemId,
+        ClaimsPrincipal user,
+        [FromForm] AuctionItemUpdateCommand request,
+        [FromServices] IAuctionItemService auctionItemService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionItemService.DeleteItem(auctionId, itemId, userId);
+        if (result.IsSuccess)
+        {
+            return Results.NoContent();
+        }
+        
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
     })
     .RequireAuthorization()
     .DisableAntiforgery()

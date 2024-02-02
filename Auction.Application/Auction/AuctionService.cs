@@ -81,27 +81,27 @@ public class AuctionService(
                     }
                 }
             });
-        auction.AuctionItems.Add(
-            new Core.Auction.Entities.AuctionItem
-            {
-                Id = Guid.NewGuid(),
-                ActualPrice = 100m,
-                Description = "Luis Vuitton T-Shirt", 
-                IsSellingNow = false,
-                MinimalBid = 30m,
-                Name = "Luis Vuitton T-Shirt",
-                StartingPrice = 100m,
-                SellingPeriod = TimeSpan.FromSeconds(120),
-                Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
-                {
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo",
-                        PhotoUrl = "https://picsum.photos/200/300"
-                    }
-                }
-                });
+        // auction.AuctionItems.Add(
+        //     new Core.Auction.Entities.AuctionItem
+        //     {
+        //         Id = Guid.NewGuid(),
+        //         ActualPrice = 100m,
+        //         Description = "Luis Vuitton T-Shirt", 
+        //         IsSellingNow = false,
+        //         MinimalBid = 30m,
+        //         Name = "Luis Vuitton T-Shirt",
+        //         StartingPrice = 100m,
+        //         SellingPeriod = TimeSpan.FromSeconds(120),
+        //         Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
+        //         {
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo",
+        //                 PhotoUrl = "https://picsum.photos/200/300"
+        //             }
+        //         }
+        //         });
         auction.StartTime = DateTime.UtcNow.AddSeconds(10);
         
         var result = await _repository.AddAsync(auction);
