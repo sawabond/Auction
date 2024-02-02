@@ -66,6 +66,7 @@ var app = builder.Build();
 app.MapPost("/api/top-up", async (
     [FromBody] TopUpCommand topUpRequest,
     [FromQuery] string returnUrl,
+    [FromQuery] string redirectUrl,
     [FromServices] IStripeClient stripeClient) =>
 {
     var sessionCreateOptions = new SessionCreateOptions
@@ -87,7 +88,7 @@ app.MapPost("/api/top-up", async (
             }
         },
         Mode = "payment",
-        SuccessUrl = $"{returnUrl}/api/success?userId={topUpRequest.UserId}&session_id={{CHECKOUT_SESSION_ID}}",
+        SuccessUrl = $"{returnUrl}/api/success?userId={topUpRequest.UserId}&session_id={{CHECKOUT_SESSION_ID}}&redirectUrl={redirectUrl}",
         CancelUrl = $"{returnUrl}/cancel"
     };
 
@@ -100,12 +101,13 @@ app.MapPost("/api/top-up", async (
 app.MapGet("/api/success", async (
     [FromQuery(Name="session_id")] string sessionId,
     [FromQuery] Guid userId,
+    [FromQuery] string redirectUrl,
     [FromServices] IPaymentService paymentService) =>
 {
     var result = await paymentService.CreatePaymentAsync(userId, sessionId);
     if (result.IsSuccess)
     {
-        return Results.Ok();
+        return Results.Redirect(redirectUrl);
     }
 
     return Results.BadRequest();
