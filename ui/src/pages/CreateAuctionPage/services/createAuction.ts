@@ -1,21 +1,21 @@
+import axios from 'axios';
 import getTokenFromCookies from '../../../components/utils/getTokenFromCookies';
 
-const createAuction = async (values: any) => {
+const createAuction = async (values : any) => {
   const token = getTokenFromCookies();
-  const response = await fetch('http://localhost:5167/api/auctions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`, // Include the token in the request headers
-    },
-    body: JSON.stringify(values),
-  });
 
-  if (!response.ok) {
+  try {
+    const response = await axios.post('http://localhost:5167/api/auctions', values, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
     throw new Error('Network response was not ok');
   }
-
-  return response.json();
 };
 
 export default createAuction;

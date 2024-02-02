@@ -8,7 +8,7 @@ import { useState } from 'react';
 import addAuctionItem from './Services/addAuctionItem';
 
 function AddAuctionItemPage() {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const initialValues = {
@@ -49,22 +49,26 @@ function AddAuctionItemPage() {
       .max(500, "Description must have less than 500 symbols")
       .required("Description is required"),
     photos: yup
-      .array()
+      .array(        
+        yup
+        .mixed<File>()
+        .required("Name is required")
+        .test(
+          "is-valid-type",
+          "Not a valid image type",
+          (value) =>
+            value ? isValidFileType(value.name.toLowerCase(), "image") : true
+        )
+        .test(
+          "is-valid-size",
+          "Max allowed size is 100KB",
+          (value) => !value || (value.size <= MAX_FILE_SIZE)
+        ))
       .of(
         yup
-          .mixed<File>()
-          .required("Name is required")
-          .test(
-            "is-valid-type",
-            "Not a valid image type",
-            (value) =>
-              value ? isValidFileType(value.name.toLowerCase(), "image") : true
-          )
-          .test(
-            "is-valid-size",
-            "Max allowed size is 100KB",
-            (value) => !value || (value.size <= MAX_FILE_SIZE)
-          )
+          .object().shape({
+            name: yup.string().matches(new RegExp("/(.jpg|.png)$/gm")),
+          })
       ),
   });
   
@@ -80,7 +84,7 @@ function AddAuctionItemPage() {
   });
 
   const handleFilesChange = (files: File[]) => {
-    setUploadedFiles(files);
+    setUploadedPhotos(files);
   };
 
   const handleSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
@@ -91,29 +95,30 @@ function AddAuctionItemPage() {
     formData.append("name", values.name);
     formData.append("description", values.description);
 
-    uploadedFiles.forEach((file, index) => {
-      formData.append(`photos[${index}]`, file);
-    });
+    for (let index = 0; index < uploadedPhotos.length; index++) {
+      const file = uploadedPhotos[index];
+      
+      if (file.name.match(/(.jpg|.png)$/gm)) {
+          formData.append(`photos[${index}]`, file);
+      } else {
+        return;
+      }
+  }
 
-    var flag = true;
     try {
       await mutation.mutateAsync(formData);
+      resetForm();
+      clearFiles();
+      setIsFormSubmitted(true);
     } catch (error: any) {
-      flag = false;
       console.error('Error while creating auction item:', error.message);
     } finally {
       setSubmitting(false);
-      if (flag)
-      {
-        resetForm();
-        clearFiles();
-        setIsFormSubmitted(true);
-      }
     }
   };
 
   const clearFiles = () => {
-    setUploadedFiles([]);
+    setUploadedPhotos([]);
   };
 
   return (

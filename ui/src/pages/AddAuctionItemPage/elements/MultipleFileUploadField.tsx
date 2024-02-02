@@ -39,7 +39,8 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { nam
   }, [files, onFilesChange]);
 
   const handleUpload = (file: File, url: string) => {
-    setFiles(prevFiles => prevFiles.map(fileWrapper => fileWrapper.file === file ? { ...fileWrapper, url } : fileWrapper));
+    if (file.name.match("(.jpg|.png)$"))
+      setFiles(prevFiles => prevFiles.map(fileWrapper => fileWrapper.file === file ? { ...fileWrapper, url } : fileWrapper));
   };
 
   const handleDelete = (file: File) => {
@@ -47,13 +48,12 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { nam
   };
 
   const acceptImage: Accept = {
-    'image/*': ['*'],
+    'image/png, image/jpeg': ['*'],
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: acceptImage ,
-    maxSize: 3000 * 1024, // 3000KB
+    accept: acceptImage 
   });
 
   return (
