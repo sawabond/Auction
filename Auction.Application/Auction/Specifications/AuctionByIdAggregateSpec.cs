@@ -2,12 +2,13 @@
 
 namespace Auction.Application.Auction.Specifications;
 
-public class AuctionByIdWithItemsSpec : SingleResultSpecification<Core.Auction.Entities.Auction>
+public class AuctionByIdAggregateSpec : SingleResultSpecification<Core.Auction.Entities.Auction>
 {
-    public AuctionByIdWithItemsSpec(Guid id)
+    public AuctionByIdAggregateSpec(Guid id)
     {
         Query
             .Include(x => x.AuctionItems)
+            .ThenInclude(x => x.Photos)
             .Where(x => x.Id == id);
     }
 }
