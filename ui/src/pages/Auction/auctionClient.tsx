@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import Cookies from 'js-cookie';
 import { useParams } from 'react-router-dom';
-import Auction from './Auction';
 import { TextField, Button, Container } from '@material-ui/core';
+import Auction from './Auction';
 
 const AuctionMessaging: React.FC = () => {
   const { auctionId } = useParams<{ auctionId: string }>();
-  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(
+    null
+  );
   const [bidAmount, setBidAmount] = useState<number>(0);
   const [auction, setAuction] = useState<any>(null);
 
@@ -15,7 +17,7 @@ const AuctionMessaging: React.FC = () => {
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${import.meta.env.VITE_GATEWAY_URL!}/auction-hub`, {
         withCredentials: true,
-        accessTokenFactory: () => Cookies.get('token')!
+        accessTokenFactory: () => Cookies.get('token')!,
       })
       .withAutomaticReconnect()
       .build();
@@ -25,7 +27,8 @@ const AuctionMessaging: React.FC = () => {
     const startConnection = async () => {
       try {
         await newConnection.start();
-        await newConnection.invoke("JoinGroup", auctionId);
+        console.log('Connection started');
+        await newConnection.invoke('JoinGroup', auctionId);
       } catch (err) {
         console.error('Connection failed: ', err);
       }
@@ -34,18 +37,21 @@ const AuctionMessaging: React.FC = () => {
     startConnection();
 
     return () => {
-      newConnection.stop();
+      newConnection.stop().then(() => console.log('Connection stopped'));
     };
   }, [auctionId]);
 
   useEffect(() => {
+    console.log(auction);
     const updateBid = (bid: any) => {
       const updatedAuction = { ...auction };
-      const itemIndex = updatedAuction.auctionItems.findIndex((x: any) => x.isSellingNow);
+      const itemIndex = updatedAuction.auctionItems.findIndex(
+        (x: any) => x.isSellingNow
+      );
       if (itemIndex !== -1) {
         updatedAuction.auctionItems[itemIndex] = {
           ...updatedAuction.auctionItems[itemIndex],
-          actualPrice: bid.actualPrice
+          actualPrice: bid.actualPrice,
         };
         setAuction(updatedAuction);
       }
@@ -63,15 +69,20 @@ const AuctionMessaging: React.FC = () => {
   }, [connection, auction]);
 
   useEffect(() => {
+    const handleAuctionUpdate = (updatedAuction: any) => {
+      console.log('OnAuctionRunning event received:', updatedAuction);
+      setAuction(updatedAuction);
+    };
+
     if (connection) {
-      connection.on('OnAuctionRunning', (updatedAuction: any) => {
-        setAuction(updatedAuction);
-      });
+      console.log('Setting up OnAuctionRunning event listener');
+      connection.on('OnAuctionRunning', handleAuctionUpdate);
     }
 
     return () => {
       if (connection) {
-        connection.off('OnAuctionRunning');
+        console.log('Removing OnAuctionRunning event listener');
+        connection.off('OnAuctionRunning', handleAuctionUpdate);
       }
     };
   }, [connection]);
@@ -97,9 +108,9 @@ const AuctionMessaging: React.FC = () => {
         fullWidth
         margin="normal"
       />
-      <Button 
-        variant="contained" 
-        color="primary" 
+      <Button
+        variant="contained"
+        color="primary"
         onClick={sendMessage}
         style={{ marginBottom: '20px' }}
       >
