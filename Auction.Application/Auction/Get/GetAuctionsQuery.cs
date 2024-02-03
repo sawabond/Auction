@@ -10,7 +10,7 @@ public record GetAuctionsQuery
 
     public string? DescriptionContains { get; set; }
 
-    public bool OnlyActive { get; set; }
+    public bool? OnlyActive { get; set; }
 
     public List<Guid> UserIds { get; set; } = new();
 }
