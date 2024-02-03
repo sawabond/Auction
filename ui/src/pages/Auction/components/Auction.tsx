@@ -1,8 +1,9 @@
 import React from 'react';
+import { Typography, Paper, List, Divider } from '@material-ui/core';
 import AuctionItem from './AuctionItem';
-import { Typography, Paper, List, ListItem, Divider } from '@material-ui/core';
 
-const Auction: React.FC<any> = ({ data }) => {
+const Auction: React.FC<any> = ({ data }: any) => {
+  console.log(data.auctionItems.map((item: any) => item.isSellingNow));
   return (
     <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
       {/* Use Typography for text; Paper for cards/sections */}
@@ -16,7 +17,8 @@ const Auction: React.FC<any> = ({ data }) => {
         Start Time: {new Date(data.startTime).toLocaleString()}
       </Typography>
       <Typography variant="body1" gutterBottom>
-        End Time: {data.endTime ? new Date(data.endTime).toLocaleString() : 'Ongoing'}
+        End Time:{' '}
+        {data.endTime ? new Date(data.endTime).toLocaleString() : 'Ongoing'}
       </Typography>
       <Divider style={{ margin: '20px 0' }} />
       <Typography variant="h6" gutterBottom>
@@ -25,8 +27,8 @@ const Auction: React.FC<any> = ({ data }) => {
       <List>
         {data.auctionItems.map((item: any) => (
           <React.Fragment key={item.id}>
-            <AuctionItem 
-              item={item} 
+            <AuctionItem
+              item={item}
               isCurrentlySelling={item.isSellingNow} // Pass the prop here
             />
             <Divider variant="inset" component="li" />

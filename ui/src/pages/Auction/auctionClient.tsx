@@ -3,7 +3,7 @@ import * as signalR from '@microsoft/signalr';
 import Cookies from 'js-cookie';
 import { useParams } from 'react-router-dom';
 import { TextField, Button, Container } from '@material-ui/core';
-import Auction from './Auction';
+import Auction from './components/Auction';
 
 const AuctionMessaging: React.FC = () => {
   const { auctionId } = useParams<{ auctionId: string }>();
