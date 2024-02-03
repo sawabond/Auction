@@ -26,7 +26,7 @@ spec:
               value: "Development"
             - name: ASPNETCORE_URLS
               value: "http://+:5248"
-            - name: "BaseAddress__PaymentClient"
+            - name: "PaymentClient__BaseAddress"
               value: "http://184.72.108.154:30013" # TODO: Change to url inside the cluster
             - name: ConnectionStrings__DefaultConnection
               valueFrom:

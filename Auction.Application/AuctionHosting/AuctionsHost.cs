@@ -24,7 +24,7 @@ public class AuctionsHost(
 
         _logger.LogInformation("Starting auction with id {AuctionId}", auctionId);
         
-        var auction = await repository.FirstOrDefaultAsync(new AuctionByIdWithItemsSpec(auctionId));
+        var auction = await repository.FirstOrDefaultAsync(new AuctionByIdAggregateSpec(auctionId));
         await _activeAuctionsStorage.AddAsync(auction);
         
 

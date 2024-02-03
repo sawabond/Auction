@@ -25,7 +25,8 @@ public class FilteredPaginatedAuctionAggregateSpec : Specification<Core.Auction.
 
         Query.Take(query.PageSize + 1);
 
-        Query.Where(x => x.AuctionItems.Any(x => x.IsSellingNow == query.OnlyActive));
+        if (query.OnlyActive.HasValue)
+            Query.Where(x => x.AuctionItems.Any(x => x.IsSellingNow == query.OnlyActive));
 
         Query.Include(x => x.AuctionItems)
             .ThenInclude(x => x.Photos);
