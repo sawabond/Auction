@@ -64,13 +64,6 @@ builder.Services.AddPaymentClients(builder.Configuration);
 
 builder.Services.AddAuctionFeature();
 
-builder.Services.AddScoped<IBidService>(sp =>
-{
-    var proxyGenerator = new ProxyGenerator();
-    var actualService = sp.GetRequiredService<BidService>();
-    return proxyGenerator.CreateInterfaceProxyWithTarget<IBidService>(actualService, new TimingInterceptor());
-});
-
 builder.Services.AddScheduler(builder.Configuration);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBlobService, AwsS3BucketService>();
@@ -79,6 +72,8 @@ builder.Services.AddDbContext<AuctionDbContext>(x =>
 {
     x.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.DecorateWithMethodMeasurement<IBidService, BidService>();
 
 builder.Services.AddAuctionHosting();
 
