@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Json.Serialization;
 using Auction.Application.Auction;
 using Auction.Application.Auction.AuctionItem;
+using Auction.Application.Auction.AuctionItem.Bid;
 using Auction.Application.Auction.AuctionItem.Create;
 using Auction.Application.Auction.AuctionItem.Update;
 using Auction.Application.Auction.Create;
@@ -16,6 +17,8 @@ using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
+using Auction.Web.Metrics;
+using Castle.DynamicProxy;
 using Core;
 using FluentResults;
 using Jobs.Extensions;
@@ -25,6 +28,7 @@ using Logging.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
 using Payment.Contracts.Clients;
 using Shared;
 
@@ -34,6 +38,16 @@ builder.Services.Configure<JsonOptions>(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // Changed from IgnoreCycles to Preserve
 });
+
+builder.Services
+    .AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics.AddMeter("MethodExecutionMeter")
+            .AddAspNetCoreInstrumentation()
+            .AddPrometheusExporter();
+    });
+
 
 builder.Services.AddCors(x =>
 {
@@ -49,6 +63,14 @@ builder.Services.AddCors(x =>
 builder.Services.AddPaymentClients(builder.Configuration);
 
 builder.Services.AddAuctionFeature();
+
+builder.Services.AddScoped<IBidService>(sp =>
+{
+    var proxyGenerator = new ProxyGenerator();
+    var actualService = sp.GetRequiredService<BidService>();
+    return proxyGenerator.CreateInterfaceProxyWithTarget<IBidService>(actualService, new TimingInterceptor());
+});
+
 builder.Services.AddScheduler(builder.Configuration);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBlobService, AwsS3BucketService>();
@@ -107,6 +129,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseLoggingMiddleware();
 //app.UseSerilogRequestLogging();

@@ -20,6 +20,7 @@ public class BidService(IActiveAuctionsStorage _activeAuctionsStorage,
     
     public async Task<Result<Core.Auction.Entities.Bid>> MakeBid(Guid auctionId, Guid userId, decimal bid)
     {
+        await Task.Delay(2000);
         var balance = await _paymentClient.GetBalanceAsync(userId);
         if (balance.Amount < bid)
         {
