@@ -6,6 +6,7 @@ import Welcome from './pages/Welcome/Welcome';
 import CreateAuctionPage from './pages/CreateAuctionPage/CreateAuctionPage';
 import AddAuctionItemPage from './pages/AddAuctionItemPage/AddAuctionItemPage';
 import MyAuctionsPage from './pages/MyAuctionsPage/MyAuctionsPage';
+import EditAuctionPage from './pages/EditAuctionPage/EditAuctionPage';
 
 const routes: IRoute[] = [
   {
@@ -42,6 +43,13 @@ const routes: IRoute[] = [
     path: '/create-auction',
     enabled: true,
     component: CreateAuctionPage,
+  },
+  {
+    key: 'edit-auction',
+    title: 'Edit auction',
+    path: '/edit-auction/:auctionId',
+    enabled: true,
+    component: EditAuctionPage,
   },
   {
     key: 'add-auction-item',

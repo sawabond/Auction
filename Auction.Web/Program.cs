@@ -145,6 +145,21 @@ app.MapPut("/api/auctions", async (
     .RequireAuthorization()
     .WithOpenApi();
 
+app.MapGet("/api/auctions/{auctionId:guid}", async (
+        Guid auctionId,
+        IAuctionService auctionService) =>
+    {
+        var result = await auctionService.GetById(auctionId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value.ToViewModel());
+        }
+
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .WithOpenApi();
+
 app.MapGet("/api/user/auctions", async (
         [AsParameters] GetAuctionsRequest request,
         ClaimsPrincipal user,

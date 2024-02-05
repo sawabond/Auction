@@ -19,8 +19,6 @@ function AddAuctionItemPage() {
     photos: []
   };
 
-  const MAX_FILE_SIZE = 102400; //100KB
-
   const validFileExtensions: { [key: string]: string[] } = { image: ['jpg', 'gif', 'png', 'jpeg', 'svg', 'webp'] };
   
   function isValidFileType(fileName: string, fileType: string): boolean {
@@ -58,11 +56,6 @@ function AddAuctionItemPage() {
           "Not a valid image type",
           (value) =>
             value ? isValidFileType(value.name.toLowerCase(), "image") : true
-        )
-        .test(
-          "is-valid-size",
-          "Max allowed size is 100KB",
-          (value) => !value || (value.size <= MAX_FILE_SIZE)
         ))
       .of(
         yup
