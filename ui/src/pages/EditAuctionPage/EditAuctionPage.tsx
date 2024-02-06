@@ -15,6 +15,8 @@ import { useNavigate } from 'react-router-dom';
 import getAuction from './services/getAuction';
 import { AuctionType } from '../CreateAuctionPage/enums/AuctionType';
 import editAuction from './services/editAuction';
+import SearchInput from '../Home/components/Search/Search';
+import ItemList from './components/ItemList/ItemList';
 
 const auctionTypeOptions = Object.keys(AuctionType)
   .filter((key) => !Number.isNaN(Number(key)))
@@ -27,23 +29,34 @@ function EditAuctionPage() {
   const navigate = useNavigate();
   const currentUrl = window.location.href;
   const auctionId = currentUrl.split('/')[4];
-
+  const [allAuctionItems, setAuctionItems] = useState<any>([]);
   const [initialValues, setInitialValues] = useState(null);
 
   useEffect(() => {
     const fetchAuctionData = async () => {
       try {
         const currentAuctionData = await getAuction(auctionId);
+        console.log("Fetched auction data:", currentAuctionData);
+  
+        if (currentAuctionData && Array.isArray(currentAuctionData.auctionItems)) {
+          setAuctionItems(currentAuctionData.auctionItems);
+          console.log("Updated auction items:", currentAuctionData.auctionItems);
+          console.log(allAuctionItems)
+        } else {
+          console.error("Auction items not found or not in correct format in fetched data");
+        }
+  
         setInitialValues({
           ...currentAuctionData,
-          startTime: currentAuctionData.startTime.slice(0, 16), 
+          startTime: currentAuctionData.startTime.slice(0, 16),
           auctionType: currentAuctionData.auctionType || AuctionType.English,
+          allAuctionItems: currentAuctionData.auctionItems
         });
       } catch (error) {
         console.error('Error fetching auction:', error);
       }
     };
-
+  
     fetchAuctionData();
   }, [auctionId]);
 
@@ -70,6 +83,11 @@ function EditAuctionPage() {
     },
   });
 
+  const handleDelete = (auctionId: string) => {
+    const updatedAuctionItems = allAuctionItems.filter((item: { id: string; }) => item.id !== auctionId);
+    setAuctionItems(updatedAuctionItems);
+  };
+
   const handleSubmit = (values : any) => {
     const dateObject = new Date(values.startTime);
 
@@ -85,6 +103,8 @@ function EditAuctionPage() {
       ...values,
       startTime: isoString,
     };
+
+    
   
     // Pass the updated values to mutation.mutate
     mutation.mutate(updatedValues);
@@ -154,7 +174,15 @@ function EditAuctionPage() {
               <div>{errors.auctionType as ReactNode}</div> 
             )}
 
+            
             <Button type="submit">Edit</Button>
+
+            <SearchInput />
+            {false ? (
+              <div>Loading...</div>
+            ) : (
+              <ItemList auctionItems={allAuctionItems} onDelete={handleDelete} />
+            )}
           </Form>
         </div>
       )}

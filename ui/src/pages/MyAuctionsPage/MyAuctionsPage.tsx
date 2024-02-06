@@ -38,7 +38,7 @@ export default function MyAuctionsPage() {
         if (newData.cursor !== auctionNextCursor) {
           setAllAuctions((prevAuctions: any) => {
             const updatedAuctions = [...prevAuctions, ...newData.auctions];
-            console.log('Updated auctions:', updatedAuctions);
+            //console.log('Updated auctions:', updatedAuctions);
             return updatedAuctions;
           });
           setAuctionNextCursor(newData.cursor);
