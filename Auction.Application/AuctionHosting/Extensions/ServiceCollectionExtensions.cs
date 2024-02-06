@@ -8,18 +8,18 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddAuctionHosting(this IServiceCollection @this)
     {
-        var scope = @this.BuildServiceProvider().CreateScope();
-        var repo = scope
-            .ServiceProvider
-            .GetRequiredService<IRepository<Core.Auction.Entities.Auction>>();
-        var auctions = repo
-            .ListAsync(new ActiveAuctionsWithItemsSpec()).GetAwaiter().GetResult()
-            .ToDictionary(x => x.Id);
+        // var scope = @this.BuildServiceProvider().CreateScope();
+        // var repo = scope
+        //     .ServiceProvider
+        //     .GetRequiredService<IRepository<Core.Auction.Entities.Auction>>();
+        // var auctions = repo
+        //     .ListAsync(new ActiveAuctionsWithItemsSpec()).GetAwaiter().GetResult()
+        //     .ToDictionary(x => x.Id);
     
-        @this.AddSingleton<IActiveAuctionsStorage>(_ => new ActiveAuctionsInMemoryStorage(auctions));
-        
-        @this.AddSingleton<IAuctionsHost, AuctionsHost>();
-        scope.Dispose();
+        // @this.AddSingleton<IActiveAuctionsStorage>(_ => new ActiveAuctionsInMemoryStorage(new ()));
+        //
+        // @this.AddSingleton<IAuctionsHost, AuctionsHost>();
+        // scope.Dispose();
         
         return @this;
     }
