@@ -288,7 +288,7 @@
 									"\r",
 									"const currentDate = (new Date()).toISOString();\r",
 									"const requestBody = {\r",
-									"    name: \"auction_name_\" + counter,\r",
+									"    name: \"oleksandr_auction_name_\" + counter,\r",
 									"    description: \"description_\" + counter,\r",
 									"    startTime: currentDate,\r",
 									"    auctionType: 0\r",
@@ -452,7 +452,7 @@
 							"variable": [
 								{
 									"key": "auctionId",
-									"value": "746160e0-2666-4827-8f30-0c22696d6704"
+									"value": "5afd2978-f7e0-40a5-9df4-9cb5de438085"
 								}
 							]
 						}
@@ -581,7 +581,7 @@
 							"formdata": [
 								{
 									"key": "id",
-									"value": "{{CurrentAuctionItemId}}",
+									"value": "d5adf51a-56bd-4729-a490-099bde1ac017",
 									"type": "text"
 								},
 								{
@@ -607,7 +607,7 @@
 								{
 									"key": "photos",
 									"type": "file",
-									"src": []
+									"src": "/C:/Users/oleksandr.bondarenko/Desktop/images.jpg"
 								}
 							]
 						},
@@ -712,6 +712,53 @@
 								{
 									"key": "itemId",
 									"value": "b0efd2f8-1c1b-4f21-9876-57936624843c"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user bought items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{UserAuthToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{GATEWAY_URL}}/api/user/items?page=1&pageSize=10&search=luis&minPrice=3000&maxPrice=400",
+							"host": [
+								"{{GATEWAY_URL}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"items"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "luis"
+								},
+								{
+									"key": "minPrice",
+									"value": "3000"
+								},
+								{
+									"key": "maxPrice",
+									"value": "400"
 								}
 							]
 						}

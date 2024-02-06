@@ -7,4 +7,5 @@ namespace Auction.Application.Auction.AuctionItem;
 public static partial class AuctionItemMapper
 {
     public static partial Core.Auction.Entities.AuctionItem ToEntity(this AuctionItemCreateCommand model);
+    public static partial AuctionItemViewModel ToViewModel(this Core.Auction.Entities.AuctionItem model);
 }

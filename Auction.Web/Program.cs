@@ -4,6 +4,7 @@ using Auction.Application.Auction;
 using Auction.Application.Auction.AuctionItem;
 using Auction.Application.Auction.AuctionItem.Bid;
 using Auction.Application.Auction.AuctionItem.Create;
+using Auction.Application.Auction.AuctionItem.Get;
 using Auction.Application.Auction.AuctionItem.Update;
 using Auction.Application.Auction.Create;
 using Auction.Application.Auction.Get;
@@ -15,6 +16,8 @@ using Auction.Infrastructure;
 using Auction.Infrastructure.Auction.Hubs;
 using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
+using Auction.Web.Auction.AuctionItem;
+using Auction.Web.Auction.AuctionItem.Get;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
 using Auction.Web.Metrics;
@@ -178,6 +181,10 @@ app.MapGet("/api/user/auctions", async (
 
         return Results.Ok(new { result.Value.Cursor, Auctions = resultVm });
     })
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapGet(AuctionItemEndpoints.Route, AuctionItemEndpoints.GetUserBoughtItems)
     .RequireAuthorization()
     .WithOpenApi();
 
