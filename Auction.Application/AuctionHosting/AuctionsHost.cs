@@ -26,7 +26,6 @@ public class AuctionsHost(
         
         var auction = await repository.FirstOrDefaultAsync(new AuctionByIdAggregateSpec(auctionId));
         await _activeAuctionsStorage.AddAsync(auction);
-        
 
         var firstItem = auction.GetFirstItem();
         _logger.LogInformation("First item to be selling is {@FirstItemToBeSelling}", firstItem);

@@ -1,8 +1,11 @@
 ﻿using Auction.Application.Auction.AuctionItem.Create;
+using Auction.Application.Auction.AuctionItem.Get;
+using Auction.Application.Auction.AuctionItem.Specifications;
 using Auction.Application.Auction.AuctionItem.Update;
 using Auction.Application.Auction.Specifications;
 using Auction.Application.Common;
 using Auction.Contracts.Auction.AuctionItem;
+using Auction.Core;
 using Auction.Core.Auction.Entities;
 using Core;
 using FluentResults;
@@ -15,13 +18,32 @@ public interface IAuctionItemService
     Task<Result<Guid>> AddItem(Guid auctionId, AuctionItemCreateCommand command, Guid ownerId);
     Task<Result> UpdateItem(Guid auctionId, AuctionItemUpdateCommand command, Guid ownerId);
     Task<Result> DeleteItem(Guid auctionId, Guid itemId, Guid ownerId);
+    Task<Result<PagedResult<AuctionItemViewModel>>> GetItems(GetAuctionItemsQuery query);
 }
 
 public class AuctionItemService(
     IRepository<Core.Auction.Entities.Auction> _repository,
+    IRepository<Core.Auction.Entities.AuctionItem> _auctionItemRepository,
     IBlobService _blobService,
     IPublisher _publisher) : IAuctionItemService
 {
+    public async Task<Result<PagedResult<AuctionItemViewModel>>> GetItems(GetAuctionItemsQuery query)
+    {
+        var items = await _auctionItemRepository.ListAsync(new AuctionItemsAggregateSpec(query));
+
+        if (!items.Any())
+            return new PagedResult<AuctionItemViewModel>();
+        
+        var result = items.Select(x => x.ToViewModel()).ToList();
+        
+        return new PagedResult<AuctionItemViewModel>
+        {
+            Items = result,
+            TotalCount = await _auctionItemRepository.CountAsync(new AuctionItemsAggregateSpec(query)),
+            Page = query.Page,
+            PageSize = query.PageSize
+        };
+    }
     public async Task<Result<Guid>> AddItem(Guid auctionId, AuctionItemCreateCommand command, Guid ownerId)
     {
         var auction = await _repository.SingleOrDefaultAsync(new AuctionByIdAggregateSpec(auctionId));

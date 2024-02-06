@@ -9,6 +9,8 @@ public class ActiveAuctionsWithItemsSpec : Specification<Core.Auction.Entities.A
         Query
             .Include(x => x.AuctionItems)
             .ThenInclude(x => x.Bids)
+            .Include(x => x.AuctionItems)
+            .ThenInclude(x => x.Photos)
             .Where(x => x.AuctionItems.Any(x => x.IsSellingNow));
     }
 }
