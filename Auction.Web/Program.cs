@@ -15,6 +15,8 @@ using Auction.Infrastructure.Auction.Hubs;
 using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
 using Auction.Web.Auction.AuctionItem;
+using Auction.Web.Auction.AuctionItem.Get;
+using Auction.Web.Auction.AuctionItem.Update;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
 using Auction.Web.Metrics;
@@ -180,7 +182,11 @@ app.MapGet("/api/user/auctions", async (
     .RequireAuthorization()
     .WithOpenApi();
 
-app.MapGet(AuctionItemEndpoints.Route, AuctionItemEndpoints.GetUserBoughtItems)
+app.MapGet(GetUserBoughtItems.Route, GetUserBoughtItems.Action)
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapPatch(UpdateDeliveryStatus.Route, UpdateDeliveryStatus.Action)
     .RequireAuthorization()
     .WithOpenApi();
 

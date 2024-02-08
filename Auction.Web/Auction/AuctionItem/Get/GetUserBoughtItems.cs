@@ -1,15 +1,12 @@
 ﻿using System.Security.Claims;
 using Auction.Application.Auction.AuctionItem;
-using Auction.Web.Auction.AuctionItem.Get;
-using Microsoft.AspNetCore.Mvc;
 
-namespace Auction.Web.Auction.AuctionItem;
+namespace Auction.Web.Auction.AuctionItem.Get;
 
-public static class AuctionItemEndpoints
+public static class GetUserBoughtItems
 {
     public const string Route = "/api/user/items";
-    
-    public static async Task<IResult> GetUserBoughtItems(
+    public static async Task<IResult> Action(
         [AsParameters] GetAuctionItemsRequest request, 
         ClaimsPrincipal user,
         IAuctionItemService auctionItemService)

@@ -19,6 +19,7 @@ public interface IAuctionItemService
     Task<Result> UpdateItem(Guid auctionId, AuctionItemUpdateCommand command, Guid ownerId);
     Task<Result> DeleteItem(Guid auctionId, Guid itemId, Guid ownerId);
     Task<Result<PagedResult<AuctionItemViewModel>>> GetItems(GetAuctionItemsQuery query);
+    Task<Result> UpdateDeliveryStatus(Guid auctionId, AuctionItemUpdateDeliveryStatusCommand command, Guid ownerId);
 }
 
 public class AuctionItemService(
@@ -90,8 +91,11 @@ public class AuctionItemService(
         if (itemToUpdate is null)
             return Result.Fail($"Auction item with id {command.Id} does not exist in this auction");
         
-        if (auction.AuctionItems.Any(x => x.IsSellingNow))
-            return Result.Fail($"Auction with id {auctionId} has already started");
+        if (itemToUpdate.IsSellingNow)
+            return Result.Fail($"Auction item with id {command.Id} is already selling now");
+        
+        if (itemToUpdate.IsSold)
+            return Result.Fail($"Auction item with id {command.Id} is already sold");
         
         command.UpdateEntity(itemToUpdate);
         
@@ -107,7 +111,35 @@ public class AuctionItemService(
 
         return Result.Ok();
     }
-    
+
+    public async Task<Result> UpdateDeliveryStatus(Guid auctionId, AuctionItemUpdateDeliveryStatusCommand command, Guid ownerId)
+    {
+        var auction = await _repository.SingleOrDefaultAsync(new AuctionByIdAggregateSpec(auctionId));
+        if (auction is null)
+            return Result.Fail($"There is no auction with id {auctionId}");
+        
+        if (auction.UserId != ownerId)
+            return Result.Fail($"User with id {ownerId} is not owner of this auction");
+        
+        var itemToUpdate = auction.AuctionItems.Find(x => x.Id == command.Id);
+        if (itemToUpdate is null)
+            return Result.Fail($"Auction item with id {command.Id} does not exist in this auction");
+        
+        if (!itemToUpdate.IsSold)
+            return Result.Fail($"Auction item with id {command.Id} is not sold yet");
+        
+        itemToUpdate.DeliveryStatus = command.Status;
+        
+        await _repository.UpdateAsync(auction);
+        await _repository.SaveChangesAsync();
+        await _publisher.Publish(command.Id, itemToUpdate.ToItemUpdatedEvent() with
+        {
+            AuctionId = auctionId
+        });
+
+        return Result.Ok();
+    }
+
     public async Task<Result> DeleteItem(Guid auctionId, Guid itemId, Guid ownerId)
     {
         var auction = await _repository.SingleOrDefaultAsync(new AuctionByIdAggregateSpec(auctionId));
