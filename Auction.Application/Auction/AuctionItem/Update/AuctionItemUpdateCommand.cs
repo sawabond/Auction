@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Auction.Core.Auction.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace Auction.Application.Auction.AuctionItem.Update;
 
@@ -13,6 +14,6 @@ public class AuctionItemUpdateCommand
     public string Name { get; set; }
 
     public string Description { get; set; }
-
+    
     public IFormFileCollection  Photos { get; set; }
 }

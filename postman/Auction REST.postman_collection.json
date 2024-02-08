@@ -132,6 +132,111 @@
 			]
 		},
 		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{UserEmail}}\",\r\n  \"surname\": \"{{UserEmail}}\",\r\n  \"email\": \"{{UserEmail}}\",\r\n  \"password\": \"{{Password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{GATEWAY_URL}}/api/users/{{CurrentUserId}}",
+							"host": [
+								"{{GATEWAY_URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{CurrentUserId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upsert shipment info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"FirstName\": \"Oleksandr\",\r\n  \"LastName\": \"Koval\",\r\n  \"Patronimic\": \"Oleksandrovych\",\r\n  \"PhoneNumber\": \"+380123456789\",\r\n  \"City\": \"Kyiv\",\r\n  \"Department\": \"Department #23\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{GATEWAY_URL}}/api/users/{{CurrentUserId}}/shipment",
+							"host": [
+								"{{GATEWAY_URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{CurrentUserId}}",
+								"shipment"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Auction",
 			"item": [
 				{
@@ -621,6 +726,67 @@
 								"auctions",
 								"{{CurrentAuctionId}}",
 								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update item delivery status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{UserAuthToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"8f257f92-0f0e-4290-972c-f60c48d1b384\",\r\n    \"Status\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{GATEWAY_URL}}/api/auctions/:auctionId/items",
+							"host": [
+								"{{GATEWAY_URL}}"
+							],
+							"path": [
+								"api",
+								"auctions",
+								":auctionId",
+								"items"
+							],
+							"variable": [
+								{
+									"key": "auctionId",
+									"value": "b9b44e4c-3019-4313-bc6b-175e486c6902"
+								}
 							]
 						}
 					},

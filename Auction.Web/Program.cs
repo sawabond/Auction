@@ -4,10 +4,8 @@ using Auction.Application.Auction;
 using Auction.Application.Auction.AuctionItem;
 using Auction.Application.Auction.AuctionItem.Bid;
 using Auction.Application.Auction.AuctionItem.Create;
-using Auction.Application.Auction.AuctionItem.Get;
 using Auction.Application.Auction.AuctionItem.Update;
 using Auction.Application.Auction.Create;
-using Auction.Application.Auction.Get;
 using Auction.Application.Auction.Update;
 using Auction.Application.AuctionHosting.Extensions;
 using Auction.Application.Common;
@@ -18,12 +16,11 @@ using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
 using Auction.Web.Auction.AuctionItem;
 using Auction.Web.Auction.AuctionItem.Get;
+using Auction.Web.Auction.AuctionItem.Update;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
 using Auction.Web.Metrics;
-using Castle.DynamicProxy;
 using Core;
-using FluentResults;
 using Jobs.Extensions;
 using Kafka.Messaging;
 using Logging;
@@ -65,7 +62,6 @@ builder.Services.AddCors(x =>
 
 builder.Services.AddPaymentClients(builder.Configuration);
 
-builder.Services.AddAuctionFeature();
 
 builder.Services.AddScheduler(builder.Configuration);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -76,9 +72,15 @@ builder.Services.AddDbContext<AuctionDbContext>(x =>
     x.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// TODO: If migration, exclude registration of these services
+builder.Services.AddAuctionFeature();
 builder.Services.DecorateWithMethodMeasurement<IBidService, BidService>();
-
 builder.Services.AddAuctionHosting();
+
+ builder.AddKafkaInfrastructure(
+     handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
+     eventsAssemblies: typeof(AuctionContractsAssemblyReference).Assembly);
+// END
 
 builder.Services.AddSerilogLogging(builder.Configuration);
 
@@ -112,10 +114,6 @@ builder.Services.AddSwaggerGen(x =>
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSignalR();
-
-builder.AddKafkaInfrastructure(
-    handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
-    eventsAssemblies: typeof(AuctionContractsAssemblyReference).Assembly);
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -184,7 +182,11 @@ app.MapGet("/api/user/auctions", async (
     .RequireAuthorization()
     .WithOpenApi();
 
-app.MapGet(AuctionItemEndpoints.Route, AuctionItemEndpoints.GetUserBoughtItems)
+app.MapGet(GetUserBoughtItems.Route, GetUserBoughtItems.Action)
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapPatch(UpdateDeliveryStatus.Route, UpdateDeliveryStatus.Action)
     .RequireAuthorization()
     .WithOpenApi();
 
