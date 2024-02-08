@@ -12,7 +12,7 @@ function ItemList({ auctionItems, onDelete }: { auctionItems: any[] | undefined,
     <div className="mx-auto my-4">
       <List>
         {auctionItems.map((auctionItem: any) => (
-          <ItemListItem key={auctionItem.id} auction={auctionItem} onDelete={onDelete} />
+          <ItemListItem key={auctionItem.id} auctionItem={auctionItem} onDelete={onDelete} />
         ))}
       </List>
     </div>

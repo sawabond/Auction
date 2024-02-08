@@ -17,6 +17,7 @@ import { AuctionType } from '../CreateAuctionPage/enums/AuctionType';
 import editAuction from './services/editAuction';
 import SearchInput from '../Home/components/Search/Search';
 import ItemList from './components/ItemList/ItemList';
+import deleteAuctionItem from './services/deleteAuctionItem';
 
 const auctionTypeOptions = Object.keys(AuctionType)
   .filter((key) => !Number.isNaN(Number(key)))
@@ -83,9 +84,20 @@ function EditAuctionPage() {
     },
   });
 
-  const handleDelete = (auctionId: string) => {
-    const updatedAuctionItems = allAuctionItems.filter((item: { id: string; }) => item.id !== auctionId);
-    setAuctionItems(updatedAuctionItems);
+  const handleDelete = async (auctionItemId: string) => {
+    try {
+      // Delete the auction item
+      await deleteAuctionItem(auctionId, auctionItemId);
+  
+      // Update the auction items state by filtering out the deleted item
+      const updatedAuctionItems = allAuctionItems.filter((item: { id: string; }) => item.id !== auctionItemId);
+      setAuctionItems(updatedAuctionItems);
+  
+      // Trigger the mutation to update the backend
+      //mutation.mutate();
+    } catch (error) {
+      console.error('Error deleting auction item:', error);
+    }
   };
 
   const handleSubmit = (values : any) => {
