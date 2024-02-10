@@ -25,6 +25,7 @@ public class BalanceService(
     
     public async Task<Core.Balance> CreateNewBalance(Guid userId)
     {
+        throw new Exception("Sample");
         var balance = new Core.Balance
         {
             UserId = userId,
