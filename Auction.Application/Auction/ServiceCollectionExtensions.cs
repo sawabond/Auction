@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
     {
         @this.AddScoped<IAuctionService, AuctionService>();
         @this.AddScoped<IAuctionItemService, AuctionItemService>();
-        @this.AddScoped<IBidService, BidService>();
+        @this.AddScoped<BidService>();
         
         return @this;
     }

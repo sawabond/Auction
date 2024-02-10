@@ -27,6 +27,8 @@ public class AuctionItem
     public IReadOnlyCollection<Bid> Bids => _bids;
     
     public Auction Auction { get; set; }
+    
+    public DeliveryStatus DeliveryStatus { get; set; } = DeliveryStatus.NotStarted;
 
     public Bid AddBid(Guid userId, decimal amount, DateTime date)
     {
@@ -38,4 +40,11 @@ public class AuctionItem
 
         return bid;
     }
+}
+
+public enum DeliveryStatus
+{
+    NotStarted = 0,
+    InProgress = 1,
+    Delivered = 2
 }
