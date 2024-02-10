@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Payment.Contracts", "Paymen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Contracts", "Auth.Contracts\Auth.Contracts.csproj", "{CAE259A6-91CD-409B-8675-DC6AF580FA31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.PollingPublisher", "Auth.PollingPublisher\Auth.PollingPublisher.csproj", "{B55F1365-605D-466B-B349-C9BED7009BC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,7 @@ Global
 		{18C35666-AE71-442A-958A-007B69F99D87} = {49F6E871-B5C5-45C1-8056-FE97022B90A6}
 		{50D6C672-F957-43B5-9AB7-BB0AA5A9F587} = {49F6E871-B5C5-45C1-8056-FE97022B90A6}
 		{CAE259A6-91CD-409B-8675-DC6AF580FA31} = {2831D2ED-D3A2-48CA-B2FC-136E833C84EE}
+		{B55F1365-605D-466B-B349-C9BED7009BC5} = {2831D2ED-D3A2-48CA-B2FC-136E833C84EE}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{96C63DE6-B04D-4C10-9C78-ADBD8467D450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -165,5 +168,9 @@ Global
 		{CAE259A6-91CD-409B-8675-DC6AF580FA31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAE259A6-91CD-409B-8675-DC6AF580FA31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAE259A6-91CD-409B-8675-DC6AF580FA31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B55F1365-605D-466B-B349-C9BED7009BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B55F1365-605D-466B-B349-C9BED7009BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B55F1365-605D-466B-B349-C9BED7009BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B55F1365-605D-466B-B349-C9BED7009BC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,8 @@
 ﻿using Auth.Application.User.Login;
 using Auth.Application.User.Register;
 using Auth.Contracts.User;
+using Auth.Core;
+using Auth.Core.Common;
 using Auth.Core.User.Exceptions;
 using Core;
 
@@ -9,7 +11,9 @@ namespace Auth.Application.User;
 public class AuthService(
     IUserManagerDecorator _userManager,
     ITokenProvider _tokenProvider,
-    IPublisher _publisher)
+    IPublisher _publisher,
+    ITransactionFactory _transactionFactory,
+    IOutboxRepository _outboxRepository)
 {
     public async Task<RegisterUserResponse> Register(RegisterUserRequest registerUserRequest)
     {
@@ -21,18 +25,25 @@ public class AuthService(
 
         var user = registerUserRequest.ToEntity();
         user.UserName = registerUserRequest.Email;
-        
-        var result = await _userManager.CreateAsync(user, registerUserRequest.Password);
 
+        await using var transaction = await _transactionFactory.BeginTransactionAsync();
+        
+        // Atomic write operation within a single transaction. Avoiding dual-write problem
+        var result = await _userManager.CreateAsync(user, registerUserRequest.Password);
         if (!result.Succeeded)
         {
             throw new CreatingUserException(result.Errors);
         }
-        
-        await _publisher.Publish(user.Id, new UserRegisteredEvent
+        await _outboxRepository.AddAsync(user.Id, new UserRegisteredEvent
         {
             Id = Guid.Parse(user.Id)
         });
+        await transaction.CommitAsync();
+        
+        // await _publisher.Publish(user.Id, new UserRegisteredEvent
+        // {
+        //     Id = Guid.Parse(user.Id)
+        // });
 
         return user.ToResponse();
     }

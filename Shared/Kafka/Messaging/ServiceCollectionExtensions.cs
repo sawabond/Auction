@@ -84,6 +84,8 @@ public static class ServiceCollectionExtensions
 
     private static IEnumerable<Type> GetHandlers(Assembly handlersAssembly)
     {
+        if (handlersAssembly is null) return Enumerable.Empty<Type>();
+        
         return handlersAssembly
             .GetTypes()
             .Where(t => t.GetInterfaces().Any(i => 

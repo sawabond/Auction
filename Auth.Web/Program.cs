@@ -1,5 +1,7 @@
 using Auth.Application.User;
 using Auth.Contracts;
+using Auth.Core;
+using Auth.Core.Common;
 using Auth.Core.User.Entities;
 using Auth.Infrastructure;
 using Auth.Infrastructure.User;
@@ -44,6 +46,9 @@ builder.Services.AddIdentityCore<AppUser>()
 builder.AddKafkaInfrastructure(
     handlersAssembly: typeof(AuthInfrastructureAssemblyReference).Assembly,
     eventsAssemblies: typeof(AuthContractsAssemblyReference).Assembly);
+
+builder.Services.AddScoped<ITransactionFactory, TransactionFactory>();
+builder.Services.AddScoped<IOutboxRepository, OutboxRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x =>
