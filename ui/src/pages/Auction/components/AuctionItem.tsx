@@ -1,72 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { Button, TextField } from '@material-ui/core';
 
-function AuctionItem({ item, isCurrentlySelling }: any) {
-  const [timeLeft, setTimeLeft] = useState('');
-  const [showBids, setShowBids] = useState(false); // State to toggle bid visibility
+function AuctionItem({ item, hubService, isCurrentlySelling }: any) {
+  const [bidAmount, setBidAmount] = useState(0);
 
-  useEffect(() => {
-    if (item.isSellingNow) {
-      const parts = item.sellingPeriod.split(':').map(Number);
-      const totalSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
-
-      let remainingSeconds = totalSeconds;
-
-      const countdown = setInterval(() => {
-        const minutes = Math.floor(remainingSeconds / 60);
-        const seconds = remainingSeconds % 60;
-
-        setTimeLeft(`${minutes}:${seconds.toString().padStart(2, '0')}`);
-        remainingSeconds -= 1;
-
-        if (remainingSeconds < 0) {
-          clearInterval(countdown);
-          setTimeLeft('Auction ended');
-        }
-      }, 1000);
-
-      return () => clearInterval(countdown);
-    }
-  }, [item.isSellingNow, item.sellingPeriod]);
-
-  const toggleBids = () => {
-    setShowBids(!showBids);
+  const sliderSettings = {
+    infinite: false,
+    centerMode: true,
+    centerPadding: '0px',
+    slidesToShow: 1,
+    speed: 500,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          arrows: true,
+          centerMode: true,
+          centerPadding: '0px',
+          slidesToShow: 1,
+        },
+      },
+    ],
   };
 
+  const sliderRef = useRef(null);
+  const handleBid = async () => {
+    if (bidAmount > 0) {
+      await hubService.sendBid(bidAmount, item.id); // Ensure sendBid method supports item id as a parameter
+    }
+  };
   return (
     <div
-      className={`border p-4 m-2 rounded-lg ${
-        item.isSellingNow ? 'bg-green-200' : 'bg-gray-200'
-      }`}
+      className={`border p-4 rounded-lg ${
+        isCurrentlySelling ? 'bg-green-200' : 'bg-gray-200'
+      } m-5`}
     >
       <h2 className="text-lg font-bold">{item.name}</h2>
       <p>{item.description}</p>
       <p>Starting Price: {item.startingPrice}</p>
       <p>Actual Price: {item.actualPrice}</p>
       <p>Minimal Bid: {item.minimalBid}</p>
-      {item.isSellingNow && (
-        <p className="text-red-500">
-          Time Left: {timeLeft || item.sellingPeriod}
-        </p>
-      )}
-
-      <button
-        onClick={toggleBids}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-3"
-      >
-        {showBids ? 'Hide Bids' : 'Show Bids'}
-      </button>
-
-      {showBids && (
-        <div className="mt-3">
-          <ul>
-            {item.bids.map((bid: any) => (
-              <li key={bid.id} className="mt-2">
-                Bidder: {bid.bidderName}, Amount: {bid.amount}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <TextField
+        label="Enter your bid"
+        type="number"
+        value={bidAmount}
+        onChange={(e) => setBidAmount(Number(e.target.value))}
+        fullWidth
+        margin="normal"
+      />
+      <Button onClick={handleBid} color="primary" variant="contained">
+        Send Bid
+      </Button>
+      <div className="w-4/6">
+        <Slider ref={sliderRef} {...sliderSettings}>
+          {item.photos.map((photo, index) => (
+            <div key={index} className="w-36">
+              <img src={photo.photoUrl} alt={`Photo ${index + 1}`} />
+            </div>
+          ))}
+        </Slider>
+      </div>
     </div>
   );
 }

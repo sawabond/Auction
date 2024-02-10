@@ -1,42 +1,74 @@
-import React from 'react';
-import { Typography, Paper, List, Divider } from '@material-ui/core';
-import AuctionItem from './AuctionItem';
+import React, { useRef } from 'react';
+import Slider from 'react-slick';
+import AuctionItem from './AuctionItem'; // Ensure this is correctly imported
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
-const Auction: React.FC<any> = ({ data }: any) => {
-  console.log(data.auctionItems.map((item: any) => item.isSellingNow));
+function Auction({ data, hubService }: any) {
+  const sliderRef = useRef(null);
+
+  const settings = {
+    dots: true,
+    infinite: false,
+    centerMode: true,
+    centerPadding: '0px',
+    slidesToShow: 1,
+    speed: 500,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          arrows: true,
+          centerMode: true,
+          centerPadding: '0px',
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+
+  const goToSlide = (index) => {
+    if (sliderRef.current) {
+      sliderRef.current.slickGoTo(index);
+    }
+  };
+
   return (
-    <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
-      {/* Use Typography for text; Paper for cards/sections */}
-      <Typography variant="h5" gutterBottom>
-        Auction: {data.name}
-      </Typography>
-      <Typography variant="subtitle1" gutterBottom>
-        Description: {data.description}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        Start Time: {new Date(data.startTime).toLocaleString()}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        End Time:{' '}
-        {data.endTime ? new Date(data.endTime).toLocaleString() : 'Ongoing'}
-      </Typography>
-      <Divider style={{ margin: '20px 0' }} />
-      <Typography variant="h6" gutterBottom>
-        Auction Items:
-      </Typography>
-      <List>
-        {data.auctionItems.map((item: any) => (
-          <React.Fragment key={item.id}>
-            <AuctionItem
-              item={item}
-              isCurrentlySelling={item.isSellingNow} // Pass the prop here
-            />
-            <Divider variant="inset" component="li" />
-          </React.Fragment>
-        ))}
-      </List>
-    </Paper>
+    <div>
+      <h1 className="text-2xl font-bold text-center">{data.name}</h1>
+
+      <div className="flex justify-around p-5 w-full">
+        <div className="w-4/6">
+          <Slider ref={sliderRef} {...settings}>
+            {data.auctionItems.map((item) => (
+              <AuctionItem
+                key={item.id}
+                item={item}
+                hubService={hubService}
+                isCurrentlySelling={item.isSellingNow}
+              />
+            ))}
+          </Slider>
+        </div>
+        <div className="w-48 ml-5 border shadow-md rounded ">
+          <ul className="text-center">
+            {data.auctionItems.map((item, index) => (
+              <li
+                key={item.id}
+                style={{
+                  color: item.isSellingNow ? 'green' : 'black',
+                  cursor: 'pointer',
+                }}
+                onClick={() => goToSlide(index)}
+              >
+                {item.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
-};
+}
 
 export default Auction;
