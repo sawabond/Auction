@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -8,6 +8,7 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Fab
 } from '@mui/material';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
@@ -18,6 +19,7 @@ import editAuction from './services/editAuction';
 import SearchInput from '../Home/components/Search/Search';
 import ItemList from './components/ItemList/ItemList';
 import deleteAuctionItem from './services/deleteAuctionItem';
+import AddIcon from '@mui/icons-material/Add';
 
 const auctionTypeOptions = Object.keys(AuctionType)
   .filter((key) => !Number.isNaN(Number(key)))
@@ -84,6 +86,10 @@ function EditAuctionPage() {
     },
   });
 
+  const handleClick = () => {
+    navigate(`/auction/${auctionId}/add-auction-item`);
+  };
+
   const handleDelete = async (auctionItemId: string) => {
     try {
       // Delete the auction item
@@ -115,8 +121,6 @@ function EditAuctionPage() {
       ...values,
       startTime: isoString,
     };
-
-    
   
     // Pass the updated values to mutation.mutate
     mutation.mutate(updatedValues);
@@ -133,70 +137,77 @@ function EditAuctionPage() {
       onSubmit={handleSubmit}
     >
       {({ values, errors, touched, handleChange }) => (
-        <div className="flex flex-col justify-center items-center h-screen">
-          <h1 className="text-3xl font-bold mb-4">Edit Auction</h1>
-          <Form className="flex flex-col w-6/12 shadow p-8 rounded">
-            <Field
-              as={TextField}
-              className="mb-2"
-              name="name"
-              label="Name"
-              error={touched.name && !!errors.name}
-              helperText={touched.name && errors.name}
-              sx={{ mb: 1 }}
-            />
-            <Field
-              as={TextField}
-              name="description"
-              label="Description"
-              multiline
-              error={touched.description && !!errors.description}
-              helperText={touched.description && errors.description}
-              sx={{ mb: 1 }}
-            />
-            <TextField
-              type="datetime-local"
-              label="Start Time"
-              name="startTime"
-              value={values.startTime}
-              onChange={handleChange}
-              error={touched.startTime && !!errors.startTime}
-
-              InputLabelProps={{
-                shrink: true,
-              }}
-              sx={{ mb: 1 }}
-            />
-
-            <FormControl>
-              <InputLabel>Auction Type</InputLabel>
+        <div className="flex flex-row justify-center items-center h-screen">
+            <Form className="flex flex-col w-4/12 shadow p-8 rounded">
+            <h1 className="text-3xl font-bold mb-4">Edit Auction</h1>
               <Field
-                as={Select}
-                name="auctionType"
-                error={touched.auctionType && !!errors.auctionType}
-              >
-                {auctionTypeOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Field>
-            </FormControl>
-            {touched.auctionType && errors.auctionType && (
-              <div>{errors.auctionType as ReactNode}</div> 
-            )}
+                as={TextField}
+                className="mb-2"
+                name="name"
+                label="Name"
+                error={touched.name && !!errors.name}
+                helperText={touched.name && errors.name}
+                sx={{ mb: 1 }}
+              />
+              <Field
+                as={TextField}
+                name="description"
+                label="Description"
+                multiline
+                error={touched.description && !!errors.description}
+                helperText={touched.description && errors.description}
+                sx={{ mb: 1 }}
+              />
+              <TextField
+                type="datetime-local"
+                label="Start Time"
+                name="startTime"
+                value={values.startTime}
+                onChange={handleChange}
+                error={touched.startTime && !!errors.startTime}
 
-            
-            <Button type="submit">Edit</Button>
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ mb: 1 }}
+              />
 
-            <SearchInput />
-            {false ? (
-              <div>Loading...</div>
-            ) : (
-              <ItemList auctionItems={allAuctionItems} onDelete={handleDelete} />
-            )}
-          </Form>
-        </div>
+              <FormControl>
+                <InputLabel>Auction Type</InputLabel>
+                <Field
+                  as={Select}
+                  name="auctionType"
+                  error={touched.auctionType && !!errors.auctionType}
+                >
+                  {auctionTypeOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Field>
+              </FormControl>
+              {touched.auctionType && errors.auctionType && (
+                <div>{errors.auctionType as ReactNode}</div> 
+              )}            
+              <Button type="submit">Save</Button>
+              
+            </Form>
+            <div className="flex flex-col">
+              <div className="flex flex-row justify-center items-center">
+                <Fab size="small" color="primary" aria-label="add" onClick={handleClick}>
+                  <AddIcon />
+                </Fab>
+                <div className="w-full max-w-full">
+                  <SearchInput />
+                </div>
+              </div>
+              {false ? (
+                <div>Loading...</div>
+              ) : (
+                <ItemList auctionItems={allAuctionItems} onDelete={handleDelete} />
+              )}
+            </div>
+          </div>
       )}
     </Formik>
   );

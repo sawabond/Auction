@@ -1,29 +1,29 @@
-import React from 'react';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { RestoreFromTrash } from '@material-ui/icons';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import { Typography } from '@material-ui/core';
 
 function ItemListItem({ auctionItem: auctionItem, onDelete }: { auctionItem: any, onDelete: (auctionItemId: string) => void }) {
   const handleDelete = () => {
     onDelete(auctionItem.id);
   };
 
-  // const handleRestore = () => {
-  //   onRestore(auction.id);
-  // };
 
   return (
-    <ListItem>
-      <ListItemText primary={auctionItem.name} secondary={auctionItem.description} />
-      <ListItemSecondaryAction>
+    <Card sx={{ maxWidth: 345 }}>
+      <CardMedia
+        component="img"
+        image={auctionItem.photos[0]?.photoUrl}
+        alt="Your Image"
+        className="w-32 h-32 object-cover"
+      />
+      <Typography variant="body1">{auctionItem.name}</Typography>
         <IconButton edge="end" aria-label="delete" onClick={handleDelete}>
           <DeleteIcon />
         </IconButton>
-      </ListItemSecondaryAction>
-    </ListItem>
+    </Card>
+
   );
 }
 
