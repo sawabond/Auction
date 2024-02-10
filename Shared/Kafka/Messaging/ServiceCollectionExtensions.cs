@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
         @this.Services.AddScoped(typeof(IPublisher), typeof(Publisher));
 
         @this.Services.AddKafka(kafka => kafka
-            //.UseConsoleLog()
+            .UseConsoleLog()
             .AddCluster(cluster =>
             {
                 var configurationBuilder = cluster.WithBrokers(kafkaConfig.BootstrapServers)
@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
                 
                 foreach (var @event in events)
                 {
-                    configurationBuilder.CreateTopicIfNotExists(@event.Name, 1, 1);
+                    configurationBuilder.CreateTopicIfNotExists(@event.Name, 1, 3);
                     
                     configurationBuilder.AddProducer(
                         @event.Name,
