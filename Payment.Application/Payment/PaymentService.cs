@@ -17,7 +17,6 @@ public class PaymentService(
     IPublisher _publisher,
     IStripeClient _stripeClient) : IPaymentService
 {
-    // TODO: refactor this method to user repositories
     public async Task<Result> CreatePaymentAsync(Guid userId, string sessionId)
     {
         var sessionService = new SessionService(_stripeClient);

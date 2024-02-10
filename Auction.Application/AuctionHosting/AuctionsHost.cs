@@ -1,6 +1,7 @@
 ﻿using Auction.Application.Auction.Specifications;
 using Auction.Contracts.Auction.AuctionItem;
 using Core;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -41,5 +42,6 @@ public class AuctionsHost(
             StartedAt = DateTime.UtcNow,
             SellingPeriod = firstItem.SellingPeriod,
         });
+        
     }
 }

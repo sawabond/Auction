@@ -30,8 +30,5 @@ public class AuctionClosedEventHandler(
         await repository.UpdateAsync(auction);
         
         await _activeAuctionsStorage.Remove(message.Id);
-        await _hubContext.Clients
-            .Groups(message.Id.ToString())
-            .AuctionClosed(message);
     }
 }

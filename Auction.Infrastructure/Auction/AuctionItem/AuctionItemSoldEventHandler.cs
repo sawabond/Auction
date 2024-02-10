@@ -20,14 +20,6 @@ public class AuctionItemSoldEventHandler(
 {
     public async Task Handle(IMessageContext context, AuctionItemSoldEvent message)
     {
-        await _hubContext.Clients
-            .Groups(message.AuctionId.ToString())
-            .ItemSold(new
-        {
-            message.LastPrice,
-            message.Id,
-            message.UserId,
-            message.SoldAt
-        });
+        
     }
 }
