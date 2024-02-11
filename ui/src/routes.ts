@@ -47,7 +47,7 @@ const routes: IRoute[] = [
   {
     key: 'edit-auction',
     title: 'Edit auction',
-    path: '/edit-auction/:auctionId',
+    path: '/auction/:auctionId/edit-auction',
     enabled: true,
     component: EditAuctionPage,
   },

@@ -1,36 +1,21 @@
-import axios from 'axios';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 import AuctionList from '../../components/elements/AuctionList/AuctionList';
 import SearchInput from '../../components/elements/Search/Search';
 import { ToastContainer } from 'react-toastify';
 import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
-import getTokenFromCookies from '../../components/utils/getTokenFromCookies';
+import getMyAuctions from './services/getMyAuctions';
 
-const getMyAuctions = async (cursor : any) => {
-  const token = getTokenFromCookies();
-  const url = `http://localhost:5167/api/user/auctions?pageSize=2&cursor=${cursor}`;
 
-  try {
-    const response = await axios.get(url,{
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error('Network response was not ok');
-  }
-};
 
 export default function MyAuctionsPage() {
   const [auctionNextCursor, setAuctionNextCursor] = useAuctionNextCursor('');
   const [allAuctions, setAllAuctions] = useState<any>([]);
+  const [pageSize] = useState(2);
 
   const { isLoading, data } = useQuery(
     ['auctions', auctionNextCursor],
-    () => getMyAuctions(auctionNextCursor),
+    () => getMyAuctions(auctionNextCursor, pageSize),
     {
       keepPreviousData: true,
       onSuccess: (newData) => {

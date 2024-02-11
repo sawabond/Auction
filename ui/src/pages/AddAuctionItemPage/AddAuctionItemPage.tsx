@@ -5,13 +5,12 @@ import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import MultipleFileUploadField from '../../components/elements/Drag and drop/MultipleFileUploadField';
 import { useState } from 'react';
-import addAuctionItem from './Services/addAuctionItem';
-import { useNavigate } from 'react-router-dom';
+import addAuctionItem from './services/addAuctionItem';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function AddAuctionItemPage() {
   const navigate = useNavigate();  
-  const currentUrl = window.location.href;
-  const auctionId = currentUrl.split('/')[4];
+  const { auctionId } = useParams();
   const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -73,13 +72,13 @@ function AddAuctionItemPage() {
       }
     }
     try {
-      await mutation.mutateAsync(formData);
+      await mutation.mutateAsync({formData, auctionId});
       resetForm();
       clearFiles();
       setIsFormSubmitted(true);
       
       if (!isMultiple) {
-        navigate(`/edit-auction/${auctionId}`);
+        navigate(`/auction/${auctionId}/edit-auction`);
       }
     } catch (error: any) {
       console.error('Error while creating auction item:', error.message);

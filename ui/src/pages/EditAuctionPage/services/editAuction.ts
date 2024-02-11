@@ -5,7 +5,7 @@ const editAuction = async (values : any) => {
   const token = getTokenFromCookies();
 
   try {
-    const response = await axios.put('http://localhost:5167/api/auctions', values, {
+    const response = await axios.put(`${import.meta.env.VITE_GATEWAY_URL!}/api/auctions`, values, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

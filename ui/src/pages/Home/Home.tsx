@@ -5,26 +5,16 @@ import { useQuery } from 'react-query';
 import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
 import AuctionList from '../../components/elements/AuctionList/AuctionList';
 import SearchInput from '../../components/elements/Search/Search';
-import axios from 'axios';
-
-const getAllAuctions = async (cursor : any) => {
-  const url = `http://localhost:5167/api/auctions?pageSize=2&cursor=${cursor}`;
-
-  try {
-    const response = await axios.get(url);
-    return response.data;
-  } catch (error) {
-    throw new Error('Network response was not ok');
-  }
-};
+import getAllAuctions from './services/getAllAuctions';
 
 export default function Home() {
   const [auctionNextCursor, setAuctionNextCursor] = useAuctionNextCursor('');
   const [allAuctions, setAllAuctions] = useState<any>([]);
+  const [pageSize] = useState(2);
 
   const { isLoading, data } = useQuery(
     ['auctions', auctionNextCursor],
-    () => getAllAuctions(auctionNextCursor),
+    () => getAllAuctions(auctionNextCursor, pageSize),
     {
       keepPreviousData: true,
       onSuccess: (newData) => {
