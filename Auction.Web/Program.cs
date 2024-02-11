@@ -184,6 +184,9 @@ app.MapGet(GetUserBoughtItems.Route, GetUserBoughtItems.Action)
     .RequireAuthorization()
     .WithOpenApi();
 
+app.MapGet(GetAuctionItems.Route, GetAuctionItems.Action)
+    .WithOpenApi();
+
 app.MapPatch(UpdateDeliveryStatus.Route, UpdateDeliveryStatus.Action)
     .RequireAuthorization()
     .WithOpenApi();
