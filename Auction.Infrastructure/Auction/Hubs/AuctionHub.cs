@@ -3,7 +3,6 @@ using Auction.Application.Auction.AuctionItem.Bid;
 using Auction.Application.AuctionHosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Localization;
 
 namespace Auction.Infrastructure.Auction.Hubs;
 

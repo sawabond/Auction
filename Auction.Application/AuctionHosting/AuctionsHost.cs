@@ -9,7 +9,7 @@ namespace Auction.Application.AuctionHosting;
 
 public interface IAuctionsHost
 {
-    Task StartAuctionById(Guid auctionId);
+    Task<Core.Auction.Entities.Auction> StartAuctionById(Guid auctionId);
 }
 
 public class AuctionsHost(
@@ -17,7 +17,7 @@ public class AuctionsHost(
     IActiveAuctionsStorage _activeAuctionsStorage,
     IServiceScopeFactory _scopeFactory) : IAuctionsHost
 {
-    public async Task StartAuctionById(Guid auctionId)
+    public async Task<Core.Auction.Entities.Auction> StartAuctionById(Guid auctionId)
     { 
         using var scope = _scopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IRepository<Core.Auction.Entities.Auction>>();
@@ -42,6 +42,7 @@ public class AuctionsHost(
             StartedAt = DateTime.UtcNow,
             SellingPeriod = firstItem.SellingPeriod,
         });
-        
+
+        return auction;
     }
 }

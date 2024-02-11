@@ -14,7 +14,6 @@ using Auction.Infrastructure;
 using Auction.Infrastructure.Auction.Hubs;
 using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
-using Auction.Web.Auction.AuctionItem;
 using Auction.Web.Auction.AuctionItem.Get;
 using Auction.Web.Auction.AuctionItem.Update;
 using Auction.Web.Auction.Get;
@@ -47,7 +46,6 @@ builder.Services
             .AddAspNetCoreInstrumentation()
             .AddPrometheusExporter();
     });
-
 
 builder.Services.AddCors(x =>
 {

@@ -29,7 +29,7 @@ public class AuctionItemStartedSellingEventHandler(
     }
 
     // TODO: Refactor this trash
-    [AutomaticRetry(Attempts = 10)]
+    [AutomaticRetry(Attempts = 2)]
     public async Task SellItem(Guid auctionId)
     {
         using var scope = _scopeFactory.CreateScope();
