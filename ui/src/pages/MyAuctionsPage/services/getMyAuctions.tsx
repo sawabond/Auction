@@ -1,13 +1,13 @@
 import axios from "axios";
 import getTokenFromCookies from "../../../components/utils/getTokenFromCookies";
 
-const getMyAuctions = async (cursor : any, pageSize : any) => {
+const getMyAuctions = async (pageSize : any, cursor : any) => {
     const token = getTokenFromCookies();
     const url = `${import.meta.env.VITE_GATEWAY_URL!}/api/user/auctions`;
   
     const params = new URLSearchParams({
-      cursor,
       pageSize,
+      cursor,
     });
   
     try {
