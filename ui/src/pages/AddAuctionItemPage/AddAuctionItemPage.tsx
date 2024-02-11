@@ -1,4 +1,4 @@
-import { Formik, Form, Field, useFormikContext } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import { TextField, Button } from '@material-ui/core';
 import * as yup from 'yup';
 import { useMutation } from 'react-query';
@@ -6,8 +6,12 @@ import { toast } from 'react-toastify';
 import MultipleFileUploadField from './elements/MultipleFileUploadField';
 import { useState } from 'react';
 import addAuctionItem from './Services/addAuctionItem';
+import { useNavigate } from 'react-router-dom';
 
 function AddAuctionItemPage() {
+  const navigate = useNavigate();  
+  const currentUrl = window.location.href;
+  const auctionId = currentUrl.split('/')[4];
   const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -65,8 +69,6 @@ function AddAuctionItemPage() {
       ),
   });
   
-  
-
   const mutation = useMutation(addAuctionItem, {
     onSuccess: () => {
       toast.success('Auction item added successfully!');
@@ -80,34 +82,46 @@ function AddAuctionItemPage() {
     setUploadedPhotos(files);
   };
 
-  const handleSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
+  const handleSubmit = async (values: any, { setSubmitting, resetForm }: any, isMultiple: boolean) => {
     setIsFormSubmitted(false);
     const formData = new FormData();
     formData.append("startingPrice", values.startingPrice);
     formData.append("minimalBid", values.minimalBid);
     formData.append("name", values.name);
     formData.append("description", values.description);
-
+  
     for (let index = 0; index < uploadedPhotos.length; index++) {
       const file = uploadedPhotos[index];
       
       if (file.name.match(/(.jpg|.png)$/gm)) {
-          formData.append(`photos[${index}]`, file);
+        formData.append(`photos[${index}]`, file);
       } else {
         return;
       }
-  }
-
+    }
+  
     try {
       await mutation.mutateAsync(formData);
       resetForm();
       clearFiles();
       setIsFormSubmitted(true);
+      
+      if (!isMultiple) {
+        navigate(`/edit-auction/${auctionId}`);
+      }
     } catch (error: any) {
       console.error('Error while creating auction item:', error.message);
     } finally {
       setSubmitting(false);
     }
+  };  
+  
+  const handleSubmitSingle = async (values: any, { setSubmitting, resetForm }: any) => {
+    await handleSubmit(values, { setSubmitting, resetForm }, false);
+  };
+  
+  const handleSubmitMultiple = async (values: any, { setSubmitting, resetForm }: any) => {
+    await handleSubmit(values, { setSubmitting, resetForm }, true);
   };
 
   const clearFiles = () => {
@@ -118,9 +132,9 @@ function AddAuctionItemPage() {
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmitSingle}
     >
-      {({ errors, touched }) => (
+      {({ errors, touched, values, setSubmitting, resetForm }) => (
         <div className="flex flex-col justify-center items-center h-screen">
           <h1 className="text-3xl font-bold mb-4">Add Auction Item</h1>
           <Form className="flex flex-col w-6/12 shadow p-8 rounded">
@@ -159,8 +173,8 @@ function AddAuctionItemPage() {
               sx={{ mb: 1 }}
             />
             <MultipleFileUploadField name="photos" onFilesChange={handleFilesChange} isFormSubmitted={isFormSubmitted}/> 
-            {/* Pass the name of the field for multiple file uploads */}
-            <Button type="submit">Add</Button>
+            <Button type="submit" name="button_add_one">Add</Button>
+            <Button type="button" name="button_add_multiple" onClick={() => handleSubmitMultiple(values, {setSubmitting, resetForm})}>Add multiple</Button>
           </Form>
         </div>
       )}
