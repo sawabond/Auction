@@ -1,5 +1,4 @@
-// MultipleFileUploadField.tsx
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Accept, FileError, FileRejection, useDropzone } from 'react-dropzone';
 import { SingleFileUploadField } from './SingleFileUploadField';

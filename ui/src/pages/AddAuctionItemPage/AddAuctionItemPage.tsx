@@ -50,23 +50,6 @@ function AddAuctionItemPage() {
       .string()
       .max(500, "Description must have less than 500 symbols")
       .required("Description is required"),
-    photos: yup
-      .array(        
-        yup
-        .mixed<File>()
-        .required("Name is required")
-        .test(
-          "is-valid-type",
-          "Not a valid image type",
-          (value) =>
-            value ? isValidFileType(value.name.toLowerCase(), "image") : true
-        ))
-      .of(
-        yup
-          .object().shape({
-            name: yup.string().matches(new RegExp("/(.jpg|.png)$/gm")),
-          })
-      ),
   });
   
   const mutation = useMutation(addAuctionItem, {
@@ -99,7 +82,6 @@ function AddAuctionItemPage() {
         return;
       }
     }
-  
     try {
       await mutation.mutateAsync(formData);
       resetForm();

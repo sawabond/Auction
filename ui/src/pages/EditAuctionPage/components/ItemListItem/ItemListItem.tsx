@@ -11,7 +11,7 @@ function ItemListItem({ auctionItem: auctionItem, onDelete }: { auctionItem: any
 
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 345, minWidth: 160 }}>
       <CardMedia
         component="img"
         image={auctionItem.photos[0]?.photoUrl}

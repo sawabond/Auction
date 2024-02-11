@@ -12,7 +12,7 @@ import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import createAuction from './services/createAuction';
-import { AuctionType } from './enums/AuctionType';
+import { AuctionType } from '../../components/enums/AuctionType';
 
 const auctionTypeOptions = Object.keys(AuctionType)
   .filter((key) => !Number.isNaN(Number(key)))

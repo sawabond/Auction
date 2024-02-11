@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useQuery } from 'react-query';
 import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
-import AuctionList from './components/AuctionList/AuctionList';
-import SearchInput from './components/Search/Search';
+import AuctionList from '../../components/elements/AuctionList/AuctionList';
+import SearchInput from '../../components/elements/Search/Search';
 import axios from 'axios';
 
 const getAllAuctions = async (cursor : any) => {
