@@ -3,7 +3,7 @@ import { TextField, Button } from '@material-ui/core';
 import * as yup from 'yup';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
-import MultipleFileUploadField from './elements/MultipleFileUploadField';
+import MultipleFileUploadField from '../../components/elements/Drag and drop/MultipleFileUploadField';
 import { useState } from 'react';
 import addAuctionItem from './Services/addAuctionItem';
 import { useNavigate } from 'react-router-dom';
@@ -22,16 +22,6 @@ function AddAuctionItemPage() {
     description: "",
     photos: []
   };
-
-  const validFileExtensions: { [key: string]: string[] } = { image: ['jpg', 'gif', 'png', 'jpeg', 'svg', 'webp'] };
-  
-  function isValidFileType(fileName: string, fileType: string): boolean {
-    const validExtensions = validFileExtensions[fileType];
-    if (!validExtensions || validExtensions.length === 0) return false;
-    const fileExtension = fileName.split('.').pop()?.toLowerCase();
-    return !!fileExtension && validExtensions.includes(fileExtension);
-  }
-  
 
   const validationSchema = yup.object().shape({
     startingPrice: yup
