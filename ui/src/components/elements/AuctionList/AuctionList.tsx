@@ -1,13 +1,13 @@
-import React from 'react';
 import List from '@material-ui/core/List';
-import AuctionItem from '../AuctionItem/AuctionItem';
+import AuctionListItem from '../AuctionListItem/AuctionListItem';
 
 function AuctionList({ auctions }: any) {
+  console.log(auctions)
   return (
     <div className="mx-auto my-4">
       <List>
         {auctions.map((auction: any) => (
-          <AuctionItem key={auction.id} auction={auction} />
+          <AuctionListItem key={auction.id} auction={auction} />
         ))}
       </List>
     </div>

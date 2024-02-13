@@ -14,7 +14,6 @@ using Auction.Infrastructure;
 using Auction.Infrastructure.Auction.Hubs;
 using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
-using Auction.Web.Auction.AuctionItem;
 using Auction.Web.Auction.AuctionItem.Get;
 using Auction.Web.Auction.AuctionItem.Update;
 using Auction.Web.Auction.Get;
@@ -47,7 +46,6 @@ builder.Services
             .AddAspNetCoreInstrumentation()
             .AddPrometheusExporter();
     });
-
 
 builder.Services.AddCors(x =>
 {
@@ -164,6 +162,21 @@ app.MapPut("/api/auctions", async (
     .RequireAuthorization()
     .WithOpenApi();
 
+app.MapGet("/api/auctions/{auctionId:guid}", async (
+        Guid auctionId,
+        IAuctionService auctionService) =>
+    {
+        var result = await auctionService.GetById(auctionId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value.ToViewModel());
+        }
+
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .WithOpenApi();
+
 app.MapGet("/api/user/auctions", async (
         [AsParameters] GetAuctionsRequest request,
         ClaimsPrincipal user,
@@ -184,6 +197,9 @@ app.MapGet("/api/user/auctions", async (
 
 app.MapGet(GetUserBoughtItems.Route, GetUserBoughtItems.Action)
     .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapGet(GetAuctionItems.Route, GetAuctionItems.Action)
     .WithOpenApi();
 
 app.MapPatch(UpdateDeliveryStatus.Route, UpdateDeliveryStatus.Action)

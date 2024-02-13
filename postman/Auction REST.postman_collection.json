@@ -40,7 +40,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"{{UserEmail}}\",\r\n  \"surname\": \"{{UserEmail}}\",\r\n  \"email\": \"{{UserEmail}}\",\r\n  \"password\": \"{{Password}}\"\r\n}",
+							"raw": "{\r\n  \"name\": \"ddo22102@gmail.com\",\r\n  \"surname\": \"{{UserEmail}}\",\r\n  \"email\": \"gavn23o222sd1@gmail.com\",\r\n  \"password\": \"{{Password}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -48,10 +48,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{GATEWAY_URL}}/api/auth/register",
+							"raw": "http://localhost:5190/api/auth/register",
+							"protocol": "http",
 							"host": [
-								"{{GATEWAY_URL}}"
+								"localhost"
 							],
+							"port": "5190",
 							"path": [
 								"api",
 								"auth",
@@ -925,6 +927,72 @@
 								{
 									"key": "maxPrice",
 									"value": "400"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get auction items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{UserAuthToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{GATEWAY_URL}}/api/auctions/:auctionId/items?page=1&pageSize=10&itemId=8685873b-74f1-4485-89bc-a682a786f08f",
+							"host": [
+								"{{GATEWAY_URL}}"
+							],
+							"path": [
+								"api",
+								"auctions",
+								":auctionId",
+								"items"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "luis",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "3000",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "itemId",
+									"value": "8685873b-74f1-4485-89bc-a682a786f08f"
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "auctionId",
+									"value": "ced5711c-4d96-453e-be8c-13eecc104ad0"
 								}
 							]
 						}

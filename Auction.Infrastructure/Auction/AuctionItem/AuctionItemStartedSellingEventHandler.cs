@@ -1,6 +1,8 @@
-﻿using Auction.Application.AuctionHosting;
+﻿using Auction.Application.Auction.AuctionItem.Bid;
+using Auction.Application.AuctionHosting;
 using Auction.Contracts.Auction;
 using Auction.Contracts.Auction.AuctionItem;
+using Auction.Infrastructure.Auction.Hubs;
 using Core;
 using Hangfire;
 using KafkaFlow;
@@ -26,11 +28,14 @@ public class AuctionItemStartedSellingEventHandler(
         await scheduler.Schedule(() => SellItem(message.AuctionId), message.SellingPeriod);
     }
 
+    // TODO: Refactor this trash
+    [AutomaticRetry(Attempts = 2)]
     public async Task SellItem(Guid auctionId)
     {
         using var scope = _scopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IRepository<Core.Auction.Entities.Auction>>();
         var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>();
+        var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<AuctionHub>>();
         
         var auction = await _activeAuctionsStorage.GetAsync(auctionId);
         var soldItem = auction.CurrentlySellingItem;
@@ -41,7 +46,8 @@ public class AuctionItemStartedSellingEventHandler(
         _logger.LogInformation("Next selling item setting result was {ItemWasSet}", nextAuctionItemWasSet);
         
         await repository.UpdateAsync(auction);
-        await publisher.Publish(auction.Id, new AuctionItemSoldEvent
+
+        var itemSoldEvent = new AuctionItemSoldEvent
         {
             Id = soldItem.Id,
             AuctionId = auction.Id,
@@ -49,7 +55,12 @@ public class AuctionItemStartedSellingEventHandler(
             UserId = soldItem.Bids?.LastOrDefault()?.UserId,
             AuctionOwnerId = auction.UserId,
             SoldAt = DateTime.UtcNow
-        });
+        };
+        await publisher.Publish(auction.Id, itemSoldEvent);
+        await hubContext.Clients
+            .Groups(auctionId.ToString())
+            .SendAsync("ItemSold", itemSoldEvent);
+        
         _logger.LogInformation("Publishing AuctionItemSoldEvent for item {ItemId}", soldItem.Id);
         
         if (nextAuctionItemWasSet)
@@ -71,11 +82,16 @@ public class AuctionItemStartedSellingEventHandler(
             
             _logger.LogInformation("No more items to sell for Auction {AuctionId}", auction.Id);
             _logger.LogInformation("Publishing AuctionClosedEvent for Auction {AuctionId}", auction.Id);
-            await publisher.Publish(auction.Id, new AuctionClosedEvent
+
+            var auctionClosedEvent = new AuctionClosedEvent
             {
                 Id = auction.Id,
                 ClosedAt = DateTime.UtcNow
-            });
+            };
+            await publisher.Publish(auction.Id, auctionClosedEvent);
+            await hubContext.Clients
+                .Groups(auctionId.ToString())
+                .SendAsync("AuctionClosed", auctionClosedEvent);
         }
     }
 }

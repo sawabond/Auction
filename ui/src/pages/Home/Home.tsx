@@ -1,29 +1,21 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { useQuery } from 'react-query';
 import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
-import AuctionList from './components/AuctionList/AuctionList';
-import SearchInput from './components/Search/Search';
-
-const fetchAuctions = async (cursor: any) => {
-  const url = `http://localhost:5167/api/auctions?pageSize=2&cursor=${cursor}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return response.json();
-};
+import AuctionList from '../../components/elements/AuctionList/AuctionList';
+import SearchInput from '../../components/elements/Search/Search';
+import getAllAuctions from './services/getAllAuctions';
 
 export default function Home() {
   const [auctionNextCursor, setAuctionNextCursor] = useAuctionNextCursor('');
   const [allAuctions, setAllAuctions] = useState<any>([]);
+  const [pageSize] = useState(2);
 
   const { isLoading, data } = useQuery(
     ['auctions', auctionNextCursor],
-    () => fetchAuctions(auctionNextCursor),
+    () => getAllAuctions(auctionNextCursor, pageSize),
     {
       keepPreviousData: true,
       onSuccess: (newData) => {

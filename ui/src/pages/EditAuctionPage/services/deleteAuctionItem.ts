@@ -1,15 +1,16 @@
 import axios from 'axios';
 import getTokenFromCookies from '../../../components/utils/getTokenFromCookies';
 
-const createAuction = async (values : any) => {
+const deleteAuctionItem = async (auctionId : any, auctionItemId : any) => {
   const token = getTokenFromCookies();
 
   try {
-    const response = await axios.post(`${import.meta.env.VITE_GATEWAY_URL!}/api/auctions`, values, {
+    const response = await axios.delete(`${import.meta.env.VITE_GATEWAY_URL!}/api/auctions/${auctionId}/items/${auctionItemId}`, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: `Bearer ${token}`,
       },
+      data: null
     });
 
     return response.data;
@@ -18,4 +19,4 @@ const createAuction = async (values : any) => {
   }
 };
 
-export default createAuction;
+export default deleteAuctionItem;

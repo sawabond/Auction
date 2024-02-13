@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UsePostgreSqlStorage(configuration.GetConnectionString("DefaultConnection"))
-                .UseFilter(new AutomaticRetryAttribute { Attempts = 10 } );
+                .UseFilter(new AutomaticRetryAttribute { Attempts = 2 } );
         });
         @this.AddHangfireServer(x => x.SchedulePollingInterval = TimeSpan.FromSeconds(3));
         
