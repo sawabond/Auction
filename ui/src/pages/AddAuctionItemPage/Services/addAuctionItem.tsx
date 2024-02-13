@@ -1,14 +1,12 @@
 import axios from 'axios';
 import getTokenFromCookies from '../../../components/utils/getTokenFromCookies';
 
-const addAuctionItem = async (formData : any) => {
-  const currentUrl = window.location.href;
-  const auctionId = currentUrl.split('/')[4];
+const addAuctionItem = async ({ formData, auctionId } : any) => {
   const token = getTokenFromCookies(); // Ensure to call the function to retrieve the token
 
   try {
     const response = await axios.post(
-      `http://localhost:5167/api/auctions/${auctionId}/items`,
+      `${import.meta.env.VITE_GATEWAY_URL!}/api/auctions/${auctionId}/items`,
       formData,
       {
         headers: {

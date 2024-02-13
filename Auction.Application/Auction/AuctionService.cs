@@ -14,6 +14,7 @@ public interface IAuctionService
 {
     Task<Result<FilteredPaginatedAuctions>> Get(GetAuctionsQuery query);
     Task<Result<Guid>> Create(AuctionCreateCommand command, Guid userId);
+    Task<Result<Core.Auction.Entities.Auction>> GetById(Guid auctionId);
     Task<Result> Delete(Guid userId, Guid id);
     Task<Result> Update(AuctionUpdateCommand command, Guid userId);
 }
@@ -109,6 +110,20 @@ public class AuctionService(
         _logger.LogInformation("Auction with Id {AuctionId} created", auction.Id);
 
         return Result.Ok(result.Id);
+    }
+
+    public async Task<Result<Core.Auction.Entities.Auction>> GetById(Guid auctionId)
+    {
+        _logger.LogInformation("Started getting auction with Id {AuctionId}",
+            auctionId);
+
+        var auction = await _repository.FirstOrDefaultAsync(new AuctionByIdAggregateSpec(auctionId));
+        if (auction is null)
+        {
+            return Result.Fail("Auction not found");
+        }
+
+        return Result.Ok(auction);
     }
 
     public async Task<Result> Update(AuctionUpdateCommand command, Guid userId)
