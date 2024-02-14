@@ -5,14 +5,13 @@ import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import MultipleFileUploadField from '../../components/elements/Drag and drop/MultipleFileUploadField';
 import { useState } from 'react';
-import addAuctionItem from './services/addAuctionItem';
+import addAuctionItem from './services/editAuctionItem';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function AddAuctionItemPage() {
+function EditAuctionItemPage() {
   const navigate = useNavigate();  
   const { auctionId } = useParams();
   const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const initialValues = {
     startingPrice: "",
@@ -53,9 +52,8 @@ function AddAuctionItemPage() {
   const handleFilesChange = (files: File[]) => {
     setUploadedPhotos(files);
   };
-
-  const handleSubmit = async (values: any, { setSubmitting, resetForm }: any, isMultiple: boolean) => {
-    setIsFormSubmitted(false);
+  
+  const handleSubmitSingle = async (values: any) => {
     const formData = new FormData();
     formData.append("startingPrice", values.startingPrice);
     formData.append("minimalBid", values.minimalBid);
@@ -72,31 +70,14 @@ function AddAuctionItemPage() {
       }
     }
     try {
-      await mutation.mutateAsync({formData, auctionId});
-      resetForm();
-      clearFiles();
-      setIsFormSubmitted(true);
+      await mutation.mutateAsync({formData, auctionId})
       
-      if (!isMultiple) {
         navigate(`/auctions/${auctionId}/edit`);
-      }
     } catch (error: any) {
       console.error('Error while creating auction item:', error.message);
     } finally {
-      setSubmitting(false);
-    }
-  };  
-  
-  const handleSubmitSingle = async (values: any, { setSubmitting, resetForm }: any) => {
-    await handleSubmit(values, { setSubmitting, resetForm }, false);
-  };
-  
-  const handleSubmitMultiple = async (values: any, { setSubmitting, resetForm }: any) => {
-    await handleSubmit(values, { setSubmitting, resetForm }, true);
-  };
 
-  const clearFiles = () => {
-    setUploadedPhotos([]);
+    }
   };
 
   return (
@@ -143,9 +124,8 @@ function AddAuctionItemPage() {
               helperText={touched.description && errors.description}
               sx={{ mb: 1 }}
             />
-            <MultipleFileUploadField name="photos" onFilesChange={handleFilesChange} isFormSubmitted={isFormSubmitted}/> 
-            <Button type="submit" name="button_add_one">Add</Button>
-            <Button type="button" name="button_add_multiple" onClick={() => handleSubmitMultiple(values, {setSubmitting, resetForm})}>Add multiple</Button>
+            <MultipleFileUploadField name="photos" onFilesChange={handleFilesChange}/> 
+            <Button type="submit" name="button_add_one">Save</Button>
           </Form>
         </div>
       )}
@@ -153,4 +133,4 @@ function AddAuctionItemPage() {
   );
 }
 
-export default AddAuctionItemPage;
+export default EditAuctionItemPage;

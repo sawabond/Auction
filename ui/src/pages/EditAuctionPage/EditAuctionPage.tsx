@@ -79,7 +79,7 @@ function EditAuctionPage() {
   const mutation = useMutation(editAuction, {
     onSuccess: () => {
       toast.success('Auction edited successfully!');
-      navigate('/my-auctions');
+      navigate('/auctions/my-auctions');
     },
     onError: (error : any) => {
       toast.error(`Error while editing auction: ${error.message}`);
@@ -87,7 +87,7 @@ function EditAuctionPage() {
   });
 
   const handleClick = () => {
-    navigate(`/auction/${auctionId}/add-auction-item`);
+    navigate(`/auctions/${auctionId}/auction-items/add`);
   };
 
   const handleDelete = async (auctionItemId: string) => {

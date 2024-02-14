@@ -17,7 +17,7 @@ interface UploadableFile {
   url?: string;
 }
 
-function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { name: string; onFilesChange: Function, isFormSubmitted: boolean }) {
+function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = true  }: { name: string; onFilesChange: Function, isFormSubmitted?: boolean }) {
   const [files, setFiles] = useState<UploadableFile[]>([]);
 
   useEffect(() => {
