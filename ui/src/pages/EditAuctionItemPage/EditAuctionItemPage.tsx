@@ -4,22 +4,42 @@ import * as yup from 'yup';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import MultipleFileUploadField from '../../components/elements/Drag and drop/MultipleFileUploadField';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import addAuctionItem from './services/editAuctionItem';
 import { useNavigate, useParams } from 'react-router-dom';
+import getAuctionItem from './services/getAuctionItem';
 
 function EditAuctionItemPage() {
   const navigate = useNavigate();  
-  const { auctionId } = useParams();
-  const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
+  const { auctionId, auctionItemId } = useParams();
+  const [itemPhotos, setUploadedPhotos] = useState<File[]>([]);
+  const [initialValues, setInitialValues] = useState(null);
 
-  const initialValues = {
-    startingPrice: "",
-    minimalBid: "",
-    name: "",
-    description: "",
-    photos: []
-  };
+  useEffect(() => {
+    const fetchAuctionData = async () => {
+      try {
+        const currentAuctionItemData = await getAuctionItem({ auctionId, auctionItemId });
+        console.log("Fetched auction item data:", currentAuctionItemData);
+  
+        if (currentAuctionItemData && Array.isArray(currentAuctionItemData.photos)) {
+          //setAuctionItems(currentAuctionItemData.photos);
+          console.log("Updated auction item photos:", currentAuctionItemData.auctionItems);
+          console.log(itemPhotos)
+        } else {
+          console.error("Auction items not found or not in correct format in fetched data");
+        }
+  
+        setInitialValues({
+          ...currentAuctionItemData,
+          startingPrice: currentAuctionItemData.startingPrice,
+        });
+      } catch (error) {
+        console.error('Error fetching auction:', error);
+      }
+    };
+  
+    fetchAuctionData();
+  }, [auctionItemId]);
 
   const validationSchema = yup.object().shape({
     startingPrice: yup
@@ -53,15 +73,16 @@ function EditAuctionItemPage() {
     setUploadedPhotos(files);
   };
   
-  const handleSubmitSingle = async (values: any) => {
+  const handleSubmit = async (values: any) => {
     const formData = new FormData();
+    formData.append("id", auctionItemId || "");
     formData.append("startingPrice", values.startingPrice);
     formData.append("minimalBid", values.minimalBid);
     formData.append("name", values.name);
     formData.append("description", values.description);
   
-    for (let index = 0; index < uploadedPhotos.length; index++) {
-      const file = uploadedPhotos[index];
+    for (let index = 0; index < itemPhotos.length; index++) {
+      const file = itemPhotos[index];
       
       if (file.name.match(/(.jpg|.png)$/gm)) {
         formData.append(`photos[${index}]`, file);
@@ -80,15 +101,19 @@ function EditAuctionItemPage() {
     }
   };
 
+  if (!initialValues) {
+    return <div>Loading...</div>; // Or any loading indicator
+  }
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={handleSubmitSingle}
+      onSubmit={handleSubmit}
     >
-      {({ errors, touched, values, setSubmitting, resetForm }) => (
+      {({ errors, touched }) => (
         <div className="flex flex-col justify-center items-center h-screen">
-          <h1 className="text-3xl font-bold mb-4">Add Auction Item</h1>
+          <h1 className="text-3xl font-bold mb-4">Edit Auction Item</h1>
           <Form className="flex flex-col w-6/12 shadow p-8 rounded">
             <Field
               as={TextField}

@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import getAuction from './services/getAuction';
 import { AuctionType } from '../../components/enums/AuctionType';
 import editAuction from './services/editAuction';
@@ -30,8 +30,7 @@ const auctionTypeOptions = Object.keys(AuctionType)
 
 function EditAuctionPage() {
   const navigate = useNavigate();
-  const currentUrl = window.location.href;
-  const auctionId = currentUrl.split('/')[4];
+  const { auctionId } = useParams();
   const [allAuctionItems, setAuctionItems] = useState<any>([]);
   const [initialValues, setInitialValues] = useState(null);
 
