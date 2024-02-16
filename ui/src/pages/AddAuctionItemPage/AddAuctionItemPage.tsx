@@ -65,7 +65,7 @@ function AddAuctionItemPage() {
     for (let index = 0; index < uploadedPhotos.length; index++) {
       const file = uploadedPhotos[index];
       
-      if (file.name.match(/(.jpg|.png)$/gm)) {
+      if (file.name.match(/(.jpg|.jpeg|.png|.jfif|.pjpeg|.pjp)$/gm)) {
         formData.append(`photos[${index}]`, file);
       } else {
         return;

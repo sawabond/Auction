@@ -14,11 +14,10 @@ interface UploadableFile {
   id: number;
   file: File;
   errors: FileError[];
-  url?: string;
 }
 
-function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = true  }: { name: string; onFilesChange: Function, isFormSubmitted?: boolean }) {
-  const [files, setFiles] = useState<UploadableFile[]>([]);
+function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = false, photos = []}: { name: string; onFilesChange: Function, isFormSubmitted?: boolean, photos?: File[] }) {
+  const [files, setFiles] = useState<UploadableFile[]>(photos.map(file => ({ id: getNewId(), file, errors: [] })));
 
   useEffect(() => {
     onFilesChange(files.map(fileWrapper => fileWrapper.file));
@@ -37,9 +36,9 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = true  
     onFilesChange([...files, ...mappedAccepted]); // Notify parent component about new files
   }, [files, onFilesChange]);
 
-  const handleUpload = (file: File, url: string) => {
+  const handleUpload = (file: File) => {
     if (file.name.match("(.jpg|.png)$"))
-      setFiles(prevFiles => prevFiles.map(fileWrapper => fileWrapper.file === file ? { ...fileWrapper, url } : fileWrapper));
+      setFiles(prevFiles => prevFiles.map(fileWrapper => fileWrapper.file === file ? { ...fileWrapper, file } : fileWrapper));
   };
 
   const handleDelete = (file: File) => {
@@ -47,13 +46,17 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = true  
   };
 
   const acceptImage: Accept = {
-    'image/png, image/jpeg': ['*'],
+    'image/png': ['.png'],
+    'image/jpeg': ['.jpg'],
+    //'image/x-citrix-jpeg': ['.jpeg'],
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: acceptImage 
   });
+
+
 
   return (
     <React.Fragment>

@@ -12,7 +12,7 @@ import getAuctionItem from './services/getAuctionItem';
 function EditAuctionItemPage() {
   const navigate = useNavigate();  
   const { auctionId, auctionItemId } = useParams();
-  const [itemPhotos, setUploadedPhotos] = useState<File[]>([]);
+  const [itemPhotos, setUploadedPhotos] = useState<any>([]);
   const [initialValues, setInitialValues] = useState(null);
 
   useEffect(() => {
@@ -22,17 +22,18 @@ function EditAuctionItemPage() {
         console.log("Fetched auction item data:", currentAuctionItemData);
   
         if (currentAuctionItemData && Array.isArray(currentAuctionItemData.photos)) {
-          //setAuctionItems(currentAuctionItemData.photos);
-          console.log("Updated auction item photos:", currentAuctionItemData.auctionItems);
-          console.log(itemPhotos)
+          setUploadedPhotos(currentAuctionItemData.photos);
+          console.log("Updated auction item photos:", currentAuctionItemData.photos);
+
         } else {
           console.error("Auction items not found or not in correct format in fetched data");
         }
   
         setInitialValues({
           ...currentAuctionItemData,
-          startingPrice: currentAuctionItemData.startingPrice,
+          itemPhotos: currentAuctionItemData.photos
         });
+        console.log(itemPhotos)
       } catch (error) {
         console.error('Error fetching auction:', error);
       }
@@ -84,7 +85,7 @@ function EditAuctionItemPage() {
     for (let index = 0; index < itemPhotos.length; index++) {
       const file = itemPhotos[index];
       
-      if (file.name.match(/(.jpg|.png)$/gm)) {
+      if (file.name.match(/(.jpg|.jpeg|.png|.jfif|.pjpeg|.pjp)$/gm)) {
         formData.append(`photos[${index}]`, file);
       } else {
         return;
@@ -149,7 +150,7 @@ function EditAuctionItemPage() {
               helperText={touched.description && errors.description}
               sx={{ mb: 1 }}
             />
-            <MultipleFileUploadField name="photos" onFilesChange={handleFilesChange}/> 
+            <MultipleFileUploadField name="photos" onFilesChange={handleFilesChange} photos={itemPhotos}/> 
             <Button type="submit" name="button_add_one">Save</Button>
           </Form>
         </div>

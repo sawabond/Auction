@@ -4,7 +4,7 @@ import { FileHeader } from './FileHeader';
 export interface SingleFileUploadField {
   file: File;
   onDelete: (file: File) => void;
-  onUpload: (file: File, url: string) => void;
+  onUpload: (file: File) => void;
 }
 
 export function SingleFileUploadField({
