@@ -1,5 +1,7 @@
 ﻿using Core;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Payment.Application.Balance.Specifications;
 using Payment.Contracts.Balance;
 
@@ -7,20 +9,37 @@ namespace Payment.Application.Balance;
 
 public interface IBalanceService
 {
-    Task<Core.Balance?> GetUserBalance(Guid id);
+    ValueTask<Core.Balance?> GetUserBalance(Guid id);
     Task<(Core.Balance Source, Core.Balance Target)> Transfer(Guid sourceUserId, Guid targetUserId, decimal amount);
     Task<Core.Balance> CreateNewBalance(Guid userId);
 }
 
 public class BalanceService(
+    IDistributedCache _cache,
     ILogger<BalanceService> _logger,
     IRepository<Core.Balance> _repository,
     IPublisher _publisher) : IBalanceService
 {
-    public async Task<Core.Balance?> GetUserBalance(Guid id)
+    public async ValueTask<Core.Balance?> GetUserBalance(Guid id)
     {
-        // TODO: Add caching
-        return await _repository.GetByIdAsync(id);
+        // Read aside implementation
+        var cachedBalance = _cache.GetString($"balance_{id}");
+        if (!string.IsNullOrWhiteSpace(cachedBalance))
+        {
+            return JsonConvert.DeserializeObject<Core.Balance>(cachedBalance);
+        }
+        
+        var balance = await _repository.GetByIdAsync(id);
+        if (balance != null)
+        {
+            await _cache.SetStringAsync($"balance_{id}", JsonConvert.SerializeObject(balance), 
+                new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
+        }
+
+        return balance;
     }
     
     public async Task<Core.Balance> CreateNewBalance(Guid userId)
@@ -50,6 +69,9 @@ public class BalanceService(
         targetBalance.Amount += amount;
         
         await _repository.SaveChangesAsync();
+        // invalidate cache
+        await _cache.RemoveAsync($"balance_{sourceBalance.UserId}");
+        await _cache.RemoveAsync($"balance_{sourceBalance.UserId}");
         
         _logger.LogInformation("Saved balance changes to database from {SourceUserId} to {TargetUserId} for {Amount}", 
             sourceUserId, targetUserId, amount);
