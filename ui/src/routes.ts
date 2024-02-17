@@ -5,6 +5,8 @@ import Home from './pages/Home/Home';
 import Welcome from './pages/Welcome/Welcome';
 import CreateAuctionPage from './pages/CreateAuctionPage/CreateAuctionPage';
 import AddAuctionItemPage from './pages/AddAuctionItemPage/AddAuctionItemPage';
+import Profile from './pages/Profile/Profile';
+import Payment from './pages/Payment/Payment';
 import MyAuctionsPage from './pages/MyAuctionsPage/MyAuctionsPage';
 import EditAuctionPage from './pages/EditAuctionPage/EditAuctionPage';
 
@@ -58,6 +60,19 @@ const routes: IRoute[] = [
     enabled: true,
     component: AddAuctionItemPage,
   },
+  {
+    key: 'profile',
+    title: 'Profile',
+    path: '/profile',
+    enabled: true,
+    component: Profile,
+  },
+  {
+    key: 'payment',
+    title: 'Payment',
+    path: '/payment',
+    enabled: true,
+    component: Payment,
   {
     key: 'my-auctions-page',
     title: 'My auctions page',
