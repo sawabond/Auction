@@ -105,6 +105,10 @@ function EditAuctionPage() {
     }
   };
 
+  const handleMove = async (auctionItemId: string) => {
+    navigate(`/auctions/${auctionId}/auction-items/${auctionItemId}/edit`);
+  };
+
   const handleSubmit = (values : any) => {
     const dateObject = new Date(values.startTime);
 
@@ -136,7 +140,7 @@ function EditAuctionPage() {
       onSubmit={handleSubmit}
     >
       {({ values, errors, touched, handleChange }) => (
-        <div className="flex flex-row justify-center items-center h-screen">
+        <div className="flex flex-row justify-center items-center h-svh gap-6">
             <Form className="flex flex-col w-4/12 shadow p-8 rounded">
             <h1 className="text-3xl font-bold mb-4">Edit Auction</h1>
               <Field
@@ -193,7 +197,7 @@ function EditAuctionPage() {
             </Form>
             <div className="flex flex-col">
               <div className="flex flex-row justify-center items-center">
-                <Fab size="small" color="primary" aria-label="add" onClick={handleClick}>
+                <Fab className="bg-violet-950 text-white rounded" size="small" color="primary" aria-label="add" onClick={handleClick}>
                   <AddIcon />
                 </Fab>
                 <div className="w-full max-w-full">
@@ -203,7 +207,7 @@ function EditAuctionPage() {
               {false ? (
                 <div>Loading...</div>
               ) : (
-                <ItemList auctionItems={allAuctionItems} onDelete={handleDelete} />
+                <ItemList auctionItems={allAuctionItems} onMove={handleMove} onDelete={handleDelete} />
               )}
             </div>
           </div>

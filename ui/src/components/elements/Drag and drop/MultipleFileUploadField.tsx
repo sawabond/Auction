@@ -1,5 +1,5 @@
 import { Grid } from '@material-ui/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Accept, FileError, FileRejection, useDropzone } from 'react-dropzone';
 import { SingleFileUploadField } from './SingleFileUploadField';
 import { UploadError } from './UploadError';
@@ -59,16 +59,20 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = false,
   return (
     <div>
       <Grid item>
-      <div {...getRootProps({ className: "border-2 border-dashed border-purple-500 rounded flex items-center justify-center bg-white h-20 outline-none" })}>
+      <div {...getRootProps({ className: "border-2 border-dashed border-purple-500 "+
+      "rounded flex items-center justify-center bg-white h-20 outline-none" })}>
           <input {...getInputProps()} />
           <p>Drag 'n' drop some files here, or click to select files</p>
         </div>
       </Grid>
-      <div className="grid grid-cols-3 gap-4 mx-auto my-4 overflow-auto h-full max-h-[52vh]">
+      <div className="grid grid-cols-3 gap-4 mx-auto my-4 overflow-auto h-90 max-h-[42vh]">
         {files.map(fileWrapper => (
           <Grid item key={fileWrapper.id}>
             {fileWrapper.errors.length > 0 ? (
-              <UploadError file={fileWrapper.file} errors={fileWrapper.errors} onDelete={() => handleDelete(fileWrapper.file)} />
+              <UploadError 
+                file={fileWrapper.file} 
+                errors={fileWrapper.errors} 
+                onDelete={() => handleDelete(fileWrapper.file)} />
             ) : (
               <SingleFileUploadField 
                 file={fileWrapper.file} 

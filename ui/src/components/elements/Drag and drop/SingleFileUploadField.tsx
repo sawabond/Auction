@@ -1,7 +1,6 @@
 import { Grid, LinearProgress } from '@material-ui/core';
 import { FileHeader } from './FileHeader';
 import { Card, CardMedia } from '@mui/material';
-import { useEffect, useState } from 'react';
 
 export interface SingleFileUploadField {
   file: File;
@@ -16,7 +15,7 @@ export function SingleFileUploadField({
 
   console.log(file)
   return (
-    <Card sx={{ maxWidth: 345, minWidth: 160 }}>
+    <Card sx={{ width: 160 }}>
       <Grid item>
 
         <CardMedia
