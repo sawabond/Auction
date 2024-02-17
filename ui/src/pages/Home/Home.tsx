@@ -22,7 +22,6 @@ export default function Home() {
         if (newData.cursor !== auctionNextCursor) {
           setAllAuctions((prevAuctions: any) => {
             const updatedAuctions = [...prevAuctions, ...newData.auctions];
-            console.log('Updated auctions:', updatedAuctions);
             return updatedAuctions;
           });
           setAuctionNextCursor(newData.cursor);
@@ -40,11 +39,11 @@ export default function Home() {
   return (
     <div className="div">
       <SearchInput />
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <AuctionList auctions={allAuctions} />
-      )}
+      {/*{isLoading ? (*/}
+      {/*  <div>Loading...</div>*/}
+      {/*) : (*/}
+      {/*  <AuctionList auctions={allAuctions} />*/}
+      {/*)}*/}
 
       {data?.cursor && (
         <button type="submit" onClick={handleLoadMore}>
