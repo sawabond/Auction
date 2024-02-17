@@ -8,39 +8,44 @@ import { useEffect, useState } from 'react';
 import addAuctionItem from './services/editAuctionItem';
 import { useNavigate, useParams } from 'react-router-dom';
 import getAuctionItem from './services/getAuctionItem';
+import downloadFileFromS3AndMakeFile from './services/downloadFileFromS3AndMakeFile';
 
 function EditAuctionItemPage() {
   const navigate = useNavigate();  
   const { auctionId, auctionItemId } = useParams();
   const [itemPhotos, setUploadedPhotos] = useState<any>([]);
   const [initialValues, setInitialValues] = useState(null);
-
+  
   useEffect(() => {
     const fetchAuctionData = async () => {
-      try {
-        const currentAuctionItemData = await getAuctionItem({ auctionId, auctionItemId });
-        console.log("Fetched auction item data:", currentAuctionItemData);
-  
-        if (currentAuctionItemData && Array.isArray(currentAuctionItemData.photos)) {
-          setUploadedPhotos(currentAuctionItemData.photos);
-          console.log("Updated auction item photos:", currentAuctionItemData.photos);
+        try {
+            const currentAuctionItemData = await getAuctionItem({ auctionId, auctionItemId });
+            console.log("Fetched auction item data:", currentAuctionItemData);
 
-        } else {
-          console.error("Auction items not found or not in correct format in fetched data");
+            if (currentAuctionItemData && Array.isArray(currentAuctionItemData.photos)) {
+                const photoFiles = await Promise.all(currentAuctionItemData.photos.map(async (photo: { photoUrl: string; name: string; }) => {
+                    return await downloadFileFromS3AndMakeFile(photo.photoUrl, photo.name);
+                }));
+                setUploadedPhotos(photoFiles);
+                console.log("Updated auction item photos:", photoFiles);
+                setInitialValues({
+                    ...currentAuctionItemData,
+                    itemPhotos: photoFiles
+                });
+            } else {
+                console.error("Auction items not found or not in correct format in fetched data");
+            }
+        } catch (error) {
+            console.error('Error fetching auction:', error);
         }
-  
-        setInitialValues({
-          ...currentAuctionItemData,
-          itemPhotos: currentAuctionItemData.photos
-        });
-        console.log(itemPhotos)
-      } catch (error) {
-        console.error('Error fetching auction:', error);
-      }
     };
-  
+
     fetchAuctionData();
-  }, [auctionItemId]);
+}, []);
+  
+  useEffect(() => {
+    console.log(itemPhotos); // Log the updated itemPhotos
+  }, [itemPhotos]);
 
   const validationSchema = yup.object().shape({
     startingPrice: yup
@@ -63,7 +68,7 @@ function EditAuctionItemPage() {
   
   const mutation = useMutation(addAuctionItem, {
     onSuccess: () => {
-      toast.success('Auction item added successfully!');
+      toast.success('Auction item saved successfully!');
     },
     onError: (error: any) => {
       toast.error(`Error while creating auction: ${error.message}`);
@@ -113,9 +118,10 @@ function EditAuctionItemPage() {
       onSubmit={handleSubmit}
     >
       {({ errors, touched }) => (
-        <div className="flex flex-col justify-center items-center h-screen">
-          <h1 className="text-3xl font-bold mb-4">Edit Auction Item</h1>
+        <div className="flex flex-row justify-center items-center h-screen">
+
           <Form className="flex flex-col w-6/12 shadow p-8 rounded">
+            <h1 className="text-3xl font-bold mb-4">Edit Auction Item</h1>
             <Field
               as={TextField}
               className="mb-2"
@@ -150,10 +156,12 @@ function EditAuctionItemPage() {
               helperText={touched.description && errors.description}
               sx={{ mb: 1 }}
             />
-            <MultipleFileUploadField name="photos" onFilesChange={handleFilesChange} photos={itemPhotos}/> 
+          
             <Button type="submit" name="button_add_one">Save</Button>
           </Form>
+          <MultipleFileUploadField name="photos" onFilesChange={handleFilesChange} photos={itemPhotos}/> 
         </div>
+        
       )}
     </Formik>
   );

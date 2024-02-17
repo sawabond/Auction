@@ -56,30 +56,30 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = false,
     accept: acceptImage 
   });
 
-
-
   return (
-    <React.Fragment>
+    <div>
       <Grid item>
       <div {...getRootProps({ className: "border-2 border-dashed border-purple-500 rounded flex items-center justify-center bg-white h-20 outline-none" })}>
           <input {...getInputProps()} />
           <p>Drag 'n' drop some files here, or click to select files</p>
         </div>
       </Grid>
-      {files.map(fileWrapper => (
-        <Grid item key={fileWrapper.id}>
-          {fileWrapper.errors.length > 0 ? (
-            <UploadError file={fileWrapper.file} errors={fileWrapper.errors} onDelete={() => handleDelete(fileWrapper.file)} />
-          ) : (
-            <SingleFileUploadField 
-              file={fileWrapper.file} 
-              onUpload={handleUpload} 
-              onDelete={() => handleDelete(fileWrapper.file)} 
-            />
-          )}
-        </Grid>
-      ))}
-    </React.Fragment>
+      <div className="grid grid-cols-3 gap-4 mx-auto my-4 overflow-auto h-full max-h-[52vh]">
+        {files.map(fileWrapper => (
+          <Grid item key={fileWrapper.id}>
+            {fileWrapper.errors.length > 0 ? (
+              <UploadError file={fileWrapper.file} errors={fileWrapper.errors} onDelete={() => handleDelete(fileWrapper.file)} />
+            ) : (
+              <SingleFileUploadField 
+                file={fileWrapper.file} 
+                onUpload={handleUpload} 
+                onDelete={() => handleDelete(fileWrapper.file)} 
+              />
+            )}
+          </Grid>
+        ))}
+      </div>
+    </div>
   );
 }
 
