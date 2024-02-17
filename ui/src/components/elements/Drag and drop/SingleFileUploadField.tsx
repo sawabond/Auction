@@ -1,5 +1,4 @@
 import { Grid, LinearProgress } from '@material-ui/core';
-import { useEffect, useState } from 'react';
 import { FileHeader } from './FileHeader';
 
 export interface SingleFileUploadField {

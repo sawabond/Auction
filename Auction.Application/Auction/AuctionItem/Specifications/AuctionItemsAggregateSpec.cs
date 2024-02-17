@@ -18,6 +18,12 @@ public class AuctionItemsAggregateSpec : Specification<Core.Auction.Entities.Auc
                              || x.Id.ToString().ToLower().Contains(query.Search)
                              );
         
+        if (query.AuctionId.HasValue)
+            Query.Where(x => x.Auction.Id == query.AuctionId);
+        
+        if (query.ItemId.HasValue)
+            Query.Where(x => query.ItemId == x.Id);
+        
         if (query.UserId.HasValue)
             Query.Where(x => x.Bids
                 .OrderByDescending(x => x.Date)
