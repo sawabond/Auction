@@ -71,7 +71,7 @@ public class BalanceService(
         await _repository.SaveChangesAsync();
         // invalidate cache
         await _cache.RemoveAsync($"balance_{sourceBalance.UserId}");
-        await _cache.RemoveAsync($"balance_{sourceBalance.UserId}");
+        await _cache.RemoveAsync($"balance_{targetBalance.UserId}");
         
         _logger.LogInformation("Saved balance changes to database from {SourceUserId} to {TargetUserId} for {Amount}", 
             sourceUserId, targetUserId, amount);
