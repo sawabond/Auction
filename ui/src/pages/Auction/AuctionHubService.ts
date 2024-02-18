@@ -8,10 +8,21 @@ class AuctionHubService {
 
   private onAuctionUpdated: (auction: any) => void;
 
-  constructor(auctionId: string, onAuctionUpdated: (auction: any) => void) {
+  private onItemSold: (item: any) => void;
+
+  private onAuctionClosed: () => void;
+
+  constructor(
+    auctionId: string,
+    onAuctionUpdated: (auction: any) => void,
+    onItemSold: (item: any) => void,
+    onAuctionClosed: () => void
+  ) {
     this.auctionId = auctionId;
     this.onAuctionUpdated = onAuctionUpdated;
+    this.onItemSold = onItemSold;
     this.initConnection();
+    this.onAuctionClosed = onAuctionClosed;
   }
 
   private async initConnection(): Promise<void> {
@@ -49,13 +60,14 @@ class AuctionHubService {
       console.log('Auction update received:', updatedAuction);
       this.onAuctionUpdated(updatedAuction);
     });
-
-    // Adding more verbose logging for debugging
     this.connection?.on('ItemSold', (item) => {
-      console.log('ItemSold event received:', item);
-      // Your callback logic here
+      console.log('Item sold:', item);
+      this.onItemSold(item);
     });
-
+    this.connection?.on('AuctionClosed', () => {
+      console.log('Auction closed.');
+      this.onAuctionClosed(); // Call the callback when the auction closes
+    });
     console.log('Subscribed to events');
   }
 

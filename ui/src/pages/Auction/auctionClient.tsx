@@ -1,39 +1,114 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { TextField, Button, Container } from '@material-ui/core';
+import { Container } from '@material-ui/core';
+import { toast } from 'react-toastify';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import Auction from './components/Auction';
 import AuctionHubService from './AuctionHubService';
 
 function AuctionMessaging() {
   const { auctionId } = useParams<{ auctionId: string }>();
-  const [auction, setAuction] = useState(null);
-  const [hubService, setHubService] = useState(null);
-
+  const [auction, setAuction] = useState<any>(null);
+  const [hubService, setHubService] = useState<any>(null);
+  const [isAuctionStarted, setIsAuctionStarted] = useState(false);
+  const [isAuctionClosed, setIsAuctionClosed] = useState(false);
   useEffect(() => {
-    if (auctionId) {
-      const service = new AuctionHubService(auctionId, (update) =>
-        setAuction(update)
-      );
-      service.onBidMade((bid) => {
-        setAuction((prev) => {
-          const updatedItems = prev.auctionItems.map((item) => {
-            if (item.id === bid.auctionItemId) {
-              return { ...item, actualPrice: bid.actualPrice };
-            }
-            return item;
-          });
-          return { ...prev, auctionItems: updatedItems };
-        });
-      });
-      setHubService(service);
+    if (!auctionId) return;
 
-      return () => service.disconnect();
-    }
+    const service = new AuctionHubService(
+      auctionId,
+      (update) => {
+        setAuction(update);
+
+        const startTime = new Date(update.startTime).getTime();
+        const currentTime = new Date().getTime();
+        setIsAuctionStarted(startTime <= currentTime);
+      },
+      (itemSold) => {
+        setAuction((prev: any) => {
+          if (!prev) return prev;
+
+          const updatedItems = prev.auctionItems.map((item: any) =>
+            item.id === itemSold.id
+              ? { ...item, isSold: true, userId: itemSold.userId }
+              : item
+          );
+
+          const nextSellingItem = updatedItems.find(
+            (item: any) => !item.isSold && item !== itemSold
+          );
+          if (nextSellingItem) {
+            nextSellingItem.isSellingNow = true;
+          }
+
+          return {
+            ...prev,
+            auctionItems: updatedItems,
+            currentlySellingItem: nextSellingItem || prev.currentlySellingItem,
+          };
+        });
+      },
+      () => {
+        setIsAuctionClosed(true);
+        toast.info('Auction closed.');
+      }
+    );
+
+    service.onBidMade((bid: any) => {
+      setAuction((prev: any) => {
+        if (!prev) return prev;
+
+        const updatedItems = prev.auctionItems.map((item: any) =>
+          item.id === bid.auctionItemId
+            ? { ...item, actualPrice: bid.actualPrice }
+            : item
+        );
+
+        return {
+          ...prev,
+          auctionItems: updatedItems,
+        };
+      });
+    });
+
+    setHubService(service);
+
+    return () => {
+      service.disconnect();
+    };
   }, [auctionId]);
 
   return (
     <Container>
-      {auction && <Auction data={auction} hubService={hubService} />}
+      {!isAuctionStarted ? (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center border border-gray-200 shadow-lg  rounded-lg bg-white p-14">
+          <AccessTimeOutlinedIcon
+            className="text-blue-500"
+            style={{ fontSize: 60 }}
+          />
+          <p className="mt-2 text-lg text-blue-500">
+            Waiting for the auction to start. Get ready to discover unique finds
+            and incredible deals. The thrill of the auction awaits you. Don't
+            miss out on the chance to claim your treasure. Stay tuned!
+          </p>
+        </div>
+      ) : isAuctionClosed ? (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center border border-gray-200 shadow-lg  rounded-lg bg-white p-14">
+          <InfoOutlinedIcon
+            className="text-blue-500"
+            style={{ fontSize: 60 }}
+          />
+          <p className="mt-5 text-lg text-blue-500">
+            This auction has closed. Check out our other auctions and find more
+            amazing items!
+          </p>
+        </div>
+      ) : auction ? (
+        <Auction data={auction} hubService={hubService} />
+      ) : (
+        <div>Loading Auction...</div>
+      )}
     </Container>
   );
 }

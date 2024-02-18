@@ -3,36 +3,15 @@ import Slider from 'react-slick';
 import AuctionItem from './AuctionItem';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import useUserFromToken from '../../../hooks/useUserFromToken';
 
 function Auction({ data, hubService }: any) {
   const sliderRef = useRef(null);
-  // Initialize auctionItems state with data.auctionItems
   const [auctionItems, setAuctionItems] = useState(data.auctionItems);
-
-  useEffect(() => {
-    const onItemSold = (soldItem) => {
-      // Use a functional update to ensure we're always working with the most current state
-      setAuctionItems((currentItems) =>
-        currentItems.map((item) => {
-          if (item.id === soldItem.auctionId) {
-            // If the item matches the sold item, update its isSellingNow status
-            return { ...item, isSellingNow: false };
-          }
-          // Otherwise, return the item unchanged
-          return item;
-        })
-      );
-    };
-
-    // Subscribe to the ItemSold event
-    hubService.onItemSold(onItemSold);
-
-    // Cleanup function to unsubscribe from the ItemSold event
-    return () => {
-      hubService.offItemSold(onItemSold);
-    };
-  }, [hubService]); // Removed auctionItems from the dependency array
-
+  const [currentSellingItem, setCurrentSellingItem] = useState(
+    data.currentlySellingItem
+  );
+  const user = useUserFromToken();
   const settings = {
     dots: true,
     infinite: false,
@@ -53,6 +32,19 @@ function Auction({ data, hubService }: any) {
     ],
   };
 
+  useEffect(() => {
+    setAuctionItems(data.auctionItems);
+    setCurrentSellingItem(data.currentlySellingItem);
+
+    const currentlySellingIndex = data.auctionItems.findIndex(
+      (item) => item.id === data.currentlySellingItem?.id
+    );
+
+    if (currentlySellingIndex !== -1) {
+      sliderRef.current?.slickGoTo(currentlySellingIndex);
+    }
+  }, [data.auctionItems, data.currentlySellingItem]);
+
   const goToSlide = (index) => {
     sliderRef.current?.slickGoTo(index);
   };
@@ -61,42 +53,40 @@ function Auction({ data, hubService }: any) {
     <div>
       <h1 className="text-2xl font-bold text-center">{data.name}</h1>
 
-      <div className="flex justify-around p-5 w-full">
+      <div className="flex justify-around w-full">
         <div className="w-4/6">
           <Slider ref={sliderRef} {...settings}>
-            {auctionItems.map(
-              (
-                item // Use auctionItems from state, not data.auctionItems
-              ) => (
-                <AuctionItem
-                  key={item.id}
-                  item={item}
-                  hubService={hubService}
-                  isCurrentlySelling={item.isSellingNow}
-                />
-              )
-            )}
+            {auctionItems.map((item) => (
+              <AuctionItem
+                key={item.id}
+                item={item}
+                hubService={hubService}
+                isCurrentlySelling={item.id === currentSellingItem?.id}
+                isSold={item.isSold}
+                isCurrentUserTheBuyer={item.userId === user.id}
+              />
+            ))}
           </Slider>
         </div>
-        <div className="w-48 ml-5 border shadow-md rounded ">
+        <div className="w-48 ml-5 border shadow-md rounded">
           <ul className="text-center">
-            {auctionItems.map(
-              (
-                item,
-                index // Use auctionItems from state
-              ) => (
-                <li
-                  key={item.id}
-                  style={{
-                    color: item.isSellingNow ? 'green' : 'black',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => goToSlide(index)}
-                >
-                  {item.name}
-                </li>
-              )
-            )}
+            {auctionItems.map((item, index) => (
+              <li
+                key={item.id}
+                className={`cursor-pointer ${
+                  item.id === currentSellingItem?.id
+                    ? 'text-green-500'
+                    : item.isSold
+                      ? 'text-red-500'
+                      : item.userId === user.id
+                        ? 'text-gold-500'
+                        : 'text-black'
+                }`}
+                onClick={() => goToSlide(index)}
+              >
+                {item.name}
+              </li>
+            ))}
           </ul>
         </div>
       </div>

@@ -73,6 +73,7 @@ const routes: IRoute[] = [
     path: '/payment',
     enabled: true,
     component: Payment,
+  },
   {
     key: 'my-auctions-page',
     title: 'My auctions page',
