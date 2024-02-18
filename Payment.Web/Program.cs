@@ -18,6 +18,7 @@ using BalanceService = Payment.Application.Balance.BalanceService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSerilogLogging(builder.Configuration);
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IBalanceService, BalanceService>();
