@@ -1,5 +1,5 @@
 import { Grid } from '@material-ui/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Accept, FileError, FileRejection, useDropzone } from 'react-dropzone';
 import { SingleFileUploadField } from './SingleFileUploadField';
 import { UploadError } from './UploadError';
@@ -14,11 +14,10 @@ interface UploadableFile {
   id: number;
   file: File;
   errors: FileError[];
-  url?: string;
 }
 
-function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { name: string; onFilesChange: Function, isFormSubmitted: boolean }) {
-  const [files, setFiles] = useState<UploadableFile[]>([]);
+function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = false, photos = []}: { name: string; onFilesChange: Function, isFormSubmitted?: boolean, photos?: File[] }) {
+  const [files, setFiles] = useState<UploadableFile[]>(photos.map(file => ({ id: getNewId(), file, errors: [] })));
 
   useEffect(() => {
     onFilesChange(files.map(fileWrapper => fileWrapper.file));
@@ -37,9 +36,9 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { nam
     onFilesChange([...files, ...mappedAccepted]); // Notify parent component about new files
   }, [files, onFilesChange]);
 
-  const handleUpload = (file: File, url: string) => {
+  const handleUpload = (file: File) => {
     if (file.name.match("(.jpg|.png)$"))
-      setFiles(prevFiles => prevFiles.map(fileWrapper => fileWrapper.file === file ? { ...fileWrapper, url } : fileWrapper));
+      setFiles(prevFiles => prevFiles.map(fileWrapper => fileWrapper.file === file ? { ...fileWrapper, file } : fileWrapper));
   };
 
   const handleDelete = (file: File) => {
@@ -47,7 +46,9 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { nam
   };
 
   const acceptImage: Accept = {
-    'image/png, image/jpeg': ['*'],
+    'image/png': ['.png'],
+    'image/jpeg': ['.jpg'],
+    //'image/x-citrix-jpeg': ['.jpeg'],
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -56,27 +57,33 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted }: { nam
   });
 
   return (
-    <React.Fragment>
+    <div>
       <Grid item>
-      <div {...getRootProps({ className: "border-2 border-dashed border-purple-500 rounded flex items-center justify-center bg-white h-20 outline-none" })}>
+      <div {...getRootProps({ className: "border-2 border-dashed border-purple-500 "+
+      "rounded flex items-center justify-center bg-white h-20 outline-none" })}>
           <input {...getInputProps()} />
           <p>Drag 'n' drop some files here, or click to select files</p>
         </div>
       </Grid>
-      {files.map(fileWrapper => (
-        <Grid item key={fileWrapper.id}>
-          {fileWrapper.errors.length > 0 ? (
-            <UploadError file={fileWrapper.file} errors={fileWrapper.errors} onDelete={() => handleDelete(fileWrapper.file)} />
-          ) : (
-            <SingleFileUploadField 
-              file={fileWrapper.file} 
-              onUpload={handleUpload} 
-              onDelete={() => handleDelete(fileWrapper.file)} 
-            />
-          )}
-        </Grid>
-      ))}
-    </React.Fragment>
+      <div className="grid grid-cols-3 gap-4 mx-auto my-4 overflow-auto h-90 max-h-[42vh]">
+        {files.map(fileWrapper => (
+          <Grid item key={fileWrapper.id}>
+            {fileWrapper.errors.length > 0 ? (
+              <UploadError 
+                file={fileWrapper.file} 
+                errors={fileWrapper.errors} 
+                onDelete={() => handleDelete(fileWrapper.file)} />
+            ) : (
+              <SingleFileUploadField 
+                file={fileWrapper.file} 
+                onUpload={handleUpload} 
+                onDelete={() => handleDelete(fileWrapper.file)} 
+              />
+            )}
+          </Grid>
+        ))}
+      </div>
+    </div>
   );
 }
 

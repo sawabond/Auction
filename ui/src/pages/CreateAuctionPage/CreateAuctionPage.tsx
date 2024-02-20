@@ -45,7 +45,7 @@ function CreateAuctionPage() {
   const mutation = useMutation(createAuction, {
     onSuccess: () => {
       toast.success('Auction created successfully!');
-      navigate('/my-auctions');
+      navigate('/auctions/my-auctions');
     },
     onError: (error: any) => {
       toast.error(`Error while creating auction: ${error.message}`);

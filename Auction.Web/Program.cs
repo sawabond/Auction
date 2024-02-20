@@ -220,6 +220,21 @@ app.MapGet("/api/auctions", async ([AsParameters] GetAuctionsRequest request, [F
     })
     .WithOpenApi();
 
+app.MapGet("/api/auctions/{auctionId:guid}/items/{auctionItemId:guid}", async (
+        Guid auctionItemId,
+        IAuctionItemService auctionItemService) =>
+    {
+        var result = await auctionItemService.GetById(auctionItemId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value.ToViewModel());
+        }
+
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .WithOpenApi();
+
 app.MapPost("/api/auctions/{auctionId:guid}/items", async (
         Guid auctionId,
         ClaimsPrincipal user,
