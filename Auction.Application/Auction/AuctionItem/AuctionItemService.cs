@@ -1,4 +1,5 @@
-﻿using Auction.Application.Auction.AuctionItem.Create;
+﻿using Ardalis.Specification;
+using Auction.Application.Auction.AuctionItem.Create;
 using Auction.Application.Auction.AuctionItem.Get;
 using Auction.Application.Auction.AuctionItem.Specifications;
 using Auction.Application.Auction.AuctionItem.Update;
@@ -15,6 +16,7 @@ namespace Auction.Application.Auction.AuctionItem;
 
 public interface IAuctionItemService
 {
+    Task<Result<Core.Auction.Entities.AuctionItem>> GetById(Guid auctionItemId);
     Task<Result<Guid>> AddItem(Guid auctionId, AuctionItemCreateCommand command, Guid ownerId);
     Task<Result> UpdateItem(Guid auctionId, AuctionItemUpdateCommand command, Guid ownerId);
     Task<Result> DeleteItem(Guid auctionId, Guid itemId, Guid ownerId);
@@ -28,6 +30,17 @@ public class AuctionItemService(
     IBlobService _blobService,
     IPublisher _publisher) : IAuctionItemService
 {
+    public async Task<Result<Core.Auction.Entities.AuctionItem>> GetById(Guid auctionItemId)
+    {
+        var auctionItem = await _auctionItemRepository.FirstOrDefaultAsync(new AuctionItemByIdAggregateSpec(auctionItemId));
+        if (auctionItem is null)
+        {
+            return Result.Fail("Auction not found");
+        }
+
+        return Result.Ok(auctionItem);
+    }
+    
     public async Task<Result<PagedResult<AuctionItemViewModel>>> GetItems(GetAuctionItemsQuery query)
     {
         var items = await _auctionItemRepository.ListAsync(new AuctionItemsAggregateSpec(query));
@@ -45,6 +58,7 @@ public class AuctionItemService(
             PageSize = query.PageSize
         };
     }
+
     public async Task<Result<Guid>> AddItem(Guid auctionId, AuctionItemCreateCommand command, Guid ownerId)
     {
         var auction = await _repository.SingleOrDefaultAsync(new AuctionByIdAggregateSpec(auctionId));

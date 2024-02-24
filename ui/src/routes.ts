@@ -9,6 +9,7 @@ import Profile from './pages/Profile/Profile';
 import Payment from './pages/Payment/Payment';
 import MyAuctionsPage from './pages/MyAuctionsPage/MyAuctionsPage';
 import EditAuctionPage from './pages/EditAuctionPage/EditAuctionPage';
+import EditAuctionItemPage from './pages/EditAuctionItemPage/EditAuctionItemPage';
 
 const routes: IRoute[] = [
   {
@@ -35,30 +36,37 @@ const routes: IRoute[] = [
   {
     key: 'auction',
     title: 'Auction',
-    path: '/auction/:auctionId',
+    path: '/auctions/:auctionId',
     enabled: true,
     component: AuctionMessaging,
   },
   {
     key: 'create-auction',
     title: 'Create auction',
-    path: '/create-auction',
+    path: '/auctions/create',
     enabled: true,
     component: CreateAuctionPage,
   },
   {
     key: 'edit-auction',
     title: 'Edit auction',
-    path: '/auction/:auctionId/edit-auction',
+    path: '/auctions/:auctionId/edit',
     enabled: true,
     component: EditAuctionPage,
   },
   {
     key: 'add-auction-item',
     title: 'Add auction item',
-    path: '/auction/:auctionId/add-auction-item',
+    path: '/auctions/:auctionId/auction-items/add',
     enabled: true,
     component: AddAuctionItemPage,
+  },
+  {
+    key: 'edit-auction-item',
+    title: 'Edit auction item',
+    path: '/auctions/:auctionId/auction-items/:auctionItemId/edit',
+    enabled: true,
+    component: EditAuctionItemPage,
   },
   {
     key: 'profile',
@@ -77,7 +85,7 @@ const routes: IRoute[] = [
   {
     key: 'my-auctions-page',
     title: 'My auctions page',
-    path: '/my-auctions',
+    path: '/auctions/my-auctions',
     enabled: true,
     component: MyAuctionsPage,
   },

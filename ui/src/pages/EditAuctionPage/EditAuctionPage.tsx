@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import getAuction from './services/getAuction';
 import { AuctionType } from '../../components/enums/AuctionType';
 import editAuction from './services/editAuction';
@@ -30,8 +30,7 @@ const auctionTypeOptions = Object.keys(AuctionType)
 
 function EditAuctionPage() {
   const navigate = useNavigate();
-  const currentUrl = window.location.href;
-  const auctionId = currentUrl.split('/')[4];
+  const { auctionId } = useParams();
   const [allAuctionItems, setAuctionItems] = useState<any>([]);
   const [initialValues, setInitialValues] = useState(null);
 
@@ -79,7 +78,7 @@ function EditAuctionPage() {
   const mutation = useMutation(editAuction, {
     onSuccess: () => {
       toast.success('Auction edited successfully!');
-      navigate('/my-auctions');
+      navigate('/auctions/my-auctions');
     },
     onError: (error : any) => {
       toast.error(`Error while editing auction: ${error.message}`);
@@ -87,7 +86,7 @@ function EditAuctionPage() {
   });
 
   const handleClick = () => {
-    navigate(`/auction/${auctionId}/add-auction-item`);
+    navigate(`/auctions/${auctionId}/auction-items/add`);
   };
 
   const handleDelete = async (auctionItemId: string) => {
@@ -104,6 +103,10 @@ function EditAuctionPage() {
     } catch (error) {
       console.error('Error deleting auction item:', error);
     }
+  };
+
+  const handleMove = async (auctionItemId: string) => {
+    navigate(`/auctions/${auctionId}/auction-items/${auctionItemId}/edit`);
   };
 
   const handleSubmit = (values : any) => {
@@ -137,7 +140,7 @@ function EditAuctionPage() {
       onSubmit={handleSubmit}
     >
       {({ values, errors, touched, handleChange }) => (
-        <div className="flex flex-row justify-center items-center h-screen">
+        <div className="flex flex-row justify-center items-center h-svh gap-6">
             <Form className="flex flex-col w-4/12 shadow p-8 rounded">
             <h1 className="text-3xl font-bold mb-4">Edit Auction</h1>
               <Field
@@ -194,7 +197,7 @@ function EditAuctionPage() {
             </Form>
             <div className="flex flex-col">
               <div className="flex flex-row justify-center items-center">
-                <Fab size="small" color="primary" aria-label="add" onClick={handleClick}>
+                <Fab className="bg-violet-950 text-white rounded" size="small" color="primary" aria-label="add" onClick={handleClick}>
                   <AddIcon />
                 </Fab>
                 <div className="w-full max-w-full">
@@ -204,7 +207,7 @@ function EditAuctionPage() {
               {false ? (
                 <div>Loading...</div>
               ) : (
-                <ItemList auctionItems={allAuctionItems} onDelete={handleDelete} />
+                <ItemList auctionItems={allAuctionItems} onMove={handleMove} onDelete={handleDelete} />
               )}
             </div>
           </div>
