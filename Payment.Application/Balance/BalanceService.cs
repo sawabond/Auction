@@ -22,7 +22,6 @@ public class BalanceService(
 {
     public async ValueTask<Core.Balance?> GetUserBalance(Guid id)
     {
-        // Read aside implementation
         var cachedBalance = _cache.GetString($"balance_{id}");
         if (!string.IsNullOrWhiteSpace(cachedBalance))
         {
@@ -32,7 +31,11 @@ public class BalanceService(
         var balance = await _repository.GetByIdAsync(id);
         if (balance != null)
         {
-            await _cache.SetStringAsync($"balance_{id}", JsonConvert.SerializeObject(balance));
+            await _cache.SetStringAsync($"balance_{id}", JsonConvert.SerializeObject(balance), 
+                new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            });
         }
 
         return balance;
@@ -65,7 +68,7 @@ public class BalanceService(
         targetBalance.Amount += amount;
         
         await _repository.SaveChangesAsync();
-        // invalidate cache
+        
         _cache.Remove($"balance_{sourceUserId}");
         _cache.Remove($"balance_{targetUserId}");
         
