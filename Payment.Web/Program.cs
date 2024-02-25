@@ -18,7 +18,10 @@ using BalanceService = Payment.Application.Balance.BalanceService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDistributedMemoryCache();
+builder.Services.AddStackExchangeRedisCache(x =>
+{
+    x.Configuration = "localhost:6379,password=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81";
+});
 builder.Services.AddSerilogLogging(builder.Configuration);
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IBalanceService, BalanceService>();

@@ -32,11 +32,7 @@ public class BalanceService(
         var balance = await _repository.GetByIdAsync(id);
         if (balance != null)
         {
-            await _cache.SetStringAsync($"balance_{id}", JsonConvert.SerializeObject(balance), 
-                new DistributedCacheEntryOptions()
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-            });
+            await _cache.SetStringAsync($"balance_{id}", JsonConvert.SerializeObject(balance));
         }
 
         return balance;
@@ -70,8 +66,8 @@ public class BalanceService(
         
         await _repository.SaveChangesAsync();
         // invalidate cache
-        await _cache.RemoveAsync($"balance_{sourceBalance.UserId}");
-        await _cache.RemoveAsync($"balance_{targetBalance.UserId}");
+        _cache.Remove($"balance_{sourceUserId}");
+        _cache.Remove($"balance_{targetUserId}");
         
         _logger.LogInformation("Saved balance changes to database from {SourceUserId} to {TargetUserId} for {Amount}", 
             sourceUserId, targetUserId, amount);
