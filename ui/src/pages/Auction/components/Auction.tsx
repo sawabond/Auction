@@ -44,10 +44,39 @@ function Auction({ data, hubService }: any) {
       sliderRef.current?.slickGoTo(currentlySellingIndex);
     }
   }, [data.auctionItems, data.currentlySellingItem]);
+  useEffect(() => {
+    const onBidUpdate = (updatedAuctionItem) => {
+      setAuctionItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === updatedAuctionItem.id ? updatedAuctionItem : item
+        )
+      );
+    };
+    if (hubService) {
+      hubService.onBidMade(onBidUpdate);
+    }
+  }, [hubService]);
 
   const goToSlide = (index) => {
     sliderRef.current?.slickGoTo(index);
   };
+  function getItemBackgroundClass(item, currentSellingItem, user) {
+    const isCurrentUserTheHighestBidder =
+      item.bids.length > 0 &&
+      item.bids[item.bids.length - 1].userId === user.id;
+
+    if (item.isSold) {
+      return isCurrentUserTheHighestBidder ? 'text-yellow-400' : 'text-red-500';
+    }
+
+    if (item.id === currentSellingItem?.id) {
+      return isCurrentUserTheHighestBidder
+        ? 'text-yellow-400'
+        : 'text-green-500';
+    }
+
+    return 'text-black-500';
+  }
 
   return (
     <div>
@@ -63,7 +92,10 @@ function Auction({ data, hubService }: any) {
                 hubService={hubService}
                 isCurrentlySelling={item.id === currentSellingItem?.id}
                 isSold={item.isSold}
-                isCurrentUserTheBuyer={item.userId === user.id}
+                isCurrentUserTheHighestBidder={
+                  item.bids.length > 0 &&
+                  item.bids[item.bids.length - 1].userId === user.id
+                }
               />
             ))}
           </Slider>
@@ -73,15 +105,7 @@ function Auction({ data, hubService }: any) {
             {auctionItems.map((item, index) => (
               <li
                 key={item.id}
-                className={`cursor-pointer ${
-                  item.id === currentSellingItem?.id
-                    ? 'text-green-500'
-                    : item.isSold
-                      ? 'text-red-500'
-                      : item.userId === user.id
-                        ? 'text-gold-500'
-                        : 'text-black'
-                }`}
+                className={`cursor-pointer ${getItemBackgroundClass(item, currentSellingItem, user)}`}
                 onClick={() => goToSlide(index)}
               >
                 {item.name}

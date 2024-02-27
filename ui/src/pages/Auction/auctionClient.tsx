@@ -6,13 +6,17 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import Auction from './components/Auction';
 import AuctionHubService from './AuctionHubService';
+import useBalance from '../../components/Header/hooks/useBalance';
+import { useQueryClient } from 'react-query';
 
 function AuctionMessaging() {
   const { auctionId } = useParams<{ auctionId: string }>();
   const [auction, setAuction] = useState<any>(null);
-  const [hubService, setHubService] = useState<any>(null);
+  const [hubService, setHubService] = useState<any>(null); // Ensure hubService is part of the state
   const [isAuctionStarted, setIsAuctionStarted] = useState(false);
   const [isAuctionClosed, setIsAuctionClosed] = useState(false);
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     if (!auctionId) return;
 
@@ -48,6 +52,8 @@ function AuctionMessaging() {
             currentlySellingItem: nextSellingItem || prev.currentlySellingItem,
           };
         });
+        // TODO: add If user id invalidateQueries
+        queryClient.invalidateQueries('balance');
       },
       () => {
         setIsAuctionClosed(true);
@@ -61,7 +67,11 @@ function AuctionMessaging() {
 
         const updatedItems = prev.auctionItems.map((item: any) =>
           item.id === bid.auctionItemId
-            ? { ...item, actualPrice: bid.actualPrice }
+            ? {
+                ...item,
+                actualPrice: bid.actualPrice,
+                bids: [...item.bids, bid],
+              }
             : item
         );
 
