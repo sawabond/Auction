@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useMutation } from 'react-query';
 import useUserFromToken from '../../hooks/useUserFromToken';
@@ -49,7 +49,7 @@ function Payment() {
             id="amount"
             name="amount"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => setAmount(parseFloat(e.target.value))}
             placeholder="Enter amount"
             className="mt-1 p-2 w-full border rounded-md"
           />
