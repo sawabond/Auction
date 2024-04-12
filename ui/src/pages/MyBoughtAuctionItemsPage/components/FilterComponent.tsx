@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 
 const FilterComponent = ({ applyFilters } : any) => {
   const [filters, setFilters] = useState({
-    page: 1,
-    pageSize: 10,
     search: '',
     minPrice: '',
     maxPrice: '',
@@ -23,26 +21,6 @@ const FilterComponent = ({ applyFilters } : any) => {
   return (
     <div className='flex justify-center content-center'>
       <Grid xs={9} component="form" onSubmit={handleSubmit}>
-        <Grid item>
-          <TextField
-            label="Page"
-            type="number"
-            name="page"
-            value={filters.page}
-            onChange={handleChange}
-            fullWidth
-          />
-        </Grid>
-        <Grid item>
-          <TextField
-            label="Page Size"
-            type="number"
-            name="pageSize"
-            value={filters.pageSize}
-            onChange={handleChange}
-            fullWidth
-          />
-        </Grid>
         <Grid item>
           <TextField
             label="Search"

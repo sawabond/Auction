@@ -5,21 +5,30 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import FilterComponent from './components/FilterComponent';
 import getMyBoughtAuctionItems from './services/getMyBoughtAuctionItems';
 import ItemList from './components/ItemList';
+import Pagination from '@mui/material/Pagination';
 
 export default function MyBoughtAuctionItemsPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const searchParams = new URLSearchParams(location.search);
-  const page = searchParams.get('page') == null ? 1 : searchParams.get('page');
-  const pageSize = searchParams.get('pageSize') == null ? 10 : searchParams.get('pageSize');
   const search = searchParams.get('search');
   const minPrice = searchParams.get('minPrice');
   const maxPrice = searchParams.get('maxPrice');
 
-  const [filteredItems, setFilteredItems] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [hasNextPage, setHasNextPage] = useState(true);
 
-  const applyFilters = (filters : any) => {
+  const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangePageSize = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPageSize(parseInt(event.target.value, 10));
+  };
+
+  const applyFilters = (filters: any) => {
     const queryParams = new URLSearchParams();
 
     // Add non-empty filter parameters to the URL query string
@@ -36,7 +45,13 @@ export default function MyBoughtAuctionItemsPage() {
   const { isLoading, data } = useQuery(
     ['auctionItems', page, pageSize, search, minPrice, maxPrice],
     () => getMyBoughtAuctionItems(page, pageSize, search, minPrice, maxPrice),
-    { keepPreviousData: true } // Ensure previous data is kept while loading new data
+    {
+      keepPreviousData: true,
+      onSuccess: (data) => {
+        // Check if there are any items on the next page
+        setHasNextPage(data.items.length > 0);
+      }
+    }
   );
 
   return (
@@ -45,7 +60,17 @@ export default function MyBoughtAuctionItemsPage() {
       {isLoading ? (
         <div className="basis-3/5">Loading...</div>
       ) : (
-        <ItemList className="basis-3/5" auctionItems={data.items} />
+        <div className="basis-3/5">
+          <ItemList auctionItems={data.items} />
+          <Pagination
+            count={Math.ceil(data.totalCount / pageSize)}
+            page={page}
+            onChange={handleChangePage}
+            siblingCount={1}
+            boundaryCount={1}
+            disabled={!hasNextPage}
+          />
+        </div>
       )}
       <ToastContainer />
     </div>
