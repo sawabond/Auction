@@ -20,15 +20,15 @@ export default function MyBoughtAuctionItemsPage() {
   const [pageSize, setPageSize] = useState(10);
   const [hasNextPage, setHasNextPage] = useState(true);
 
-  const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
+  const handleChangePage = (event : any, newPage : any) => {
     setPage(newPage);
   };
 
-  const handleChangePageSize = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangePageSize = (event : any) => {
     setPageSize(parseInt(event.target.value, 10));
   };
 
-  const applyFilters = (filters: any) => {
+  const applyFilters = (filters : any) => {
     const queryParams = new URLSearchParams();
 
     // Add non-empty filter parameters to the URL query string
@@ -56,9 +56,14 @@ export default function MyBoughtAuctionItemsPage() {
 
   return (
     <div className="div flex flex-row">
-      <FilterComponent className="basis-2/5" applyFilters={applyFilters} />
-      {isLoading ? (
+      <FilterComponent
+        className="basis-2/5"
+        applyFilters={applyFilters}
+        initialValues={{ search, minPrice, maxPrice }} // Pass initial values to the filter component
+      />      {isLoading ? (
         <div className="basis-3/5">Loading...</div>
+      ) : data.totalCount === 0 ? (
+        <div className="basis-3/5">No items found.</div>
       ) : (
         <div className="basis-3/5">
           <ItemList auctionItems={data.items} />

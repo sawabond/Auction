@@ -1,11 +1,13 @@
 import { Button, Grid, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
 
-const FilterComponent = ({ applyFilters } : any) => {
+const SIZE = 9;
+
+const FilterComponent = ({ applyFilters, initialValues } : any) => {
   const [filters, setFilters] = useState({
-    search: '',
-    minPrice: '',
-    maxPrice: '',
+    search: initialValues.search || "",
+    minPrice: initialValues.minPrice || "",
+    maxPrice: initialValues.maxPrice || "",
   });
 
   const handleChange = (e : any) => {
@@ -20,8 +22,8 @@ const FilterComponent = ({ applyFilters } : any) => {
 
   return (
     <div className='flex justify-center content-center'>
-      <Grid xs={9} component="form" onSubmit={handleSubmit}>
-        <Grid item>
+      <Grid component="form" onSubmit={handleSubmit}>
+        <Grid item xs={SIZE}>
           <TextField
             label="Search"
             type="text"
@@ -31,7 +33,7 @@ const FilterComponent = ({ applyFilters } : any) => {
             fullWidth
           />
         </Grid>
-        <Grid item>
+        <Grid item xs={SIZE}>
           <TextField
             label="Min Price"
             type="number"
@@ -41,7 +43,7 @@ const FilterComponent = ({ applyFilters } : any) => {
             fullWidth
           />
         </Grid>
-        <Grid item>
+        <Grid item xs={SIZE}>
           <TextField
             label="Max Price"
             type="number"
@@ -51,7 +53,7 @@ const FilterComponent = ({ applyFilters } : any) => {
             fullWidth
           />
         </Grid>
-        <Grid item>
+        <Grid item xs={SIZE}>
           <Button type="submit" variant="contained" color="primary">
             Apply Filters
           </Button>
