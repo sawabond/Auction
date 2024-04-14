@@ -1,64 +1,52 @@
-import { Button, Grid, TextField } from '@material-ui/core';
-import React, { useState } from 'react';
-
-const SIZE = 9;
+import { Button, TextField } from '@mui/material';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 
 const FilterComponent = ({ applyFilters, initialValues } : any) => {
-  const [filters, setFilters] = useState({
-    search: initialValues.search || "",
-    minPrice: initialValues.minPrice || "",
-    maxPrice: initialValues.maxPrice || "",
+  const validationSchema = Yup.object().shape({
+    search: Yup.string(),
+    minPrice: Yup.number().positive().nullable(),
+    maxPrice: Yup.number().positive().nullable(),
   });
 
-  const handleChange = (e : any) => {
-    const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
-  };
-
-  const handleSubmit = (e : any) => {
-    e.preventDefault();
-    applyFilters(filters);
+  const handleSubmit = (values : any) => {
+    applyFilters(values);
   };
 
   return (
-    <div className='flex justify-center content-center'>
-      <Grid component="form" onSubmit={handleSubmit}>
-        <Grid item xs={SIZE}>
-          <TextField
+    <div className='flex flex-col items-center justify-start pt-6'>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={validationSchema}
+      >
+        <Form className='grid gap-4'>
+          <Field
+            as={TextField}
+            name="search"
             label="Search"
             type="text"
-            name="search"
-            value={filters.search}
-            onChange={handleChange}
             fullWidth
           />
-        </Grid>
-        <Grid item xs={SIZE}>
-          <TextField
+          <Field
+            as={TextField}
+            name="minPrice"
             label="Min Price"
             type="number"
-            name="minPrice"
-            value={filters.minPrice}
-            onChange={handleChange}
             fullWidth
           />
-        </Grid>
-        <Grid item xs={SIZE}>
-          <TextField
+          <Field
+            as={TextField}
+            name="maxPrice"
             label="Max Price"
             type="number"
-            name="maxPrice"
-            value={filters.maxPrice}
-            onChange={handleChange}
             fullWidth
           />
-        </Grid>
-        <Grid item xs={SIZE}>
           <Button type="submit" variant="contained" color="primary">
             Apply Filters
           </Button>
-        </Grid>
-      </Grid>
+        </Form>
+      </Formik>
     </div>
   );
 };
