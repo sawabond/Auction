@@ -1,4 +1,4 @@
-import AuctionMessaging from './api/ws/auctionClient';
+import AuctionMessaging from './pages/Auction/auctionClient';
 import { IRoute } from './interfaces/Routes/IRoute';
 import AuthPage from './pages/AuthPage/AuthPage';
 import Home from './pages/Home/Home';
