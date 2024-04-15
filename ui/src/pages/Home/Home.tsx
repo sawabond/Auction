@@ -4,7 +4,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useQuery } from 'react-query';
 import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
-import AuctionList from '../../components/elements/AuctionList/AuctionList';
 import SearchInput from '../../components/elements/Search/Search';
 import getAllAuctions from './services/getAllAuctions';
 

@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import { Typography } from '@material-ui/core';
 
-function ItemListItem({ auctionItem: auctionItem, onDelete, onMove }: 
+function ItemListItemEdit({ auctionItem: auctionItem, onDelete, onMove }: 
 { 
   auctionItem: any, 
   onDelete: (auctionItemId: string) => void,
@@ -43,4 +43,4 @@ function ItemListItem({ auctionItem: auctionItem, onDelete, onMove }:
   );
 }
 
-export default ItemListItem;
+export default ItemListItemEdit;

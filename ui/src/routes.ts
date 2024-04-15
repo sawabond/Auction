@@ -10,6 +10,7 @@ import Payment from './pages/Payment/Payment';
 import MyAuctionsPage from './pages/MyAuctionsPage/MyAuctionsPage';
 import EditAuctionPage from './pages/EditAuctionPage/EditAuctionPage';
 import EditAuctionItemPage from './pages/EditAuctionItemPage/EditAuctionItemPage';
+import MyBoughtAuctionItemsPage from './pages/MyBoughtAuctionItemsPage/MyBoughtAuctionItemsPage';
 
 const routes: IRoute[] = [
   {
@@ -57,14 +58,14 @@ const routes: IRoute[] = [
   {
     key: 'add-auction-item',
     title: 'Add auction item',
-    path: '/auctions/:auctionId/auction-items/add',
+    path: '/auctions/:auctionId/items/add',
     enabled: true,
     component: AddAuctionItemPage,
   },
   {
     key: 'edit-auction-item',
     title: 'Edit auction item',
-    path: '/auctions/:auctionId/auction-items/:auctionItemId/edit',
+    path: '/auctions/:auctionId/items/:auctionItemId/edit',
     enabled: true,
     component: EditAuctionItemPage,
   },
@@ -88,6 +89,13 @@ const routes: IRoute[] = [
     path: '/auctions/my-auctions',
     enabled: true,
     component: MyAuctionsPage,
+  },
+  {
+    key: 'my-bought-auction-items-page',
+    title: 'My auctions page',
+    path: '/items/my-bought-items',
+    enabled: true,
+    component: MyBoughtAuctionItemsPage,
   },
 ];
 

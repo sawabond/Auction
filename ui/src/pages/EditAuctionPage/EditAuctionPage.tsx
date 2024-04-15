@@ -17,7 +17,7 @@ import getAuction from './services/getAuction';
 import { AuctionType } from '../../components/enums/AuctionType';
 import editAuction from './services/editAuction';
 import SearchInput from '../../components/elements/Search/Search';
-import ItemList from './components/ItemList/ItemList';
+import ItemListEdit from './components/ItemListEdit/ItemListEdit';
 import deleteAuctionItem from './services/deleteAuctionItem';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -86,7 +86,7 @@ function EditAuctionPage() {
   });
 
   const handleClick = () => {
-    navigate(`/auctions/${auctionId}/auction-items/add`);
+    navigate(`/auctions/${auctionId}/items/add`);
   };
 
   const handleDelete = async (auctionItemId: string) => {
@@ -106,7 +106,7 @@ function EditAuctionPage() {
   };
 
   const handleMove = async (auctionItemId: string) => {
-    navigate(`/auctions/${auctionId}/auction-items/${auctionItemId}/edit`);
+    navigate(`/auctions/${auctionId}/items/${auctionItemId}/edit`);
   };
 
   const handleSubmit = (values : any) => {
@@ -207,7 +207,7 @@ function EditAuctionPage() {
               {false ? (
                 <div>Loading...</div>
               ) : (
-                <ItemList auctionItems={allAuctionItems} onMove={handleMove} onDelete={handleDelete} />
+                <ItemListEdit auctionItems={allAuctionItems} onMove={handleMove} onDelete={handleDelete} />
               )}
             </div>
           </div>
