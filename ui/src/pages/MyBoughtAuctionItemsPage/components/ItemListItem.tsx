@@ -2,6 +2,12 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import { Typography } from '@material-ui/core';
 
+const DeliveryStatus = {
+  0: 'Not Started',
+  1: 'In Progress',
+  2: 'Delivered'
+};
+
 function ItemListItem({ auctionItem: auctionItem} : { auctionItem: any}) 
 {
   return (
@@ -26,7 +32,7 @@ function ItemListItem({ auctionItem: auctionItem} : { auctionItem: any})
       />
         <Typography variant="body1" className="text-lg font-semibold">{auctionItem.name}</Typography>
         <Typography variant="body1">Spent money: {auctionItem.actualPrice}</Typography>
-        <Typography variant="body1">{auctionItem.deliveryStatus ? "Delivered" : "Not delivered"}</Typography>
+        <Typography variant="body1">{DeliveryStatus[auctionItem.deliveryStatus]}</Typography>
     </Card>
   );
 }
