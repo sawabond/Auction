@@ -33,8 +33,8 @@ public static class ServiceCollectionExtensions
                     {
                         x.SaslMechanism = SaslMechanism.Plain;
                         x.SecurityProtocol = SecurityProtocol.SaslSsl;
-                        x.SaslUsername = "62CKJ5LNJALWDT2Z";
-                        x.SaslPassword = "oJOm/gpHgj8W12m7TQQmJ3kmlkmphtswY97HXvjSqGT+wFchsPqIjOP2V8+MeBd+";
+                        x.SaslUsername = "V7XKED2OQRIP4GZ6";
+                        x.SaslPassword = "Eaz/ooixsrf8jG5D61kJ5zd12Qxv777Gsyp9xkVeUzxTkAxCS0AtU+z/pdYSzBWA";
                     });
                 
                 var events = eventsAssemblies.SelectMany(GetEvents);
