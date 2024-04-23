@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import AuctionList from '../../components/elements/AuctionList/AuctionList';
+import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
 import SearchInput from '../../components/elements/Search/Search';
 import { ToastContainer } from 'react-toastify';
 import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
@@ -29,7 +29,6 @@ export default function MyAuctionsPage() {
       if (newData.cursor !== auctionNextCursor) {
         setAllAuctions((prevAuctions: any) => {
           const updatedAuctions = [...prevAuctions, ...newData.auctions];
-          //console.log('Updated auctions:', updatedAuctions);
           return updatedAuctions;
         });
         setAuctionNextCursor(newData.cursor);
@@ -48,7 +47,7 @@ export default function MyAuctionsPage() {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <AuctionList auctions={allAuctions} />
+        <AuctionGroup auctions={allAuctions} />
       )}
 
       {data?.cursor && (

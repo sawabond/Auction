@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -6,6 +6,7 @@ import { useQuery } from 'react-query';
 import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
 import SearchInput from '../../components/elements/Search/Search';
 import getAllAuctions from './services/getAllAuctions';
+import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
 
 export default function Home() {
   const [auctionNextCursor, setAuctionNextCursor] = useAuctionNextCursor('');
@@ -30,26 +31,33 @@ export default function Home() {
     }
   );
 
-  const handleLoadMore = () => {
-    if (data?.cursor) {
-      setAuctionNextCursor(data.cursor);
-    }
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight ||
+      isLoading ||
+      !data?.cursor
+    )
+      return;
+    setAuctionNextCursor(data.cursor);
   };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [auctionNextCursor, isLoading, data]);
 
   return (
     <div className="div">
       <SearchInput />
-      {/*{isLoading ? (*/}
-      {/*  <div>Loading...</div>*/}
-      {/*) : (*/}
-      {/*  <AuctionList auctions={allAuctions} />*/}
-      {/*)}*/}
-
-      {data?.cursor && (
-        <button type="submit" onClick={handleLoadMore}>
-          Load More
-        </button>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <AuctionGroup auctions={allAuctions} />
       )}
+      {/**/}
+
       <ToastContainer />
     </div>
   );
