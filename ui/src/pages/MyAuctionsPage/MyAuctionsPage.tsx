@@ -25,7 +25,6 @@ export default function MyAuctionsPage() {
   const { isLoading, data } = useQuery(['auctions', auctionNextCursor], () => getMyAuctions(pageSize, auctionNextCursor), {
     keepPreviousData: true,
     onSuccess: (newData) => {
-      // Check if the new cursor is different from the current one
       if (newData.cursor !== auctionNextCursor) {
         setAllAuctions((prevAuctions: any) => {
           const updatedAuctions = [...prevAuctions, ...newData.auctions];
