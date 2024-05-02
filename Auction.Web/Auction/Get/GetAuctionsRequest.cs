@@ -15,4 +15,7 @@ public class GetAuctionsRequest
 
     [FromQuery(Name = "description.[contains]")]
     public string? DescriptionContains { get; set; }
+    
+    [FromQuery(Name = "onlyActive")]
+    public bool? OnlyActive { get; set; }
 }

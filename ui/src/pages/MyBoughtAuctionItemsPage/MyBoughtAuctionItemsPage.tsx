@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { ToastContainer } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
-import FilterComponent from './components/FilterComponent';
+import ItemFilterComponent from './components/ItemFilterComponent';
 import getMyBoughtAuctionItems from './services/getMyBoughtAuctionItems';
 import ItemList from './components/ItemList';
 import Pagination from '@mui/material/Pagination';
@@ -52,7 +52,7 @@ export default function MyBoughtAuctionItemsPage() {
 
   return (
     <div className="div flex flex-row justify-around">
-      <FilterComponent
+      <ItemFilterComponent
         className="basis-2/5"
         applyFilters={applyFilters}
         initialValues={{ search, minPrice, maxPrice }}
