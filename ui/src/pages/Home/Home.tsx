@@ -69,10 +69,11 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className='div flex flex-row justify-around'>
       <AuctionFilterComponent 
         applyFilters={applyFilters}
         initialValues={{ search, description, onlyActive }}
+        className='basis-2/5'
       />
       <InfiniteScroll
         dataLength={allAuctions.length}
@@ -80,6 +81,7 @@ export default function Home() {
         hasMore={!!auctionNextCursor}
         loader={<p>Loading...</p>}
         endMessage={<p>No more auctions</p>}
+        className='basis-3/5'
       >
         <AuctionGroup auctions={allAuctions} />
       </InfiniteScroll>

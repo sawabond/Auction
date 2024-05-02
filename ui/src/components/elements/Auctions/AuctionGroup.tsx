@@ -13,7 +13,7 @@ function AuctionGroup({ auctions }: any) {
 
   return (
     <div className="mx-auto my-4">
-      <List>
+      <List className='flex flex-col gap-4'>
         {auctions.map((auction: any) => (
           <div key={auction.id} onClick={() => handleClick(auction.id)}>
             <Auction auction={auction} />

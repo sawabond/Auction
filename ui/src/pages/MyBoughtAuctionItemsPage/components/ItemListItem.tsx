@@ -30,9 +30,9 @@ function ItemListItem({ auctionItem: auctionItem} : { auctionItem: any})
         alt="Your Image"
         className="w-1/3 h-32 object-cover"
       />
-        <Typography variant="body1" className="text-lg font-semibold">{auctionItem.name}</Typography>
-        <Typography variant="body1">Spent money: {auctionItem.actualPrice}</Typography>
-        <Typography variant="body1">{DeliveryStatus[auctionItem.deliveryStatus]}</Typography>
+      <Typography variant="body1" className="text-lg font-semibold">{auctionItem.name}</Typography>
+      <Typography variant="body1">Spent money: {auctionItem.actualPrice}</Typography>
+      <Typography variant="body1">{DeliveryStatus[auctionItem.deliveryStatus]}</Typography>
     </Card>
   );
 }
