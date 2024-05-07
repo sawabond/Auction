@@ -1,14 +1,13 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import List from '@material-ui/core/List';
 import Auction from './Auction';
 
-function AuctionGroup({ auctions }: any) {
+function AuctionGroup({ auctions, url = "" }: any) {
   const navigate = useNavigate();
 
   const handleClick = (auctionId: string) => {
-    navigate(`/auctions/${auctionId}`);
+    navigate(`/auctions/${auctionId}` + url);
   };
 
   return (

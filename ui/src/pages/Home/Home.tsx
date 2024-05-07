@@ -11,9 +11,9 @@ import { useNavigate } from 'react-router-dom';
 export default function Home() {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
-  const search = searchParams.get('name.[sw]') || "";
-  const description = searchParams.get('description.[contains]') || "";
-  const onlyActive = searchParams.get('onlyActive');
+  const nameStartsWith = searchParams.get('nameStartsWith') || "";
+  const descriptionContains = searchParams.get('descriptionContains') || "";
+  const onlyActive = searchParams.get('onlyActive') || false;
 
   const [auctionNextCursor, setAuctionNextCursor] = useState('');
   const [allAuctions, setAllAuctions] = useState([]);
@@ -25,22 +25,7 @@ export default function Home() {
   
     for (const key in filters) {
       if (filters[key] != '') {
-        var param;
-        switch (key) {
-          case "search": {
-            param = "name.[sw]";
-            break;
-          }
-          case "description": {
-            param = "description.[contains]";
-            break;
-          }
-          default: {
-            param = key;
-            break;
-          }
-        }
-        queryParams.append(param, filters[key]); // Use the derived param instead of key
+        queryParams.append(key, filters[key]);
       }
     }
   
@@ -50,19 +35,19 @@ export default function Home() {
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true);
-      const { auctions, cursor } = await getAllAuctions('', pageSize, search, description, onlyActive); // Initial limit
+      const { auctions, cursor } = await getAllAuctions('', pageSize, nameStartsWith, descriptionContains , onlyActive); // Initial limit
       setAllAuctions(auctions);
       setAuctionNextCursor(cursor);
       setIsLoading(false);
     };
     fetchInitialData();
-  }, [pageSize, search, description, onlyActive]); // Add search, description, and onlyActive as dependencies
+  }, [pageSize, nameStartsWith, descriptionContains , onlyActive]); // Add search, description, and onlyActive as dependencies
   
 
   const handleMoreAuctions = async () => {
     if (isLoading || !auctionNextCursor) return;
     setIsLoading(true);
-    const { auctions, cursor } = await getAllAuctions(auctionNextCursor, pageSize, search, description, onlyActive); // Fetch next page with current cursor
+    const { auctions, cursor } = await getAllAuctions(auctionNextCursor, pageSize, nameStartsWith, descriptionContains , onlyActive); // Fetch next page with current cursor
     setAllAuctions(prevAuctions => [...prevAuctions, ...auctions]); // Append new auctions to existing auctions
     setAuctionNextCursor(cursor);
     setIsLoading(false);
@@ -72,7 +57,7 @@ export default function Home() {
     <div className='div flex flex-row justify-around'>
       <AuctionFilterComponent 
         applyFilters={applyFilters}
-        initialValues={{ search, description, onlyActive }}
+        initialValues={{ nameStartsWith, descriptionContains, onlyActive }}
         className='basis-2/5'
       />
       <InfiniteScroll

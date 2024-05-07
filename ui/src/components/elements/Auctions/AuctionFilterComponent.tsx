@@ -4,8 +4,8 @@ import * as Yup from 'yup';
 
 const AuctionFilterComponent = ({ applyFilters, initialValues } : any) => {
   const validationSchema = Yup.object().shape({
-    search: Yup.string(),
-    description: Yup.string(),
+    nameStartsWith: Yup.string(),
+    descriptionContains: Yup.string(),
   });
 
   const handleSubmit = (values : any) => {
@@ -21,14 +21,14 @@ const AuctionFilterComponent = ({ applyFilters, initialValues } : any) => {
         <Form className='grid gap-4'>
           <Field
             as={TextField}
-            name="search"
+            name="nameStartsWith"
             label="Search"
             type="text"
             fullWidth
           />
           <Field
             as={TextField}
-            name="description"
+            name="descriptionContains"
             label="Description"
             type="text"
             fullWidth
