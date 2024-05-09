@@ -7,6 +7,7 @@ import getAllAuctions from './services/getAllAuctions';
 import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
 import AuctionFilterComponent from '../../components/elements/Auctions/AuctionFilterComponent';
 import { useNavigate } from 'react-router-dom';
+import applyFilters from '../../components/utils/applyFilters';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -20,35 +21,40 @@ export default function Home() {
   const [pageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
 
-  const applyFilters = (filters: any) => {
-    const queryParams = new URLSearchParams();
-  
-    for (const key in filters) {
-      if (filters[key] != '') {
-        queryParams.append(key, filters[key]);
-      }
-    }
-  
-    navigate(`?${queryParams.toString()}`);
-  };
-
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true);
-      const { auctions, cursor } = await getAllAuctions('', pageSize, nameStartsWith, descriptionContains , onlyActive); // Initial limit
+      const { auctions, cursor } = await getAllAuctions(
+        '', 
+        pageSize, 
+        nameStartsWith, 
+        descriptionContains, 
+        onlyActive
+      );
       setAllAuctions(auctions);
       setAuctionNextCursor(cursor);
       setIsLoading(false);
     };
     fetchInitialData();
-  }, [pageSize, nameStartsWith, descriptionContains , onlyActive]); // Add search, description, and onlyActive as dependencies
+  }, [
+    pageSize, 
+    nameStartsWith, 
+    descriptionContains, 
+    onlyActive
+  ]);
   
 
   const handleMoreAuctions = async () => {
     if (isLoading || !auctionNextCursor) return;
     setIsLoading(true);
-    const { auctions, cursor } = await getAllAuctions(auctionNextCursor, pageSize, nameStartsWith, descriptionContains , onlyActive); // Fetch next page with current cursor
-    setAllAuctions(prevAuctions => [...prevAuctions, ...auctions]); // Append new auctions to existing auctions
+    const { auctions, cursor } = await getAllAuctions(
+      auctionNextCursor, 
+      pageSize, 
+      nameStartsWith, 
+      descriptionContains, 
+      onlyActive
+    );
+    setAllAuctions(prevAuctions => [...prevAuctions, ...auctions]);
     setAuctionNextCursor(cursor);
     setIsLoading(false);
   };
