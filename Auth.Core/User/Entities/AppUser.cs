@@ -7,6 +7,7 @@ public class AppUser : IdentityUser
 {
     [Column(TypeName = "jsonb")]
     public ShipmentInformation? ShipmentInformation { get; set; }
+    public List<IdentityUserRole<string>> UserRoles { get; set; } = new();
 }
 
 public class ShipmentInformation

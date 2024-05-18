@@ -1,12 +1,15 @@
 ﻿using Auth.Application.User.Login;
 using Auth.Application.User.Register;
 using Auth.Contracts.User;
+using Auth.Core.User;
 using Auth.Core.User.Exceptions;
 using Core;
+using Microsoft.AspNetCore.Identity;
 
 namespace Auth.Application.User;
 
 public class AuthService(
+    IRoleManagerDecorator _roleManager,
     IUserManagerDecorator _userManager,
     ITokenProvider _tokenProvider,
     IPublisher _publisher)
@@ -21,6 +24,16 @@ public class AuthService(
 
         var user = registerUserRequest.ToEntity();
         user.UserName = registerUserRequest.Email;
+
+        if (Roles.Map.TryGetValue(registerUserRequest.Role, out var role))
+            user.UserRoles.Add(
+                new()
+                {
+                    RoleId = role.Id,
+                    UserId = user.Id
+                });
+        else
+            throw new RoleNotFoundException(registerUserRequest.Role);
         
         var result = await _userManager.CreateAsync(user, registerUserRequest.Password);
 
@@ -31,7 +44,8 @@ public class AuthService(
         
         await _publisher.Publish(user.Id, new UserRegisteredEvent
         {
-            Id = Guid.Parse(user.Id)
+            Id = Guid.Parse(user.Id),
+            Role = registerUserRequest.Role
         });
 
         return user.ToResponse();
@@ -53,7 +67,9 @@ public class AuthService(
             throw new WrongPasswordException();
         }
 
-        var tokenString = _tokenProvider.GetToken(user);
+        var roles = await _roleManager.GetUserRolesById(Guid.Parse(user.Id));
+
+        var tokenString = _tokenProvider.GetToken(user, roles);
 
         return new(tokenString);
     }

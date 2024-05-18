@@ -100,7 +100,7 @@ app.MapPost("/api/top-up", async (
     var session = await sessionService.CreateAsync(sessionCreateOptions);
 
     return Results.Ok(new { session.Url });
-});
+}).RequireAuthorization();
 
 app.MapGet("/api/success", async (
     [FromQuery(Name="session_id")] string sessionId,
@@ -129,7 +129,7 @@ app.MapGet("/api/balances", async (
     }
 
     return Results.BadRequest();
-});
+}).RequireAuthorization();
 
 app.MapGet("/api/balances/{userId}", async (
     Guid userId,
@@ -142,6 +142,6 @@ app.MapGet("/api/balances/{userId}", async (
     }
 
     return Results.BadRequest();
-});
+}).RequireAuthorization();
 
 app.Run();

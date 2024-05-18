@@ -24,6 +24,8 @@ using Jobs.Extensions;
 using Kafka.Messaging;
 using Logging;
 using Logging.Middlewares;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -132,7 +134,7 @@ app.UseHttpsRedirection();
 
 app.MapHub<AuctionHub>("/auction-hub").RequireCors("DefaultPolicy");
 
-app.MapPost("/api/auctions", async (
+app.MapPost("/api/auctions", [Authorize(Roles = "Seller")] async (
         AuctionCreateCommand request,
         ClaimsPrincipal user,
         IAuctionService auctionService) =>
@@ -145,7 +147,7 @@ app.MapPost("/api/auctions", async (
     .RequireAuthorization()
     .WithOpenApi();
 
-app.MapPut("/api/auctions", async (
+app.MapPut("/api/auctions", [Authorize(Roles = "Seller")] async (
         AuctionUpdateCommand request,
         ClaimsPrincipal user,
         IAuctionService auctionService) =>
@@ -235,7 +237,7 @@ app.MapGet("/api/auctions/{auctionId:guid}/items/{auctionItemId:guid}", async (
     .RequireAuthorization()
     .WithOpenApi();
 
-app.MapPost("/api/auctions/{auctionId:guid}/items", async (
+app.MapPost("/api/auctions/{auctionId:guid}/items", [Authorize(Roles = "Seller")] async (
         Guid auctionId,
         ClaimsPrincipal user,
         [FromForm] AuctionItemCreateCommand request,
@@ -250,7 +252,7 @@ app.MapPost("/api/auctions/{auctionId:guid}/items", async (
     .DisableAntiforgery()
     .WithOpenApi();
 
-app.MapPut("/api/auctions/{auctionId:guid}/items", async (
+app.MapPut("/api/auctions/{auctionId:guid}/items",     [Authorize(Roles = "Seller")] async (
         Guid auctionId,
         ClaimsPrincipal user,
         [FromForm] AuctionItemUpdateCommand request,
@@ -269,7 +271,7 @@ app.MapPut("/api/auctions/{auctionId:guid}/items", async (
     .DisableAntiforgery()
     .WithOpenApi();
 
-app.MapDelete("/api/auctions/{auctionId:guid}/items/{itemId:guid}", async (
+app.MapDelete("/api/auctions/{auctionId:guid}/items/{itemId:guid}", [Authorize(Roles = "Seller")] async (
         Guid auctionId,
         Guid itemId,
         ClaimsPrincipal user,
@@ -289,7 +291,7 @@ app.MapDelete("/api/auctions/{auctionId:guid}/items/{itemId:guid}", async (
     .DisableAntiforgery()
     .WithOpenApi();
 
-app.MapDelete("/api/auctions/{auctionId:guid}", async (
+app.MapDelete("/api/auctions/{auctionId:guid}", [Authorize(Roles = "Seller")] async (
         Guid auctionId,
         ClaimsPrincipal user,
         [FromServices] IAuctionService auctionService) =>
