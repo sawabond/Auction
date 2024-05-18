@@ -135,7 +135,8 @@ app.MapGet("/api/balances", [Authorize] async (
     return Results.BadRequest();
 }).RequireAuthorization();
 
-app.MapGet("/api/balances/{userId}", [Authorize] async (
+// This endpoint is used by the Payment.Contracts.Clients.PaymentClient
+app.MapGet("/api/balances/{userId}", async (
     Guid userId,
     [FromServices] IBalanceService balanceService) =>
 {
@@ -146,6 +147,6 @@ app.MapGet("/api/balances/{userId}", [Authorize] async (
     }
 
     return Results.BadRequest();
-}).RequireAuthorization();
+});
 
 app.Run();
