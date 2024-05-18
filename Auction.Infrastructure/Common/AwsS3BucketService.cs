@@ -3,10 +3,11 @@ using Amazon.S3;
 using Amazon.S3.Transfer;
 using Auction.Application.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace Auction.Infrastructure.Common;
 
-public class AwsS3BucketService : IBlobService
+public class AwsS3BucketService(IConfiguration _configuration) : IBlobService
 {
     private readonly string _bucketName = "auction-item-photos";
     
@@ -14,7 +15,7 @@ public class AwsS3BucketService : IBlobService
     {
         try
         {
-            var awsCredentials = new BasicAWSCredentials("AKIA5IKD6FW7TYBD6WDR", "Sz5EnEomlJsWPPtzzMjuYPPITaIxi+Cvu2ibB2s+");
+            var awsCredentials = new BasicAWSCredentials(_configuration["Aws:AccessKey"], _configuration["Aws:SecretKey"]);
             var s3Client = new AmazonS3Client(awsCredentials, Amazon.RegionEndpoint.USEast1);
             var transferUtility = new TransferUtility(s3Client);
 
