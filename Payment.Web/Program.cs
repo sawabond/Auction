@@ -4,6 +4,7 @@ using Auth.Contracts;
 using Core;
 using Kafka.Messaging;
 using Logging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Payment.Application.Balance;
@@ -67,7 +68,10 @@ builder.AddKafkaInfrastructure(
 
 var app = builder.Build();
 
-app.MapPost("/api/top-up", async (
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapPost("/api/top-up", [Authorize] async (
     [FromBody] TopUpCommand topUpRequest,
     [FromQuery] string returnUrl,
     [FromQuery] string redirectUrl,
@@ -81,7 +85,7 @@ app.MapPost("/api/top-up", async (
             {
                 PriceData = new SessionLineItemPriceDataOptions
                 {
-                    UnitAmount = topUpRequest.Amount,
+                    UnitAmount = topUpRequest.Amount * 100, // stripe requires amount in cents
                     Currency = "UAH",
                     ProductData = new SessionLineItemPriceDataProductDataOptions
                     {
@@ -117,7 +121,7 @@ app.MapGet("/api/success", async (
     return Results.BadRequest();
 });
 
-app.MapGet("/api/balances", async (
+app.MapGet("/api/balances", [Authorize] async (
     ClaimsPrincipal user,
     [FromServices] IBalanceService balanceService) =>
 {
@@ -131,7 +135,7 @@ app.MapGet("/api/balances", async (
     return Results.BadRequest();
 }).RequireAuthorization();
 
-app.MapGet("/api/balances/{userId}", async (
+app.MapGet("/api/balances/{userId}", [Authorize] async (
     Guid userId,
     [FromServices] IBalanceService balanceService) =>
 {

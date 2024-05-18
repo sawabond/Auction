@@ -62,7 +62,6 @@ builder.Services.AddCors(x =>
 
 builder.Services.AddPaymentClients(builder.Configuration);
 
-
 builder.Services.AddScheduler(builder.Configuration);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBlobService, AwsS3BucketService>();
@@ -252,7 +251,7 @@ app.MapPost("/api/auctions/{auctionId:guid}/items", [Authorize(Roles = "Seller")
     .DisableAntiforgery()
     .WithOpenApi();
 
-app.MapPut("/api/auctions/{auctionId:guid}/items",     [Authorize(Roles = "Seller")] async (
+app.MapPut("/api/auctions/{auctionId:guid}/items", [Authorize(Roles = "Seller")] async (
         Guid auctionId,
         ClaimsPrincipal user,
         [FromForm] AuctionItemUpdateCommand request,
