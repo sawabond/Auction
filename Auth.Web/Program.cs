@@ -5,6 +5,7 @@ using Auth.Infrastructure;
 using Auth.Infrastructure.User;
 using Kafka.Messaging;
 using Logging;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Npgsql;
@@ -39,6 +40,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 });
 
 builder.Services.AddIdentityCore<AppUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AuthDbContext>();
 
 builder.AddKafkaInfrastructure(

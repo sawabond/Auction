@@ -10,6 +10,7 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddUserInfrastructure(this IServiceCollection @this)
     {
         @this.AddScoped<IUserManagerDecorator, UserManagerDecorator>();
+        @this.AddScoped<IRoleManagerDecorator, RoleManagerDecorator>();
         @this.AddScoped<ITokenProvider, JwtTokenProvider>();
 
         return @this;

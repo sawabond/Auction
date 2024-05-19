@@ -4,6 +4,7 @@ using Auth.Core.User.Entities;
 using Auth.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Auth.Infrastructure.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    partial class AuthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240518130218_AddedRoles")]
+    partial class AddedRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,6 +98,9 @@ namespace Auth.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("text");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -108,6 +114,8 @@ namespace Auth.Infrastructure.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
@@ -210,12 +218,7 @@ namespace Auth.Infrastructure.Migrations
                     b.Property<string>("RoleId")
                         .HasColumnType("text");
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("text");
-
                     b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("RoleId");
 
@@ -239,6 +242,13 @@ namespace Auth.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.HasOne("Auth.Core.User.Entities.AppUser", null)
+                        .WithMany("Roles")
+                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -270,10 +280,6 @@ namespace Auth.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Auth.Core.User.Entities.AppUser", null)
-                        .WithMany("UserRoles")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
@@ -298,7 +304,7 @@ namespace Auth.Infrastructure.Migrations
 
             modelBuilder.Entity("Auth.Core.User.Entities.AppUser", b =>
                 {
-                    b.Navigation("UserRoles");
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

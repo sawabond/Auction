@@ -4,6 +4,7 @@ using System.Text;
 using Auth.Application.User;
 using Auth.Application.User.Login;
 using Auth.Core.User.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Configuration;
@@ -14,14 +15,15 @@ public class JwtTokenProvider(IOptions<AuthConfiguration> _jwtSettings) : IToken
 {
     private readonly AuthConfiguration _authConfiguration = _jwtSettings.Value;
 
-    public string GetToken(AppUser user)
+    public string GetToken(AppUser user, IEnumerable<IdentityRole> roles)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email)
+            new (ClaimTypes.NameIdentifier, user.Id),
+            new (ClaimTypes.Name, user.UserName),
+            new (ClaimTypes.Email, user.Email),
         };
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.Name)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authConfiguration.SecurityKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
