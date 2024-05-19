@@ -2,8 +2,10 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useMutation } from 'react-query';
 import useUserFromToken from '../../hooks/useUserFromToken';
+import Cookies from 'js-cookie';
 
 function Payment() {
+  const token = Cookies.get('token');
   const [amount, setAmount] = useState<number>();
   const user = useUserFromToken();
   const topUpMutation = useMutation(
@@ -12,7 +14,12 @@ function Payment() {
       const PaymentRedirectUrl = 'http://localhost:5173/profile';
       return axios.post(
         `${GATEWAY_URL}/api/top-up?returnUrl=${GATEWAY_URL}&redirectUrl=${PaymentRedirectUrl}`,
-        paymentData
+        paymentData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
     },
     {

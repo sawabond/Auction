@@ -26,6 +26,7 @@ function RegistrationForm({
       email: '',
       password: '',
       confirmPassword: '',
+      role: 'User'
     },
     validate: validateRegisterForm,
     onSubmit: (values) => {
