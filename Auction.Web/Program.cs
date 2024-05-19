@@ -121,6 +121,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseGlobalExceptionHandler();
+
 app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -178,7 +180,7 @@ app.MapGet("/api/auctions/{auctionId:guid}", async (
     .RequireAuthorization()
     .WithOpenApi();
 
-app.MapGet("/api/user/auctions", async (
+app.MapGet("/api/user/auctions", [Authorize(Roles = "Seller")] async (
         [AsParameters] GetAuctionsRequest request,
         ClaimsPrincipal user,
         IAuctionService auctionService) =>
