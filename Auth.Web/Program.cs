@@ -3,6 +3,7 @@ using Auth.Contracts;
 using Auth.Core.User.Entities;
 using Auth.Infrastructure;
 using Auth.Infrastructure.User;
+using Core;
 using Kafka.Messaging;
 using Logging;
 using Microsoft.AspNetCore.Identity;
@@ -76,6 +77,8 @@ builder.Services.AddSwaggerGen(x =>
 });
 
 var app = builder.Build();
+
+app.UseGlobalExceptionHandler();
 
 app.UseCors("DefaultPolicy");
 

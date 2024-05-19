@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Shared\Core\Core.csproj" />
       <ProjectReference Include="..\Shared\Logging\Logging.csproj" />
     </ItemGroup>
 

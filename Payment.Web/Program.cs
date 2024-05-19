@@ -68,6 +68,8 @@ builder.AddKafkaInfrastructure(
 
 var app = builder.Build();
 
+app.UseGlobalExceptionHandler();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
