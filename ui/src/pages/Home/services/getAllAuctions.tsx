@@ -1,4 +1,3 @@
-import { Description } from "@mui/icons-material";
 import axios from "axios";
 
 const getAllAuctions = async (

@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 
 const ItemFilterComponent = ({ applyFilters, initialValues } : any) => {
   const validationSchema = Yup.object().shape({
-    search: Yup.string(),
+    search: Yup.string().nullable(),
     minPrice: Yup.number().positive().nullable(),
     maxPrice: Yup.number().positive().nullable()
   });

@@ -1,7 +1,4 @@
 // Presentation Layer: MyAuctionsPage.jsx
-
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import AuctionFilterComponent from '../../components/elements/Auctions/AuctionFilterComponent';
 import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
 import Pagination from '@mui/material/Pagination';
@@ -11,8 +8,6 @@ import { useMyAuctions } from './hooks/useMyAuctions';
 const URL = "/edit";
 
 export default function MyAuctionsPage() {
-  const navigate = useNavigate();
-
   const searchParams = new URLSearchParams(location.search);
 
   // Extracting query parameters

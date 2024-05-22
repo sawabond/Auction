@@ -7,7 +7,7 @@ import getAllAuctions from './services/getAllAuctions';
 import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
 import AuctionFilterComponent from '../../components/elements/Auctions/AuctionFilterComponent';
 import { useNavigate } from 'react-router-dom';
-import applyFilters from '../../components/utils/applyFilters';
+import { applyFilters as applyFiltersUtil } from '../../components/utils/applyFilters';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -20,6 +20,10 @@ export default function Home() {
   const [allAuctions, setAllAuctions] = useState([]);
   const [pageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
+
+  const applyFilters = (filters) => {
+    applyFiltersUtil(filters, navigate);
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {

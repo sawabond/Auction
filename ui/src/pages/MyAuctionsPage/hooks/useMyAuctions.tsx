@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import getMyAuctions from '../services/getMyAuctions';
-import applyFilters from '../../../components/utils/applyFilters';
+import { applyFilters as applyFiltersUtil } from '../../../components/utils/applyFilters';
 
 export const useMyAuctions = (location) => {
   const navigate = useNavigate();
@@ -19,6 +19,10 @@ export const useMyAuctions = (location) => {
   const [pageSize, setPageSize] = useState(2);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+
+  const applyFilters = (filters) => {
+    applyFiltersUtil(filters, navigate);
+  };
  
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -37,9 +41,7 @@ export const useMyAuctions = (location) => {
     fetchInitialData();
   }, [pageSize, nameStartsWith, descriptionContains, onlyActive]); 
 
-  
-
-  const handleNext = async () => {
+  const handleNext = async (page) => {
     if (auctionNextCursor || currentPage * pageSize !== allAuctions.length) {
       setIsLoading(true);
       if(currentPage * pageSize === allAuctions.length)
@@ -57,29 +59,28 @@ export const useMyAuctions = (location) => {
       }
       else
       {
-        setCurrentAuctions(allAuctions.slice(currentPage * pageSize, currentPage * pageSize + pageSize));
+        setCurrentAuctions(allAuctions.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize));
       }
       setIsLoading(false);
-      setCurrentPage(prevPage => prevPage + 1);
     }
   };
 
-  const handlePrevious = async () => {
+  const handlePrevious = async (page) => {
     if (currentPage > 1) {
       setIsLoading(true);
 
-      setCurrentAuctions(allAuctions.slice((currentPage - 2) * pageSize, (currentPage - 2) * pageSize + pageSize));
+      setCurrentAuctions(allAuctions.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize));
       setIsLoading(false);
-      setCurrentPage(prevPage => prevPage - 1);
     }
   };
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, page: number) => {
 
     if (page > currentPage)
-      handleNext();
-    else
-      handlePrevious();
+      handleNext(page);
+    else if (page < currentPage)
+      handlePrevious(page);
+    setCurrentPage(page);
   }
 
   useEffect(() => {

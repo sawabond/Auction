@@ -1,4 +1,4 @@
-const applyFilters = (filters: any, navigate: any) => {
+export const applyFilters = (filters: any, navigate: any) => {
     const queryParams = new URLSearchParams();
   
     for (const key in filters) {
@@ -9,5 +9,3 @@ const applyFilters = (filters: any, navigate: any) => {
 
     navigate(`?${queryParams.toString()}`);
 };
-
-export default applyFilters;
