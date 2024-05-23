@@ -2,11 +2,11 @@ import { Button, TextField } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 
-const FilterComponent = ({ applyFilters, initialValues } : any) => {
+const ItemFilterComponent = ({ applyFilters, initialValues } : any) => {
   const validationSchema = Yup.object().shape({
-    search: Yup.string(),
+    search: Yup.string().nullable(),
     minPrice: Yup.number().positive().nullable(),
-    maxPrice: Yup.number().positive().nullable(),
+    maxPrice: Yup.number().positive().nullable()
   });
 
   const handleSubmit = (values : any) => {
@@ -51,4 +51,4 @@ const FilterComponent = ({ applyFilters, initialValues } : any) => {
   );
 };
 
-export default FilterComponent;
+export default ItemFilterComponent;

@@ -9,14 +9,14 @@ namespace Auction.Infrastructure.Common;
 
 public class AwsS3BucketService(IConfiguration _configuration) : IBlobService
 {
-    private readonly string _bucketName = "auction-item-photos";
+    private readonly string _bucketName = "auction-items-photos";
     
     public async Task<(string FileName, Uri Url)> UploadFile(IFormFile file, string fileName)
     {
         try
         {
             var awsCredentials = new BasicAWSCredentials(_configuration["Aws:AccessKey"], _configuration["Aws:SecretKey"]);
-            var s3Client = new AmazonS3Client(awsCredentials, Amazon.RegionEndpoint.USEast1);
+            var s3Client = new AmazonS3Client(awsCredentials, Amazon.RegionEndpoint.EUNorth1);
             var transferUtility = new TransferUtility(s3Client);
 
             var fileKey = $"{Guid.NewGuid()}-{fileName}";

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { ToastContainer } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
-import FilterComponent from './components/FilterComponent';
+import { applyFilters as applyFiltersUtil } from '../../components/utils/applyFilters';
+import ItemFilterComponent from './components/ItemFilterComponent';
 import getMyBoughtAuctionItems from './services/getMyBoughtAuctionItems';
 import ItemList from './components/ItemList';
 import Pagination from '@mui/material/Pagination';
@@ -15,7 +16,7 @@ export default function MyBoughtAuctionItemsPage() {
   const navigate = useNavigate();
 
   const searchParams = new URLSearchParams(location.search);
-  const search = searchParams.get('search');
+  const search = searchParams.get('search') || "";
   const minPrice = searchParams.get('minPrice');
   const maxPrice = searchParams.get('maxPrice');
 
@@ -27,16 +28,8 @@ export default function MyBoughtAuctionItemsPage() {
     setPage(newPage);
   };
 
-  const applyFilters = (filters : any) => {
-    const queryParams = new URLSearchParams();
-
-    for (const key in filters) {
-      if (filters[key] !== '') {
-        queryParams.append(key, filters[key]);
-      }
-    }
-
-    navigate(`?${queryParams.toString()}`);
+  const applyFilters = (filters) => {
+    applyFiltersUtil(filters, navigate);
   };
 
   const { isLoading, data } = useQuery(
@@ -52,7 +45,7 @@ export default function MyBoughtAuctionItemsPage() {
 
   return (
     <div className="div flex flex-row justify-around">
-      <FilterComponent
+      <ItemFilterComponent
         className="basis-2/5"
         applyFilters={applyFilters}
         initialValues={{ search, minPrice, maxPrice }}

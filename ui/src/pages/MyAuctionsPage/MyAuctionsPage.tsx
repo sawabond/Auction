@@ -1,62 +1,45 @@
-import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
-import AuctionList from '../../components/elements/AuctionList/AuctionList';
-import SearchInput from '../../components/elements/Search/Search';
-import { ToastContainer } from 'react-toastify';
-import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
-import getMyAuctions from './services/getMyAuctions';
-import { useLocation } from 'react-router-dom';
+// Presentation Layer: MyAuctionsPage.jsx
+import AuctionFilterComponent from '../../components/elements/Auctions/AuctionFilterComponent';
+import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+import { useMyAuctions } from './hooks/useMyAuctions';
+
+const URL = "/edit";
 
 export default function MyAuctionsPage() {
-  const [auctionNextCursor, setAuctionNextCursor] = useAuctionNextCursor('');
-  const [allAuctions, setAllAuctions] = useState<any>([]);
-  const location = useLocation();
-
   const searchParams = new URLSearchParams(location.search);
-  const pageSize = searchParams.get('pageSize') || 2;
 
-  useEffect(() => {
-    const urlCursor = searchParams.get('cursor');
-    if (urlCursor) {
-      setAuctionNextCursor(urlCursor);
-    }
-  }, []);
+  // Extracting query parameters
+  const nameStartsWith = searchParams.get('name.[sw]') || "";
+  const descriptionContains = searchParams.get('description.[contains]') || "";
+  const onlyActive = searchParams.get('onlyActive') || false;
+  const { currentAuctions, isLoading, currentPage, totalPages, applyFilters, handleChangePage } = useMyAuctions(location);
 
-  const { isLoading, data } = useQuery(['auctions', auctionNextCursor], () => getMyAuctions(pageSize, auctionNextCursor), {
-    keepPreviousData: true,
-    onSuccess: (newData) => {
-      // Check if the new cursor is different from the current one
-      if (newData.cursor !== auctionNextCursor) {
-        setAllAuctions((prevAuctions: any) => {
-          const updatedAuctions = [...prevAuctions, ...newData.auctions];
-          //console.log('Updated auctions:', updatedAuctions);
-          return updatedAuctions;
-        });
-        setAuctionNextCursor(newData.cursor);
-      }
-    },
-  });
-
-  const handleLoadMore = () => {
-    if (data?.cursor) {
-      setAuctionNextCursor(data.cursor);
-    }
-  };
   return (
-    <div className="div">
-      <SearchInput />
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <AuctionList auctions={allAuctions} />
-      )}
+    <div className='div flex flex-row justify-around'>
+      <AuctionFilterComponent 
+        applyFilters={applyFilters}
+        initialValues={{nameStartsWith, descriptionContains, onlyActive}}
+        className='basis-2/5'
+      />
 
-      {data?.cursor && (
-        <button type="submit" onClick={handleLoadMore}>
-          Load More
-        </button>
+      {isLoading ? (
+        <div className="basis-3/5">Loading...</div>
+      ) :  currentAuctions.length === 0 ? (
+        <div className="basis-3/5">No auctions found.</div>
+      ) : (
+        <div className="basis-3/5">
+          <AuctionGroup auctions={currentAuctions} url={URL} />
+          <Stack spacing={2} direction="row" justifyContent="center">
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handleChangePage}
+            />
+          </Stack>
+        </div>
       )}
-      <ToastContainer />
     </div>
   );
 }

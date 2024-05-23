@@ -1,55 +1,85 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
-import { useQuery } from 'react-query';
-import useAuctionNextCursor from '../../hooks/useAuctionNextCursor';
-import SearchInput from '../../components/elements/Search/Search';
 import getAllAuctions from './services/getAllAuctions';
+import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
+import AuctionFilterComponent from '../../components/elements/Auctions/AuctionFilterComponent';
+import { useNavigate } from 'react-router-dom';
+import { applyFilters as applyFiltersUtil } from '../../components/utils/applyFilters';
 
 export default function Home() {
-  const [auctionNextCursor, setAuctionNextCursor] = useAuctionNextCursor('');
-  const [allAuctions, setAllAuctions] = useState<any>([]);
-  const [pageSize] = useState(2);
+  const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const nameStartsWith = searchParams.get('name.[sw]') || "";
+  const descriptionContains = searchParams.get('description.[contains]') || "";
+  const onlyActive = searchParams.get('onlyActive') || false;
 
-  const { isLoading, data } = useQuery(
-    ['auctions', auctionNextCursor],
-    () => getAllAuctions(auctionNextCursor, pageSize),
-    {
-      keepPreviousData: true,
-      onSuccess: (newData) => {
-        // Check if the new cursor is different from the current one
-        if (newData.cursor !== auctionNextCursor) {
-          setAllAuctions((prevAuctions: any) => {
-            const updatedAuctions = [...prevAuctions, ...newData.auctions];
-            return updatedAuctions;
-          });
-          setAuctionNextCursor(newData.cursor);
-        }
-      },
-    }
-  );
+  const [auctionNextCursor, setAuctionNextCursor] = useState('');
+  const [allAuctions, setAllAuctions] = useState([]);
+  const [pageSize] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLoadMore = () => {
-    if (data?.cursor) {
-      setAuctionNextCursor(data.cursor);
-    }
+  const applyFilters = (filters) => {
+    applyFiltersUtil(filters, navigate);
+  };
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      setIsLoading(true);
+      const { auctions, cursor } = await getAllAuctions(
+        '', 
+        pageSize, 
+        nameStartsWith, 
+        descriptionContains, 
+        onlyActive
+      );
+      setAllAuctions(auctions);
+      setAuctionNextCursor(cursor);
+      setIsLoading(false);
+    };
+    fetchInitialData();
+  }, [
+    pageSize, 
+    nameStartsWith, 
+    descriptionContains, 
+    onlyActive
+  ]);
+  
+
+  const handleMoreAuctions = async () => {
+    if (isLoading || !auctionNextCursor) return;
+    setIsLoading(true);
+    const { auctions, cursor } = await getAllAuctions(
+      auctionNextCursor, 
+      pageSize, 
+      nameStartsWith, 
+      descriptionContains, 
+      onlyActive
+    );
+    setAllAuctions(prevAuctions => [...prevAuctions, ...auctions]);
+    setAuctionNextCursor(cursor);
+    setIsLoading(false);
   };
 
   return (
-    <div className="div">
-      <SearchInput />
-      {/*{isLoading ? (*/}
-      {/*  <div>Loading...</div>*/}
-      {/*) : (*/}
-      {/*  <AuctionList auctions={allAuctions} />*/}
-      {/*)}*/}
-
-      {data?.cursor && (
-        <button type="submit" onClick={handleLoadMore}>
-          Load More
-        </button>
-      )}
+    <div className='div flex flex-row justify-around'>
+      <AuctionFilterComponent 
+        applyFilters={applyFilters}
+        initialValues={{ nameStartsWith, descriptionContains, onlyActive }}
+        className='basis-2/5'
+      />
+      <InfiniteScroll
+        dataLength={allAuctions.length}
+        next={handleMoreAuctions}
+        hasMore={!!auctionNextCursor}
+        loader={<p>Loading...</p>}
+        endMessage={<p>No more auctions</p>}
+        className='basis-3/5'
+      >
+        <AuctionGroup auctions={allAuctions} />
+      </InfiniteScroll>
       <ToastContainer />
     </div>
   );
