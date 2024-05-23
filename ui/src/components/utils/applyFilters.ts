@@ -3,7 +3,17 @@ export const applyFilters = (filters: any, navigate: any) => {
   
     for (const key in filters) {
       if (filters[key] != '') {
-        queryParams.append(key, filters[key]);
+        switch(key){
+          case "nameStartsWith":
+            queryParams.append("name.[sw]", filters[key]);
+            break;
+          case "descriptionContains":
+            queryParams.append("description.[contains]", filters[key]);
+            break;
+          default:
+            queryParams.append(key, filters[key]);
+            break;
+        }
       }
     }
 

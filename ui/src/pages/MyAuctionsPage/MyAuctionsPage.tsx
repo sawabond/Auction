@@ -11,8 +11,8 @@ export default function MyAuctionsPage() {
   const searchParams = new URLSearchParams(location.search);
 
   // Extracting query parameters
-  const nameStartsWith = searchParams.get('nameStartsWith') || '';
-  const descriptionContains = searchParams.get('descriptionContains') || '';
+  const nameStartsWith = searchParams.get('name.[sw]') || "";
+  const descriptionContains = searchParams.get('description.[contains]') || "";
   const onlyActive = searchParams.get('onlyActive') || false;
   const { currentAuctions, isLoading, currentPage, totalPages, applyFilters, handleChangePage } = useMyAuctions(location);
 

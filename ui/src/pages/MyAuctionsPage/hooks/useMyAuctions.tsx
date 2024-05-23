@@ -9,19 +9,20 @@ import { applyFilters as applyFiltersUtil } from '../../../components/utils/appl
 export const useMyAuctions = (location) => {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
-  const nameStartsWith = searchParams.get('nameStartsWith') || "";
-  const descriptionContains = searchParams.get('descriptionContains') || "";
+  const nameStartsWith = searchParams.get('name.[sw]') || "";
+  const descriptionContains = searchParams.get('description.[contains]') || "";
   const onlyActive = searchParams.get('onlyActive') || false;
   const [auctionNextCursor, setAuctionNextCursor] = useState('');
   const [allAuctions, setAllAuctions] = useState([]);
   const [currentAuctions, setCurrentAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(3);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
   const applyFilters = (filters) => {
     applyFiltersUtil(filters, navigate);
+    setCurrentPage(1);
   };
  
   useEffect(() => {

@@ -12,8 +12,8 @@ import { applyFilters as applyFiltersUtil } from '../../components/utils/applyFi
 export default function Home() {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
-  const nameStartsWith = searchParams.get('nameStartsWith') || "";
-  const descriptionContains = searchParams.get('descriptionContains') || "";
+  const nameStartsWith = searchParams.get('name.[sw]') || "";
+  const descriptionContains = searchParams.get('description.[contains]') || "";
   const onlyActive = searchParams.get('onlyActive') || false;
 
   const [auctionNextCursor, setAuctionNextCursor] = useState('');
