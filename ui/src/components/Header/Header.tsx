@@ -48,45 +48,59 @@ function Header() {
           </li>
         </ul>
       </nav>
-      <div className="flex items-center">
-        {isLoading ? (
-          <span>Loading...</span>
-        ) : error ? (
-          <span>
-            An error occurred:{' '}
-            {(error as AxiosError).message || 'Unknown error'}
-          </span>
-        ) : (
-          <span>Balance: {balance?.amount} UAH</span>
-        )}
-      </div>
-      <div>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="menu-appbar"
-          aria-haspopup="true"
-          onClick={handleMenu}
-          color="inherit"
-        >
-          <PersonRoundedIcon />
-        </IconButton>
-        <Menu
-          id="menu-appbar"
-          anchorEl={anchorEl}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          keepMounted
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={() => handleNavigate('/profile')}>
-            Profile
-          </MenuItem>
-          <MenuItem onClick={() => handleNavigate('/payment')}>Top up</MenuItem>
-          <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
-        </Menu>
-      </div>
+      {Cookies.get('isAuthenticated') === 'true' ? (
+        <div className="flex items-center">
+          {isLoading ? (
+            <span>Loading...</span>
+          ) : error ? (
+            <span>
+              An error occurred: {(error as AxiosError).message || 'Unknown error'}
+            </span>
+          ) : (
+            <span>Balance: {balance?.amount} UAH</span>
+          )}
+          <div>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <PersonRoundedIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              keepMounted
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={() => handleNavigate('/profile')}>
+                Profile
+              </MenuItem>
+              <MenuItem onClick={() => handleNavigate('/payment')}>Top up</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </div>
+        </div>
+      ) : (
+        <Link to="/welcome" className="text-white hover:text-blue-200 transition duration-150 ease-in-out">
+          <IconButton
+            size="large"
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            color="inherit"
+          >
+            <PersonRoundedIcon />
+          </IconButton>
+          Login
+        </Link>
+      )}
     </header>
   );
 }
