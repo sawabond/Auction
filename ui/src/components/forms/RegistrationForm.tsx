@@ -60,10 +60,10 @@ function RegistrationForm({
             variant="outlined"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            defaultValue="Select role"
+            defaultValue="Select a role"
           >
-            <MenuItem value="Select role" style={{ display: 'none' }}>
-              <em>Select role</em>
+            <MenuItem value="Select a role" style={{ display: 'none' }}>
+              <em>Select a role</em>
             </MenuItem>
             {roleOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>

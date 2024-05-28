@@ -6,6 +6,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import useBalance from './hooks/useBalance';
+import Cookies from 'js-cookie';
 
 function Header() {
   const { data: balance, isLoading, error } = useBalance();
@@ -24,6 +25,11 @@ function Header() {
     navigate(path);
     handleClose();
   };
+
+  const handleLogout = () => {
+    Cookies.remove('token');
+    Cookies.remove('isAuthenticated');
+  }
 
   return (
     <header className="bg-blue-500 text-white p-4 flex justify-between items-center">
@@ -78,6 +84,7 @@ function Header() {
             Profile
           </MenuItem>
           <MenuItem onClick={() => handleNavigate('/payment')}>Top up</MenuItem>
+          <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
         </Menu>
       </div>
     </header>
