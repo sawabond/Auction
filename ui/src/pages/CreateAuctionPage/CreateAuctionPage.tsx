@@ -20,6 +20,7 @@ const auctionTypeOptions = Object.keys(AuctionType)
     value: Number(key),
     label: AuctionType[key as keyof typeof AuctionType],
   }));
+  
 function CreateAuctionPage() {
   const navigate = useNavigate();
   const initialValues = {

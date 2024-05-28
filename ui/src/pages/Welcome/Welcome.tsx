@@ -16,10 +16,18 @@ export default function Welcome() {
         </div>
         <div className="register-link z-[1]">
           <Link
-            to="/auth"
+            to="/auth?mode=register"
             className="uppercase border p-5 h-10 w-96 bg-white text-black flex items-center justify-center rounded-full font-bold"
           >
-            Register now
+            Register
+          </Link>
+        </div>
+        <div className="register-link z-[1]">
+          <Link
+            to="/auth?mode=login"
+            className="uppercase border p-5 h-10 w-96 bg-white text-black flex items-center justify-center rounded-full font-bold"
+          >
+            Login
           </Link>
         </div>
         <div className="shadow-overlay absolute inset-0 bg-white opacity-20 m-auto w-2/5 rounded-lg" />

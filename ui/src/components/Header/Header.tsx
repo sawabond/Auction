@@ -27,14 +27,14 @@ function Header() {
 
   return (
     <header className="bg-blue-500 text-white p-4 flex justify-between items-center">
-      <Link to="/home" className="text-xl font-bold">
+      <Link to="/" className="text-xl font-bold">
         AuctionOnline
       </Link>
       <nav className="flex-grow mx-4">
         <ul className="flex justify-center space-x-4">
           <li>
             <Link
-              to="/home"
+              to="/"
               className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
             >
               Home

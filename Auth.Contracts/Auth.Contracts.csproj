@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Shared\Core\Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="GlobalExceptionHandler" Version="4.0.2" />
+    </ItemGroup>
+
 </Project>

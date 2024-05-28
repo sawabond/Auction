@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import { ILoginFormProps } from '../../interfaces/Forms/ILoginFormProps';
 import { ILoginFormValues } from '../../interfaces/Forms/ILoginFormValues';
-import GoogleIcon from '../../images/Google.svg';
 import validateLoginForm from '../../Validation/validateAuthForms/validationLoginForm';
 import CustomTextField from './CustomTextField';
 import fieldLoginConfig from './fieldLoginConfig';
 
 function LoginForm({
   onSubmit,
-  toggleForm,
-  handleGoogleSignIn,
+  toggleForm
 }: ILoginFormProps) {
   const [isClicked, setIsClicked] = useState(false);
   const handleButtonClick = () => {
@@ -62,15 +60,6 @@ function LoginForm({
           Don&apos;t have an account? Register
         </button>
       </p>
-
-      <button
-        type="button"
-        onClick={handleGoogleSignIn}
-        className="border border-emerald-600 rounded text-black text-center text-xs not-italic font-normal capitalize w-8/12 h-10 flex items-center justify-center gap-1"
-      >
-        <img src={GoogleIcon} alt="Google Icon" className="w-6" />
-        Continue with Google
-      </button>
     </form>
   );
 }

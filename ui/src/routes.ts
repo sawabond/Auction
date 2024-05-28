@@ -16,14 +16,14 @@ const routes: IRoute[] = [
   {
     key: 'home',
     title: 'Home',
-    path: '/home',
+    path: '/',
     enabled: true,
     component: Home,
   },
   {
     key: 'welcome',
     title: 'Welcome',
-    path: '/',
+    path: '/welcome',
     enabled: true,
     component: Welcome,
   },
