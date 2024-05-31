@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -9,8 +9,12 @@ function AuctionItem({
   isCurrentlySelling,
   isSold,
   isCurrentUserTheHighestBidder,
+  startTime
 }: any) {
-  const [bidAmount, setBidAmount] = useState(0);
+  const [bidAmount, setBidAmount] = useState<number | string>(0);
+  const [timeLeft, setTimeLeft] = useState<number>(0); // Time left in seconds
+  const sliderRef = useRef(null);
+
   const sliderSettings = {
     infinite: false,
     centerMode: true,
@@ -29,12 +33,60 @@ function AuctionItem({
       },
     ],
   };
-  const sliderRef = useRef(null);
+
+  useEffect(() => {
+    if (isSold) {
+      setTimeLeft(0);
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const [hours, minutes, seconds] = item.sellingPeriod.split(':').map(Number);
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+
+      const start = new Date(startTime).getTime();
+      const now = new Date().getTime();
+      const elapsed = Math.floor((now - start) / 1000);
+      const remainingTime = totalSeconds - elapsed;
+
+
+      if (remainingTime > totalSeconds){
+        setTimeLeft(null); // Auction has not started yet
+      } else if (remainingTime > 0) {
+        setTimeLeft(remainingTime);
+      } else if (isCurrentlySelling) {
+        setTimeLeft(0); // Auction ended
+      }
+
+    };
+
+    calculateTimeLeft();
+
+    const interval = setInterval(() => {
+      calculateTimeLeft();
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [item.sellingPeriod, startTime, isSold, isCurrentlySelling]);
+
+  const formatTime = (seconds: number | null) => {
+    if (seconds === null) {
+      return 'Not started';
+    }
+
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const handleBid = async () => {
-    if (bidAmount > 0) {
-      await hubService.sendBid(bidAmount, item.id);
+    const numericBidAmount = typeof bidAmount === 'string' ? Number(bidAmount) : bidAmount;
+    if (numericBidAmount > 0) {
+      await hubService.sendBid(numericBidAmount, item.id);
     }
   };
+
   function determineBgColor({
     isSold,
     isCurrentUserTheHighestBidder,
@@ -78,12 +130,13 @@ function AuctionItem({
         <p>Starting Price: {item.startingPrice}</p>
         <p>Actual Price: {item.actualPrice}</p>
         <p>Minimal Bid: {item.minimalBid}</p>
-        {isCurrentlySelling && (
+        <p>Remaining time: {isSold ? '00:00:00' : formatTime(timeLeft)}</p>
+        {isCurrentlySelling && !isSold && (
           <>
             <input
               type="number"
               value={bidAmount}
-              onChange={(e) => setBidAmount(Number(e.target.value))}
+              onChange={(e) => setBidAmount(e.target.value === '' ? '' : Number(e.target.value))}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your bid"
             />

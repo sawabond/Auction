@@ -1,32 +1,16 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import {
-  TextField,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Fab
-} from '@mui/material';
+import { TextField, Button, Fab } from '@mui/material';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import getAuction from './services/getAuction';
-import { AuctionType } from '../../components/enums/AuctionType';
 import editAuction from './services/editAuction';
 import SearchInput from '../../components/elements/Search/Search';
 import ItemListEdit from './components/ItemListEdit/ItemListEdit';
 import deleteAuctionItem from './services/deleteAuctionItem';
 import AddIcon from '@mui/icons-material/Add';
-
-const auctionTypeOptions = Object.keys(AuctionType)
-  .filter((key) => !Number.isNaN(Number(key)))
-  .map((key) => ({
-    value: Number(key),
-    label: AuctionType[key as keyof typeof AuctionType],
-  }));
 
 function EditAuctionPage() {
   const navigate = useNavigate();
@@ -51,7 +35,7 @@ function EditAuctionPage() {
         setInitialValues({
           ...currentAuctionData,
           startTime: currentAuctionData.startTime.slice(0, 16),
-          auctionType: currentAuctionData.auctionType || AuctionType.English,
+          auctionType: currentAuctionData.auctionType,
           allAuctionItems: currentAuctionData.auctionItems
         });
       } catch (error) {
@@ -65,14 +49,7 @@ function EditAuctionPage() {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     description: Yup.string().required('Description is required'),
-    startTime: Yup.string().required('Start time is required'),
-    auctionType: Yup.number()
-      .required('Auction type is required')
-      .oneOf(
-        Object.keys(AuctionType)
-          .map((key) => Number(AuctionType[key as keyof typeof AuctionType]))
-          .filter((value) => !Number.isNaN(value))
-      ),
+    startTime: Yup.string().required('Start time is required')
   });
 
   const mutation = useMutation(editAuction, {
@@ -174,24 +151,7 @@ function EditAuctionPage() {
                 }}
                 sx={{ mb: 1 }}
               />
-
-              <FormControl>
-                <InputLabel>Auction Type</InputLabel>
-                <Field
-                  as={Select}
-                  name="auctionType"
-                  error={touched.auctionType && !!errors.auctionType}
-                >
-                  {auctionTypeOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Field>
-              </FormControl>
-              {touched.auctionType && errors.auctionType && (
-                <div>{errors.auctionType as ReactNode}</div> 
-              )}            
+      
               <Button type="submit">Save</Button>
               
             </Form>
