@@ -1,21 +1,19 @@
 import { useState } from 'react';
-import { Field, useFormik } from 'formik';
+import { useFormik } from 'formik';
+import { useTranslation } from 'react-i18next';
+import { FormControl, MenuItem, TextField } from '@material-ui/core';
 import fieldRegistrationConfig from './fieldRegistrationConfig';
 import { IRegisterFormValues } from '../../interfaces/Forms/IRegisterFormValues';
 import { IRegisterFormProps } from '../../interfaces/Forms/IRegisterFormProps';
 import validateRegisterForm from '../../Validation/validateAuthForms/validationRegisterForm';
 import CustomTextField from './CustomTextField';
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 
 const roleOptions = [
-  { value: "User", label: "User" },
-  { value: "Seller", label: "Seller" }
+  { value: 'User', label: 'User' },
+  { value: 'Seller', label: 'Seller' },
 ];
 
-function RegistrationForm({
-  onSubmit,
-  toggleForm
-}: IRegisterFormProps) {
+function RegistrationForm({ onSubmit, toggleForm }: IRegisterFormProps) {
   const [isClicked, setIsClicked] = useState(false);
   const handleButtonClick = () => {
     setIsClicked(true);
@@ -23,7 +21,7 @@ function RegistrationForm({
       setIsClicked(false);
     }, 200);
   };
-
+  const { t } = useTranslation();
   const formik = useFormik<IRegisterFormValues>({
     initialValues: {
       name: '',
@@ -31,7 +29,7 @@ function RegistrationForm({
       email: '',
       password: '',
       confirmPassword: '',
-      role: ''
+      role: '',
     },
     validate: validateRegisterForm,
     onSubmit: (values) => {
@@ -46,7 +44,7 @@ function RegistrationForm({
     >
       <div className="flex flex-col justify-center items-center gap-2 p-8">
         <h1 className="text-black text-center text-lg not-italic font-semibold uppercase">
-          Register
+          {t('registerTitle')}
         </h1>
         {fieldRegistrationConfig.map((field) => (
           <CustomTextField field={field} formik={formik} key={field.id} />
@@ -63,7 +61,7 @@ function RegistrationForm({
             defaultValue="Select a role"
           >
             <MenuItem value="Select a role" style={{ display: 'none' }}>
-              <em>Select a role</em>
+              <em>{t('selectRole')}</em>
             </MenuItem>
             {roleOptions.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -80,7 +78,7 @@ function RegistrationForm({
           style={{ background: 'rgba(5, 81, 81, 0.80)' }}
           onClick={handleButtonClick}
         >
-          Sign up
+          {t('signUp')}
         </button>
         <p className="text-blue-500">
           <button
@@ -88,7 +86,7 @@ function RegistrationForm({
             className="link-button underline"
             onClick={toggleForm}
           >
-            Already have an account? Login
+            {t('alreadyHaveAccount')}
           </button>
         </p>
       </div>

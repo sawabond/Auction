@@ -11,6 +11,7 @@ import {
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import createAuction from './services/createAuction';
 import { AuctionType } from '../../components/enums/AuctionType';
 
@@ -20,9 +21,10 @@ const auctionTypeOptions = Object.keys(AuctionType)
     value: Number(key),
     label: AuctionType[key as keyof typeof AuctionType],
   }));
-  
+
 function CreateAuctionPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const initialValues = {
     name: '',
     description: '',
@@ -31,11 +33,11 @@ function CreateAuctionPage() {
   };
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    description: Yup.string().required('Description is required'),
-    startTime: Yup.string().required('Start time is required'),
+    name: Yup.string().required(t('nameRequired')),
+    description: Yup.string().required(t('descriptionRequired')),
+    startTime: Yup.string().required(t('startTimeRequired')),
     auctionType: Yup.number()
-      .required('Auction type is required')
+      .required(t('auctionTypeRequired'))
       .oneOf(
         Object.keys(AuctionType)
           .map((key) => Number(AuctionType[key as keyof typeof AuctionType]))
@@ -64,13 +66,13 @@ function CreateAuctionPage() {
     >
       {({ values, errors, touched, handleChange }) => (
         <div className="flex flex-col justify-center items-center h-screen">
-          <h1 className="text-3xl font-bold mb-4">Create Auction</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('createAuctionTitle')}</h1>
           <Form className="flex flex-col w-6/12 shadow p-8 rounded">
             <Field
               as={TextField}
               className="mb-2"
               name="name"
-              label="Name"
+              label={t('name')}
               error={touched.name && !!errors.name}
               helperText={touched.name && errors.name}
               sx={{ mb: 1 }}
@@ -78,7 +80,7 @@ function CreateAuctionPage() {
             <Field
               as={TextField}
               name="description"
-              label="Description"
+              label={t('auctionDescription')}
               multiline
               error={touched.description && !!errors.description}
               helperText={touched.description && errors.description}
@@ -86,7 +88,7 @@ function CreateAuctionPage() {
             />
             <TextField
               type="datetime-local"
-              label="Start Time"
+              label={t('startTime')}
               name="startTime"
               value={values.startTime}
               onChange={handleChange}
@@ -99,7 +101,7 @@ function CreateAuctionPage() {
             />
 
             <FormControl>
-              <InputLabel>Auction Type</InputLabel>
+              <InputLabel>{t('auctionType')}</InputLabel>
               <Field
                 as={Select}
                 name="auctionType"
@@ -107,7 +109,7 @@ function CreateAuctionPage() {
               >
                 {auctionTypeOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
-                    {option.label}
+                    {t(option.label)}
                   </MenuItem>
                 ))}
               </Field>
@@ -115,7 +117,7 @@ function CreateAuctionPage() {
             {touched.auctionType && errors.auctionType && (
               <div>{errors.auctionType}</div>
             )}
-            <Button type="submit">Create</Button>
+            <Button type="submit">{t('create')}</Button>
           </Form>
         </div>
       )}

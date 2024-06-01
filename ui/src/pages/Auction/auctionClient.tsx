@@ -4,9 +4,10 @@ import { Container } from '@material-ui/core';
 import { toast } from 'react-toastify';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import { useQueryClient } from 'react-query';
+import { useTranslation } from 'react-i18next';
 import Auction from './components/Auction';
 import AuctionHubService from './AuctionHubService';
-import { useQueryClient } from 'react-query';
 import useUserFromToken from '../../hooks/useUserFromToken';
 
 function AuctionMessaging() {
@@ -17,6 +18,7 @@ function AuctionMessaging() {
   const [isAuctionStarted, setIsAuctionStarted] = useState(false);
   const [isAuctionClosed, setIsAuctionClosed] = useState(false);
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!auctionId) return;
@@ -102,11 +104,7 @@ function AuctionMessaging() {
             className="text-blue-500"
             style={{ fontSize: 60 }}
           />
-          <p className="mt-2 text-lg text-blue-500">
-            Waiting for the auction to start. Get ready to discover unique finds
-            and incredible deals. The thrill of the auction awaits you. Don't
-            miss out on the chance to claim your treasure. Stay tuned!
-          </p>
+          <p className="mt-2 text-lg text-blue-500">{t('waitingForAuction')}</p>
         </div>
       ) : isAuctionClosed ? (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center border border-gray-200 shadow-lg  rounded-lg bg-white p-14">
@@ -114,15 +112,12 @@ function AuctionMessaging() {
             className="text-blue-500"
             style={{ fontSize: 60 }}
           />
-          <p className="mt-5 text-lg text-blue-500">
-            This auction has closed. Check out our other auctions and find more
-            amazing items!
-          </p>
+          <p className="mt-5 text-lg text-blue-500">{t('auctionClosed')}</p>
         </div>
       ) : auction ? (
         <Auction data={auction} hubService={hubService} />
       ) : (
-        <div>Loading Auction...</div>
+        <div>{t('loadingAuction')}</div>
       )}
     </Container>
   );
