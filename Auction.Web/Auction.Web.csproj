@@ -12,6 +12,7 @@
     <ItemGroup>
         <PackageReference Include="Castle.Core" Version="5.1.1" />
         <PackageReference Include="Castle.Core.AsyncInterceptor" Version="2.1.0" />
+        <PackageReference Include="GlobalExceptionHandler" Version="4.0.2" />
         <PackageReference Include="KafkaFlow.LogHandler.Console" Version="3.0.3" />
         <PackageReference Include="KafkaFlow.Microsoft.DependencyInjection" Version="3.0.3" />
         <PackageReference Include="KafkaFlow.Serializer.JsonCore" Version="3.0.3" />

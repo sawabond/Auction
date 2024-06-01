@@ -21,6 +21,9 @@ function validateRegisterForm(values: IRegisterFormValues) {
   } else if (values.confirmPassword !== values.password) {
     errors.confirmPassword = 'Passwords do not match';
   }
+  if (values.role == "Select a role") {
+    errors.role = 'Role must be selected';
+  }
   return errors;
 }
 export default validateRegisterForm;
