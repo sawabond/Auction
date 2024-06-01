@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
-import { useFormik } from 'formik';
-import GoogleIcon from '../../images/Google.svg';
+import { useState } from 'react';
+import { Field, useFormik } from 'formik';
 import fieldRegistrationConfig from './fieldRegistrationConfig';
 import { IRegisterFormValues } from '../../interfaces/Forms/IRegisterFormValues';
 import { IRegisterFormProps } from '../../interfaces/Forms/IRegisterFormProps';
 import validateRegisterForm from '../../Validation/validateAuthForms/validationRegisterForm';
 import CustomTextField from './CustomTextField';
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+
+const roleOptions = [
+  { value: "User", label: "User" },
+  { value: "Seller", label: "Seller" }
+];
 
 function RegistrationForm({
   onSubmit,
-  toggleForm,
-  handleGoogleSignIn,
+  toggleForm
 }: IRegisterFormProps) {
   const [isClicked, setIsClicked] = useState(false);
   const handleButtonClick = () => {
@@ -19,6 +23,7 @@ function RegistrationForm({
       setIsClicked(false);
     }, 200);
   };
+
   const formik = useFormik<IRegisterFormValues>({
     initialValues: {
       name: '',
@@ -26,7 +31,7 @@ function RegistrationForm({
       email: '',
       password: '',
       confirmPassword: '',
-      role: 'User'
+      role: ''
     },
     validate: validateRegisterForm,
     onSubmit: (values) => {
@@ -46,6 +51,27 @@ function RegistrationForm({
         {fieldRegistrationConfig.map((field) => (
           <CustomTextField field={field} formik={formik} key={field.id} />
         ))}
+        <FormControl className="w-9/12">
+          <TextField
+            id="role"
+            name="role"
+            label="Role"
+            select
+            variant="outlined"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            defaultValue="Select a role"
+          >
+            <MenuItem value="Select a role" style={{ display: 'none' }}>
+              <em>Select a role</em>
+            </MenuItem>
+            {roleOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </FormControl>
         <button
           type="submit"
           className={`w-9/12 h-10 rounded text-white uppercase transition-transform ${
@@ -65,14 +91,6 @@ function RegistrationForm({
             Already have an account? Login
           </button>
         </p>
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="border border-emerald-600 rounded text-black text-center text-xs not-italic font-normal capitalize w-8/12 h-10 flex items-center justify-center gap-1"
-        >
-          <img src={GoogleIcon} alt="Google Icon" className="w-6" />
-          Continue with Google
-        </button>
       </div>
     </form>
   );

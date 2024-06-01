@@ -68,15 +68,11 @@ function EditAuctionPage() {
 
   const handleDelete = async (auctionItemId: string) => {
     try {
-      // Delete the auction item
       await deleteAuctionItem(auctionId, auctionItemId);
-  
-      // Update the auction items state by filtering out the deleted item
-      const updatedAuctionItems = allAuctionItems.filter((item: { id: string; }) => item.id !== auctionItemId);
+      const updatedAuctionItems = allAuctionItems.filter(
+        (item: { id: string; }) => item.id !== auctionItemId);
+
       setAuctionItems(updatedAuctionItems);
-  
-      // Trigger the mutation to update the backend
-      //mutation.mutate();
     } catch (error) {
       console.error('Error deleting auction item:', error);
     }
@@ -102,12 +98,11 @@ function EditAuctionPage() {
       startTime: isoString,
     };
   
-    // Pass the updated values to mutation.mutate
     mutation.mutate(updatedValues);
   };
 
   if (!initialValues) {
-    return <div>Loading...</div>; // Or any loading indicator
+    return <div>Loading...</div>;
   }
 
   return (
@@ -116,9 +111,14 @@ function EditAuctionPage() {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, errors, touched, handleChange }) => (
+      {({ 
+        values, 
+        errors, 
+        touched, 
+        handleChange 
+      }) => (
         <div className="flex flex-row justify-center items-center h-svh gap-6">
-            <Form className="flex flex-col w-4/12 shadow p-8 rounded">
+          <Form className="flex flex-col w-4/12 shadow p-8 rounded">
             <h1 className="text-3xl font-bold mb-4">Edit Auction</h1>
               <Field
                 as={TextField}
@@ -145,30 +145,33 @@ function EditAuctionPage() {
                 value={values.startTime}
                 onChange={handleChange}
                 error={touched.startTime && !!errors.startTime}
-
                 InputLabelProps={{
                   shrink: true,
                 }}
                 sx={{ mb: 1 }}
               />
-      
               <Button type="submit">Save</Button>
-              
             </Form>
             <div className="flex flex-col">
               <div className="flex flex-row justify-center items-center">
-                <Fab className="bg-violet-950 text-white rounded" size="small" color="primary" aria-label="add" onClick={handleClick}>
+                <Fab 
+                  className="bg-violet-950 text-white rounded" 
+                  size="small" 
+                  color="primary" 
+                  aria-label="add" 
+                  onClick={handleClick}
+                >
                   <AddIcon />
                 </Fab>
                 <div className="w-full max-w-full">
                   <SearchInput />
                 </div>
               </div>
-              {false ? (
-                <div>Loading...</div>
-              ) : (
-                <ItemListEdit auctionItems={allAuctionItems} onMove={handleMove} onDelete={handleDelete} />
-              )}
+              <ItemListEdit 
+                auctionItems={allAuctionItems} 
+                onMove={handleMove} 
+                onDelete={handleDelete} 
+              />
             </div>
           </div>
       )}

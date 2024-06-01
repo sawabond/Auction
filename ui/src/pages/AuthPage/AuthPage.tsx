@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import RegistrationForm from '../../components/forms/RegistrationForm';
@@ -10,6 +10,7 @@ import apiClient from '../../api/rest/api';
 import setAuthenticationCookies from './Logic/setAuthenticationCookies';
 
 function AuthPage() {
+  const location = useLocation();
   const [showLoginForm, setShowLoginForm] = useState<boolean>(false);
   const navigate = useNavigate();
   const toggleForm = () => {
@@ -18,13 +19,23 @@ function AuthPage() {
   const loginMutation = useMutation(apiClient.login);
   const registrationMutation = useMutation(apiClient.register);
 
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const mode = queryParams.get('mode');
+    if (mode === 'login') {
+      setShowLoginForm(true);
+    } else if (mode === 'register') {
+      setShowLoginForm(false);
+    }
+  }, [location]);
+
   const handleLogin = async (values: ILoginFormValues) => {
     try {
       const { token } = await loginMutation.mutateAsync(values);
 
       setAuthenticationCookies(token);
 
-      navigate('/home');
+      navigate('/');
       toast.success('Login successful. Welcome!');
     } catch (error) {
       toast.error('Login failed. Please check your credentials and try again.');
@@ -42,23 +53,17 @@ function AuthPage() {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // Handle Google sign-in logic
-  };
-
   return (
     <div className="h-screen w-full bg-welcome bg-no-repeat bg-cover bg-center flex justify-center items-center">
       {showLoginForm ? (
         <LoginForm
           onSubmit={handleLogin}
           toggleForm={toggleForm}
-          handleGoogleSignIn={handleGoogleSignIn}
         />
       ) : (
         <RegistrationForm
           onSubmit={handleRegistration}
           toggleForm={toggleForm}
-          handleGoogleSignIn={handleGoogleSignIn}
         />
       )}
     </div>
