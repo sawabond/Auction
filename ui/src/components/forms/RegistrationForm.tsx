@@ -1,16 +1,12 @@
-import { useState } from 'react';
-import { Field, useFormik } from 'formik';
+import React, { useState } from 'react';
+import { useFormik } from 'formik';
 import fieldRegistrationConfig from './fieldRegistrationConfig';
 import { IRegisterFormValues } from '../../interfaces/Forms/IRegisterFormValues';
 import { IRegisterFormProps } from '../../interfaces/Forms/IRegisterFormProps';
 import validateRegisterForm from '../../Validation/validateAuthForms/validationRegisterForm';
 import CustomTextField from './CustomTextField';
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
-
-const roleOptions = [
-  { value: "User", label: "User" },
-  { value: "Seller", label: "Seller" }
-];
+import { FormControl, MenuItem, TextField } from '@material-ui/core';
+import { Roles } from '../enums/roles';
 
 function RegistrationForm({
   onSubmit,
@@ -42,7 +38,7 @@ function RegistrationForm({
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className="border rounded-lg bg-white h-90vh w-2/4  max-w-xl"
+      className="border rounded-lg bg-white h-90vh w-2/4 max-w-xl"
     >
       <div className="flex flex-col justify-center items-center gap-2 p-8">
         <h1 className="text-black text-center text-lg not-italic font-semibold uppercase">
@@ -60,14 +56,16 @@ function RegistrationForm({
             variant="outlined"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            defaultValue="Select a role"
+            value={formik.values.role || 'Select a role'}
+            error={formik.touched.role && Boolean(formik.errors.role)}
+            helperText={formik.touched.role && formik.errors.role}
           >
             <MenuItem value="Select a role" style={{ display: 'none' }}>
               <em>Select a role</em>
             </MenuItem>
-            {roleOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            {Object.values(Roles).map((role) => (
+              <MenuItem key={role} value={role}>
+                {role}
               </MenuItem>
             ))}
           </TextField>
