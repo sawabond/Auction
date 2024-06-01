@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="GlobalExceptionHandler" Version="4.0.2" />
       <PackageReference Include="Riok.Mapperly" Version="3.3.0" />
     </ItemGroup>
 
