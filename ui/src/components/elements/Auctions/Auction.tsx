@@ -16,7 +16,7 @@ const LOCALE = "en-US";
 function Auction({ auction }: any) {
   const auctionStartTime: Date = new Date(auction.startTime);
   const formattedAuctionStartTime: string = auctionStartTime.toLocaleString(LOCALE, OPTIONS);
-  const auctionEndTime: Date = new Date(auction.startTime);
+  const auctionEndTime: Date = new Date(auction.endTime);
   const formattedAuctionEndTime: string = auctionEndTime.toLocaleString(LOCALE, OPTIONS);
 
   return (

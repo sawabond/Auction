@@ -70,7 +70,7 @@ public class AuctionService(
                 MinimalBid = 20m,
                 Name = "Gucci Jeans",
                 StartingPrice = 100,
-                SellingPeriod = TimeSpan.FromSeconds(30),
+                SellingPeriod = TimeSpan.FromSeconds(60),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()
@@ -97,7 +97,7 @@ public class AuctionService(
                 MinimalBid = 30m,
                 Name = "Luis Vuitton T-Shirt",
                 StartingPrice = 100m,
-                SellingPeriod = TimeSpan.FromSeconds(30),
+                SellingPeriod = TimeSpan.FromSeconds(60),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()
@@ -124,7 +124,7 @@ public class AuctionService(
                 MinimalBid = 30m,
                 Name = "Versace T-Shirt",
                 StartingPrice = 100m,
-                SellingPeriod = TimeSpan.FromSeconds(30),
+                SellingPeriod = TimeSpan.FromSeconds(60),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()
@@ -152,7 +152,7 @@ public class AuctionService(
                 MinimalBid = 30m,
                 Name = "Armani T-Shirt",
                 StartingPrice = 100m,
-                SellingPeriod = TimeSpan.FromSeconds(30),
+                SellingPeriod = TimeSpan.FromSeconds(60),
                 Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
                 {
                     new()

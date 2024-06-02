@@ -1,19 +1,17 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import { useTranslation } from 'react-i18next';
-import { FormControl, MenuItem, TextField } from '@material-ui/core';
 import fieldRegistrationConfig from './fieldRegistrationConfig';
 import { IRegisterFormValues } from '../../interfaces/Forms/IRegisterFormValues';
 import { IRegisterFormProps } from '../../interfaces/Forms/IRegisterFormProps';
 import validateRegisterForm from '../../Validation/validateAuthForms/validationRegisterForm';
 import CustomTextField from './CustomTextField';
+import { FormControl, MenuItem, TextField } from '@material-ui/core';
+import { Roles } from '../enums/roles';
 
-const roleOptions = [
-  { value: 'User', label: 'User' },
-  { value: 'Seller', label: 'Seller' },
-];
-
-function RegistrationForm({ onSubmit, toggleForm }: IRegisterFormProps) {
+function RegistrationForm({
+  onSubmit,
+  toggleForm
+}: IRegisterFormProps) {
   const [isClicked, setIsClicked] = useState(false);
   const handleButtonClick = () => {
     setIsClicked(true);
@@ -21,7 +19,7 @@ function RegistrationForm({ onSubmit, toggleForm }: IRegisterFormProps) {
       setIsClicked(false);
     }, 200);
   };
-  const { t } = useTranslation();
+
   const formik = useFormik<IRegisterFormValues>({
     initialValues: {
       name: '',
@@ -29,7 +27,7 @@ function RegistrationForm({ onSubmit, toggleForm }: IRegisterFormProps) {
       email: '',
       password: '',
       confirmPassword: '',
-      role: '',
+      role: ''
     },
     validate: validateRegisterForm,
     onSubmit: (values) => {
@@ -40,11 +38,11 @@ function RegistrationForm({ onSubmit, toggleForm }: IRegisterFormProps) {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className="border rounded-lg bg-white h-90vh w-2/4  max-w-xl"
+      className="border rounded-lg bg-white h-90vh w-2/4 max-w-xl"
     >
       <div className="flex flex-col justify-center items-center gap-2 p-8">
         <h1 className="text-black text-center text-lg not-italic font-semibold uppercase">
-          {t('registerTitle')}
+          Register
         </h1>
         {fieldRegistrationConfig.map((field) => (
           <CustomTextField field={field} formik={formik} key={field.id} />
@@ -58,14 +56,16 @@ function RegistrationForm({ onSubmit, toggleForm }: IRegisterFormProps) {
             variant="outlined"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            defaultValue="Select a role"
+            value={formik.values.role || 'Select a role'}
+            error={formik.touched.role && Boolean(formik.errors.role)}
+            helperText={formik.touched.role && formik.errors.role}
           >
             <MenuItem value="Select a role" style={{ display: 'none' }}>
-              <em>{t('selectRole')}</em>
+              <em>Select a role</em>
             </MenuItem>
-            {roleOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
+            {Object.values(Roles).map((role) => (
+              <MenuItem key={role} value={role}>
+                {role}
               </MenuItem>
             ))}
           </TextField>
@@ -78,7 +78,7 @@ function RegistrationForm({ onSubmit, toggleForm }: IRegisterFormProps) {
           style={{ background: 'rgba(5, 81, 81, 0.80)' }}
           onClick={handleButtonClick}
         >
-          {t('signUp')}
+          Sign up
         </button>
         <p className="text-blue-500">
           <button
@@ -86,7 +86,7 @@ function RegistrationForm({ onSubmit, toggleForm }: IRegisterFormProps) {
             className="link-button underline"
             onClick={toggleForm}
           >
-            {t('alreadyHaveAccount')}
+            Already have an account? Login
           </button>
         </p>
       </div>
