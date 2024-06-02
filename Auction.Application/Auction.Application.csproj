@@ -16,7 +16,6 @@
       <PackageReference Include="Ardalis.Specification" Version="8.0.0" />
       <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
       <PackageReference Include="FluentResults" Version="3.15.2" />
-      <PackageReference Include="GlobalExceptionHandler" Version="4.0.2" />
       <PackageReference Include="Riok.Mapperly" Version="3.3.0" />
       <PackageReference Include="Microsoft.AspNetCore.App" Version="5.0.0" />
     </ItemGroup>
