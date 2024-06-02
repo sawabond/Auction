@@ -18,9 +18,7 @@ function validateRegisterForm(values: IRegisterFormValues) {
 
   if (!values.password) {
     errors.password = 'Password is required';
-  // } else if (values.password.length < 6) {
-  //   errors.password = 'Password must be at least 6 characters';
-  // }
+
   } else if (
     !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(values.password)
   ) {
