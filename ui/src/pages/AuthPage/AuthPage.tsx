@@ -8,6 +8,7 @@ import { IRegisterFormValues } from '../../interfaces/Forms/IRegisterFormValues'
 import { ILoginFormValues } from '../../interfaces/Forms/ILoginFormValues';
 import apiClient from '../../api/rest/api';
 import setAuthenticationCookies from './Logic/setAuthenticationCookies';
+import { useTranslation } from 'react-i18next';
 
 function AuthPage() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function AuthPage() {
   };
   const loginMutation = useMutation(apiClient.login);
   const registrationMutation = useMutation(apiClient.register);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -36,9 +38,9 @@ function AuthPage() {
       setAuthenticationCookies(token);
 
       navigate('/');
-      toast.success('Login successful. Welcome!');
+      toast.success(t('loginSuccess'));
     } catch (error) {
-      toast.error('Login failed. Please check your credentials and try again.');
+      toast.error(t('loginFailed'));
     }
   };
 
@@ -48,7 +50,7 @@ function AuthPage() {
       await handleLogin(values);
     } catch (error: any) {
       toast.error(
-        error.response?.data ?? 'Registration failed. Please try again.'
+        error.response?.data ?? t('registrationSuccess')
       );
     }
   };

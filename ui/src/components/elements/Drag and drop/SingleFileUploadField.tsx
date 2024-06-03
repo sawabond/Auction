@@ -1,6 +1,7 @@
 import { Grid, LinearProgress } from '@material-ui/core';
 import { FileHeader } from './FileHeader';
 import { Card, CardMedia } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export interface SingleFileUploadField {
   file: File;
@@ -12,19 +13,16 @@ export function SingleFileUploadField({
   file,
   onDelete,
 }: SingleFileUploadField) {
-
-  console.log(file)
+  const { t } = useTranslation();
   return (
     <Card sx={{ width: 160 }}>
       <Grid item>
-
         <CardMedia
           component="img"
           image={URL.createObjectURL(file)}
-          alt="Your Image"
+          alt={t('yourImage')}
           className="w-32 h-32 object-cover"
         />
-
         <FileHeader file={file} onDelete={onDelete} />
         <LinearProgress variant="determinate" value={100} />
       </Grid>

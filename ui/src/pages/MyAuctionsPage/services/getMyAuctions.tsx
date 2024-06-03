@@ -6,7 +6,8 @@ const getMyAuctions = async (
   pageSize : any,
   search : any,
   description : any,
-  onlyActive : any
+  onlyActive : any,
+  t : any
 ) => {
 
   let urlParams = {
@@ -42,7 +43,7 @@ const getMyAuctions = async (
     });
     return response.data;
   } catch (error) {
-    throw new Error('Network response was not ok');
+    throw new Error(t('networkError'));
   }
 };
 

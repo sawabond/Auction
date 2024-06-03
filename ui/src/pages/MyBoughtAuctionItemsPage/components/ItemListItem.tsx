@@ -1,33 +1,38 @@
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import { Typography } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
-const DeliveryStatus = {
-  0: 'Not Started',
-  1: 'In Progress',
-  2: 'Delivered'
-};
+
 
 function ItemListItem({ auctionItem: auctionItem} : { auctionItem: any}) 
 {
+  const { t } = useTranslation();
+
+  const DeliveryStatus = {
+    0: t('notStarted'),
+    1: t('inProgress'),
+    2: t('delivered'),
+  };
+
   return (
     <Card className="MuiBox-root grid grid-cols-6 items-center gap-4">
       <CardMedia
         component="img"
         image={auctionItem.photos[0]?.photoUrl}
-        alt="Your Image"
+        alt={t('yourImage')}
         className="w-1/3 h-32 object-cover"
       />
       <CardMedia
         component="img"
         image={auctionItem.photos[1]?.photoUrl}
-        alt="Your Image"
+        alt={t('yourImage')}
         className="w-1/3 h-32 object-cover"
       />
       <CardMedia
         component="img"
         image={auctionItem.photos[2]?.photoUrl}
-        alt="Your Image"
+        alt={t('yourImage')}
         className="w-1/3 h-32 object-cover"
       />
       <Typography variant="body1" className="text-lg font-semibold">{auctionItem.name}</Typography>

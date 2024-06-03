@@ -20,10 +20,11 @@ function EditAuctionItemPage() {
   useEffect(() => {
     const fetchAuctionData = async () => {
       try {
-        const currentAuctionItemData = await getAuctionItem({
+        const currentAuctionItemData = await getAuctionItem(
           auctionId,
           auctionItemId,
-        });
+          t
+        );
         console.log('Fetched auction item data:', currentAuctionItemData);
 
         if (
@@ -35,7 +36,8 @@ function EditAuctionItemPage() {
               async (photo: { photoUrl: string; name: string }) => {
                 return downloadFileFromS3AndMakeFile(
                   photo.photoUrl,
-                  photo.name
+                  photo.name,
+                  t
                 );
               }
             )
@@ -78,7 +80,7 @@ function EditAuctionItemPage() {
       .required(t('itemDescriptionRequired')),
   });
 
-  const mutation = useMutation(addAuctionItem, {
+  const mutation = useMutation((values: any) => addAuctionItem(values, auctionId, t), {
     onSuccess: () => {
       toast.success(t('auctionItemSavedSuccess'));
     },
@@ -109,7 +111,7 @@ function EditAuctionItemPage() {
       }
     }
     try {
-      await mutation.mutateAsync({ formData, auctionId });
+      await mutation.mutateAsync({ formData, auctionId, t });
 
       navigate(`/auctions/${auctionId}/edit`);
     } catch (error: any) {

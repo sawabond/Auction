@@ -1,15 +1,17 @@
 import List from '@material-ui/core/List';
 import ItemListItemEdit from '../ItemListItemEdit/ItemListItemEdit';
+import { useTranslation } from 'react-i18next';
 
 function ItemListEdit({ auctionItems, onDelete, onMove }: 
-  { 
-    auctionItems: any[] | undefined, 
-    onDelete: (auctionId: string) => void, 
-    onMove: (auctionId: string) => void 
-  }) {
+{ 
+  auctionItems: any[] | undefined, 
+  onDelete: (auctionId: string) => void, 
+  onMove: (auctionId: string) => void 
+}) {
 
+  const { t } = useTranslation();
   if (!auctionItems) {
-    return <div>No items to display</div>;
+    return <div>{t('noItems')}</div>;
   }
 
   return (

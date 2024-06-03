@@ -64,7 +64,7 @@ function AuctionMessaging() {
       },
       () => {
         setIsAuctionClosed(true);
-        toast.info('Auction closed.');
+        toast.info(t('auctionClosedMessage'));
       }
     );
 

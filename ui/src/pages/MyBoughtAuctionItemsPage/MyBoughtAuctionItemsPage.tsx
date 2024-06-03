@@ -15,6 +15,7 @@ const PAGE_SIZE = 10;
 export default function MyBoughtAuctionItemsPage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const searchParams = new URLSearchParams(location.search);
   const search = searchParams.get('search') || '';
@@ -24,7 +25,7 @@ export default function MyBoughtAuctionItemsPage() {
   const [page, setPage] = useState(PAGE);
   const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const { t } = useTranslation();
+
   const handleChangePage = (event: any, newPage: any) => {
     setPage(newPage);
   };
@@ -35,7 +36,7 @@ export default function MyBoughtAuctionItemsPage() {
 
   const { isLoading, data } = useQuery(
     ['auctionItems', page, pageSize, search, minPrice, maxPrice],
-    () => getMyBoughtAuctionItems(page, pageSize, search, minPrice, maxPrice),
+    () => getMyBoughtAuctionItems(page, pageSize, search, minPrice, maxPrice, t),
     {
       keepPreviousData: true,
       onSuccess: (data) => {

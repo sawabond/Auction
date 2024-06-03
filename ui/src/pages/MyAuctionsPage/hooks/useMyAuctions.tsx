@@ -6,7 +6,7 @@ import { useState } from 'react';
 import getMyAuctions from '../services/getMyAuctions';
 import { applyFilters as applyFiltersUtil } from '../../../components/utils/applyFilters';
 
-export const useMyAuctions = (location) => {
+export const useMyAuctions = (location, t) => {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const nameStartsWith = searchParams.get('name.[sw]') || "";
@@ -33,7 +33,8 @@ export const useMyAuctions = (location) => {
         pageSize, 
         nameStartsWith, 
         descriptionContains, 
-        onlyActive);
+        onlyActive,
+      t);
       setCurrentAuctions(auctions);
       setAllAuctions(auctions);
       setAuctionNextCursor(cursor);
@@ -52,7 +53,8 @@ export const useMyAuctions = (location) => {
             pageSize, 
             nameStartsWith, 
             descriptionContains, 
-            onlyActive
+            onlyActive,
+            t
         );
         setAllAuctions([...allAuctions, ...auctions]);
         setCurrentAuctions(auctions);

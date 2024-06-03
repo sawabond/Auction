@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { ILoginFormProps } from '../../interfaces/Forms/ILoginFormProps';
 import { ILoginFormValues } from '../../interfaces/Forms/ILoginFormValues';
 import validateLoginForm from '../../Validation/validateAuthForms/validationLoginForm';
 import CustomTextField from './CustomTextField';
-import fieldLoginConfig from './fieldLoginConfig';
+import useFieldLoginConfig from './fieldLoginConfig';
 
 function LoginForm({ onSubmit, toggleForm }: ILoginFormProps) {
   const { t } = useTranslation();
@@ -16,6 +16,8 @@ function LoginForm({ onSubmit, toggleForm }: ILoginFormProps) {
       setIsClicked(false);
     }, 200);
   };
+
+  const fieldLoginConfig = useFieldLoginConfig();
 
   const formik = useFormik<ILoginFormValues>({
     initialValues: {

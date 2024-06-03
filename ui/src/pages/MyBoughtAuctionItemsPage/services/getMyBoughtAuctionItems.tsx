@@ -6,9 +6,11 @@ const getMyBoughtAuctionItems = async (
   pageSize : any, 
   search : any,
   minPrice : any,
-  maxPrice : any
+  maxPrice : any,
+  t : any
   ) => {
     const token = getTokenFromCookies();
+
     let urlParams = {
       page,
       pageSize,
@@ -41,7 +43,7 @@ const getMyBoughtAuctionItems = async (
       });
       return response.data;
     } catch (error) {
-      throw new Error('Network response was not ok');
+      throw new Error(t('networkError'));
     }
   };
   

@@ -1,11 +1,14 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Bid: React.FC<any> = ({ bid }) => {
+  const { t } = useTranslation();
+
   return (
     <div>
-      <p>Bid Amount: {bid.amount}</p>
-      <p>Date: {bid.date}</p>
-      <p>Actual Price: {bid.actualPrice}</p>
+      <p>{t('bidAmount')}: {bid.amount}</p>
+      <p>{t('date')}: {bid.date}</p>
+      <p>{t('actualPrice')}: {bid.actualPrice}</p>
     </div>
   );
 };

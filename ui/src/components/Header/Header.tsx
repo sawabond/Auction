@@ -93,14 +93,14 @@ function Header() {
         {Cookies.get('isAuthenticated') === 'true' ? (
           <>
             {isLoading ? (
-              <span>Loading...</span>
+              <span>{t('loading')}</span>
             ) : error ? (
               <span>
                 {t('error')}: {(error as AxiosError).message || 'Unknown error'}
               </span>
             ) : (
               <span>
-                {t('balance')}: {balance?.amount} UAH
+                {t('balance')}: {balance?.amount} {t('currency')}
               </span>
             )}
             <div>

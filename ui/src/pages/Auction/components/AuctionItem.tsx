@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { useTranslation } from 'react-i18next';
 
 function AuctionItem({
   item,
@@ -14,6 +15,7 @@ function AuctionItem({
   const [bidAmount, setBidAmount] = useState<number | string>(0);
   const [timeLeft, setTimeLeft] = useState<number>(0); // Time left in seconds
   const sliderRef = useRef(null);
+  const { t } = useTranslation();
 
   const sliderSettings = {
     infinite: false,
@@ -71,7 +73,7 @@ function AuctionItem({
 
   const formatTime = (seconds: number | null) => {
     if (seconds === null) {
-      return 'Not started';
+      return t('notStarted');
     }
 
     const hrs = Math.floor(seconds / 3600);
@@ -116,7 +118,7 @@ function AuctionItem({
             >
               <img
                 src={photo.photoUrl}
-                alt={`Photo ${index + 1}`}
+                alt={t('photo') + ` ${index + 1}`}
                 className="w-full h-full object-cover rounded-lg border border-gray-300" // Image fills width, maintains aspect ratio
               />
             </div>
@@ -127,10 +129,10 @@ function AuctionItem({
       <div className="w-full md:w-1/2 p-4 rounded-lg">
         <h2 className="text-lg font-bold">{item.name}</h2>
         <p>{item.description}</p>
-        <p>Starting Price: {item.startingPrice}</p>
-        <p>Actual Price: {item.actualPrice}</p>
-        <p>Minimal Bid: {item.minimalBid}</p>
-        <p>Remaining time: {isSold ? '00:00:00' : formatTime(timeLeft)}</p>
+        <p>{t('startingPrice')}: {item.startingPrice}</p>
+        <p>{t('actualPrice')}: {item.actualPrice}</p>
+        <p>{t('minimalBid')}: {item.minimalBid}</p>
+        <p>{t('remainingTime')}: {isSold ? '00:00:00' : formatTime(timeLeft)}</p>
         {isCurrentlySelling && !isSold && (
           <>
             <input
@@ -138,13 +140,13 @@ function AuctionItem({
               value={bidAmount}
               onChange={(e) => setBidAmount(e.target.value === '' ? '' : Number(e.target.value))}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your bid"
+              placeholder={t('enterBid')}
             />
             <button
               onClick={handleBid}
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
-              Send Bid
+              {t('sendBid')}
             </button>
           </>
         )}

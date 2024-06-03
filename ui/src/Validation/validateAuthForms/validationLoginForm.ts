@@ -1,14 +1,16 @@
+import { useTranslation } from 'react-i18next';
 import { ILoginFormValues } from '../../interfaces/Forms/ILoginFormValues';
 
 function validateLoginForm(values: ILoginFormValues) {
+  const { t } = useTranslation();
   const errors: Partial<ILoginFormValues> = {};
 
   if (!values.email) {
-    errors.email = 'Email is required';
+    errors.email = t('emailRequired');
   }
 
   if (!values.password) {
-    errors.password = 'Password is required';
+    errors.password = t('passwordRequired');
   }
 
   return errors;

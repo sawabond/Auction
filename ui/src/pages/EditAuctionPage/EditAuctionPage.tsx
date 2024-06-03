@@ -1,97 +1,66 @@
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import {
-  TextField,
-  Button,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Fab,
-} from '@mui/material';
+import { TextField, Button, Fab } from '@mui/material';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
-import AddIcon from '@mui/icons-material/Add';
-import { useTranslation } from 'react-i18next';
 import getAuction from './services/getAuction';
-import { AuctionType } from '../../components/enums/AuctionType';
 import editAuction from './services/editAuction';
 import SearchInput from '../../components/elements/Search/Search';
 import ItemListEdit from './components/ItemListEdit/ItemListEdit';
 import deleteAuctionItem from './services/deleteAuctionItem';
-
-const auctionTypeOptions = Object.keys(AuctionType)
-  .filter((key) => !Number.isNaN(Number(key)))
-  .map((key) => ({
-    value: Number(key),
-    label: AuctionType[key as keyof typeof AuctionType],
-  }));
+import AddIcon from '@mui/icons-material/Add';
+import { useTranslation } from 'react-i18next';
 
 function EditAuctionPage() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { auctionId } = useParams();
   const [allAuctionItems, setAuctionItems] = useState<any>([]);
   const [initialValues, setInitialValues] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchAuctionData = async () => {
       try {
-        const currentAuctionData = await getAuction(auctionId);
-        console.log('Fetched auction data:', currentAuctionData);
-
-        if (
-          currentAuctionData &&
-          Array.isArray(currentAuctionData.auctionItems)
-        ) {
+        const currentAuctionData = await getAuction(auctionId, t);
+        console.log("Fetched auction data:", currentAuctionData);
+  
+        if (currentAuctionData && Array.isArray(currentAuctionData.auctionItems)) {
           setAuctionItems(currentAuctionData.auctionItems);
-          console.log(
-            'Updated auction items:',
-            currentAuctionData.auctionItems
-          );
-          console.log(allAuctionItems);
+          console.log("Updated auction items:", currentAuctionData.auctionItems);
+          console.log(allAuctionItems)
         } else {
-          console.error(
-            'Auction items not found or not in correct format in fetched data'
-          );
+          console.error("Auction items not found or not in correct format in fetched data");
         }
-
+  
         setInitialValues({
           ...currentAuctionData,
           startTime: currentAuctionData.startTime.slice(0, 16),
-          auctionType: currentAuctionData.auctionType || AuctionType.English,
-          allAuctionItems: currentAuctionData.auctionItems,
+          auctionType: currentAuctionData.auctionType,
+          allAuctionItems: currentAuctionData.auctionItems
         });
       } catch (error) {
         console.error('Error fetching auction:', error);
       }
     };
-
+  
     fetchAuctionData();
   }, [auctionId]);
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    description: Yup.string().required('Description is required'),
-    startTime: Yup.string().required('Start time is required'),
-    auctionType: Yup.number()
-      .required('Auction type is required')
-      .oneOf(
-        Object.keys(AuctionType)
-          .map((key) => Number(AuctionType[key as keyof typeof AuctionType]))
-          .filter((value) => !Number.isNaN(value))
-      ),
+    name: Yup.string().required(t('nameRequired')),
+    description: Yup.string().required(t('descriptionRequired')),
+    startTime: Yup.string().required(t('startTimeRequired'))
   });
 
-  const mutation = useMutation(editAuction, {
+  const mutation = useMutation((values: any) => editAuction(values, t), {
     onSuccess: () => {
-      toast.success('Auction edited successfully!');
+      toast.success(t('auctionEditedSuccess'));
       navigate('/auctions/my-auctions');
     },
-    onError: (error: any) => {
-      toast.error(`Error while editing auction: ${error.message}`);
+    onError: (error : any) => {
+      toast.error(t('auctionEditedError'), error.message);
     },
   });
 
@@ -101,17 +70,13 @@ function EditAuctionPage() {
 
   const handleDelete = async (auctionItemId: string) => {
     try {
-      await deleteAuctionItem(auctionId, auctionItemId);
-
+      await deleteAuctionItem(auctionId, auctionItemId, t);
       const updatedAuctionItems = allAuctionItems.filter(
-        (item: { id: string }) => item.id !== auctionItemId
-      );
-      setAuctionItems(updatedAuctionItems);
+        (item: { id: string; }) => item.id !== auctionItemId);
 
-      // Trigger the mutation to update the backend
-      // mutation.mutate();
+      setAuctionItems(updatedAuctionItems);
     } catch (error) {
-      console.error('Error deleting auction item:', error);
+      console.error(t('auctionItemDeletedError'), error);
     }
   };
 
@@ -119,25 +84,27 @@ function EditAuctionPage() {
     navigate(`/auctions/${auctionId}/items/${auctionItemId}/edit`);
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values : any) => {
     const dateObject = new Date(values.startTime);
 
     // Add seconds and milliseconds to the date
     dateObject.setSeconds(12);
     dateObject.setMilliseconds(323);
-
+  
+    // Convert the Date object to an ISO string in UTC format
     const isoString = dateObject.toISOString();
-
+  
+    // Update the startTime value in the values object
     const updatedValues = {
       ...values,
       startTime: isoString,
     };
-
+  
     mutation.mutate(updatedValues);
   };
 
   if (!initialValues) {
-    return <div>{t('loadingAuction')}</div>;
+    return <div>{t('loading')}</div>;
   }
 
   return (
@@ -146,86 +113,69 @@ function EditAuctionPage() {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, errors, touched, handleChange }) => (
+      {({ 
+        values, 
+        errors, 
+        touched, 
+        handleChange 
+      }) => (
         <div className="flex flex-row justify-center items-center h-svh gap-6">
           <Form className="flex flex-col w-4/12 shadow p-8 rounded">
             <h1 className="text-3xl font-bold mb-4">{t('editAuctionTitle')}</h1>
-            <Field
-              as={TextField}
-              className="mb-2"
-              name="name"
-              label={t('name')}
-              error={touched.name && !!errors.name}
-              helperText={touched.name && errors.name}
-              sx={{ mb: 1 }}
-            />
-            <Field
-              as={TextField}
-              name="description"
-              label={t('auctionDescription')}
-              multiline
-              error={touched.description && !!errors.description}
-              helperText={touched.description && errors.description}
-              sx={{ mb: 1 }}
-            />
-            <TextField
-              type="datetime-local"
-              label={t('startTime')}
-              name="startTime"
-              value={values.startTime}
-              onChange={handleChange}
-              error={touched.startTime && !!errors.startTime}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              sx={{ mb: 1 }}
-            />
-
-            <FormControl>
-              <InputLabel>{t('auctionType')}</InputLabel>
               <Field
-                as={Select}
-                name="auctionType"
-                error={touched.auctionType && !!errors.auctionType}
-              >
-                {auctionTypeOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {t(option.label)}
-                  </MenuItem>
-                ))}
-              </Field>
-            </FormControl>
-            {touched.auctionType && errors.auctionType && (
-              <div>{errors.auctionType as ReactNode}</div>
-            )}
-            <Button type="submit">{t('save')}</Button>
-          </Form>
-          <div className="flex flex-col">
-            <div className="flex flex-row justify-center items-center">
-              <Fab
-                className="bg-violet-950 text-white rounded"
-                size="small"
-                color="primary"
-                aria-label="add"
-                onClick={handleClick}
-              >
-                <AddIcon />
-              </Fab>
-              <div className="w-full max-w-full">
-                <SearchInput />
-              </div>
-            </div>
-            {false ? (
-              <div>{t('loadingAuction')}</div>
-            ) : (
-              <ItemListEdit
-                auctionItems={allAuctionItems}
-                onMove={handleMove}
-                onDelete={handleDelete}
+                as={TextField}
+                className="mb-2"
+                name="name"
+                label={t('name')}
+                error={touched.name && !!errors.name}
+                helperText={touched.name && errors.name}
+                sx={{ mb: 1 }}
               />
-            )}
+              <Field
+                as={TextField}
+                name="description"
+                label={t('description')}
+                multiline
+                error={touched.description && !!errors.description}
+                helperText={touched.description && errors.description}
+                sx={{ mb: 1 }}
+              />
+              <TextField
+                type="datetime-local"
+                label={t('startTime')}
+                name="startTime"
+                value={values.startTime}
+                onChange={handleChange}
+                error={touched.startTime && !!errors.startTime}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ mb: 1 }}
+              />
+              <Button type="submit">{t('save')}</Button>
+            </Form>
+            <div className="flex flex-col">
+              <div className="flex flex-row justify-center items-center">
+                <Fab 
+                  className="bg-violet-950 text-white rounded" 
+                  size="small" 
+                  color="primary" 
+                  aria-label="add" 
+                  onClick={handleClick}
+                >
+                  <AddIcon />
+                </Fab>
+                <div className="w-full max-w-full">
+                  <SearchInput />
+                </div>
+              </div>
+              <ItemListEdit 
+                auctionItems={allAuctionItems} 
+                onMove={handleMove} 
+                onDelete={handleDelete} 
+              />
+            </div>
           </div>
-        </div>
       )}
     </Formik>
   );

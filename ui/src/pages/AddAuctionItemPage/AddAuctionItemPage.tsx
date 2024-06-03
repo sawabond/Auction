@@ -42,9 +42,9 @@ function AddAuctionItemPage() {
       .required(t('itemDescriptionRequired')),
   });
 
-  const mutation = useMutation(addAuctionItem, {
+  const mutation = useMutation((values: any) => addAuctionItem(values, auctionId, t), {
     onSuccess: () => {
-      toast.success('Auction item added successfully!');
+      toast.success(t('auctionItemAddedSuccess'));
     },
     onError: (error: any) => {
       toast.error(`${t('auctionItemAddedError')}: ${error.message}`);
@@ -77,7 +77,7 @@ function AddAuctionItemPage() {
       }
     }
     try {
-      await mutation.mutateAsync({ formData, auctionId });
+      await mutation.mutateAsync({ formData, auctionId, t });
       resetForm();
       clearFiles();
       setIsFormSubmitted(true);

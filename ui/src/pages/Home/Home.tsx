@@ -8,6 +8,7 @@ import getAllAuctions from './services/getAllAuctions';
 import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
 import AuctionFilterComponent from '../../components/elements/Auctions/AuctionFilterComponent';
 import { applyFilters as applyFiltersUtil } from '../../components/utils/applyFilters';
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function Home() {
   const [allAuctions, setAllAuctions] = useState([]);
   const [pageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const applyFilters = (filters) => {
     applyFiltersUtil(filters, navigate);
@@ -33,7 +35,8 @@ export default function Home() {
         pageSize,
         nameStartsWith,
         descriptionContains,
-        onlyActive
+        onlyActive,
+        t
       );
       setAllAuctions(auctions);
       setAuctionNextCursor(cursor);
@@ -50,7 +53,8 @@ export default function Home() {
       pageSize,
       nameStartsWith,
       descriptionContains,
-      onlyActive
+      onlyActive,
+      t
     );
     setAllAuctions((prevAuctions) => [...prevAuctions, ...auctions]);
     setAuctionNextCursor(cursor);
@@ -68,8 +72,8 @@ export default function Home() {
         dataLength={allAuctions.length}
         next={handleMoreAuctions}
         hasMore={!!auctionNextCursor}
-        loader={<p>Loading...</p>}
-        endMessage={<p>No more auctions</p>}
+        loader={<p>{t('loading')}</p>}
+        endMessage={<p>{t('noMoreAuctions')}</p>}
         className="basis-3/5"
       >
         <AuctionGroup auctions={allAuctions} />

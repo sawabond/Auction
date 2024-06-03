@@ -1,9 +1,12 @@
 import List from '@material-ui/core/List';
 import ItemListItem from './ItemListItem';
+import { useTranslation } from 'react-i18next';
 
 function ItemList({ auctionItems } : any) {
+  const { t } = useTranslation();
+
   if (!auctionItems) {
-    return <div>No items to display</div>;
+    return <div>{t('noItems')}</div>;
   }
 
   return (
