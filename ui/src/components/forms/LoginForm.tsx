@@ -24,7 +24,7 @@ function LoginForm({ onSubmit, toggleForm }: ILoginFormProps) {
       email: '',
       password: '',
     },
-    validate: validateLoginForm,
+    validate: (values) => validateLoginForm (values, t),
     onSubmit: (values) => {
       onSubmit(values);
     },

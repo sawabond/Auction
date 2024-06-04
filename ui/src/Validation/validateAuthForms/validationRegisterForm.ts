@@ -1,9 +1,7 @@
-import { useTranslation } from 'react-i18next';
 import { IRegisterFormValues } from '../../interfaces/Forms/IRegisterFormValues';
 
-function validateRegisterForm(values: IRegisterFormValues) {
+function validateRegisterForm(values: IRegisterFormValues, t: any) {
   const errors: Partial<IRegisterFormValues> = {};
-  const { t } = useTranslation();
 
   if (!values.firstName) {
     errors.firstName = t('firstNameRequired');

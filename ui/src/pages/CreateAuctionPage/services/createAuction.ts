@@ -1,7 +1,7 @@
 import axios from 'axios';
 import getTokenFromCookies from '../../../components/utils/getTokenFromCookies';
 
-const createAuction = async (values: any, t : any) => {
+const createAuction = async (values: any, t: any) => {
   const token = getTokenFromCookies();
 
   try {

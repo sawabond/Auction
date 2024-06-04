@@ -2,12 +2,12 @@ import axios from "axios";
 import getTokenFromCookies from "../../../components/utils/getTokenFromCookies";
 
 const getMyAuctions = async (    
-  cursor : any, 
-  pageSize : any,
-  search : any,
-  description : any,
-  onlyActive : any,
-  t : any
+  cursor: any, 
+  pageSize: any,
+  search: any,
+  description: any,
+  onlyActive: any,
+  t: any
 ) => {
 
   let urlParams = {

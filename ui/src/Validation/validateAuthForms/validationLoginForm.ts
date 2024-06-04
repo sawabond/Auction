@@ -1,8 +1,6 @@
-import { useTranslation } from 'react-i18next';
 import { ILoginFormValues } from '../../interfaces/Forms/ILoginFormValues';
 
-function validateLoginForm(values: ILoginFormValues) {
-  const { t } = useTranslation();
+function validateLoginForm(values: ILoginFormValues, t: any) {
   const errors: Partial<ILoginFormValues> = {};
 
   if (!values.email) {

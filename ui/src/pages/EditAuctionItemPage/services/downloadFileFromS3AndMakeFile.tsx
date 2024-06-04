@@ -1,4 +1,4 @@
-async function downloadFileFromS3AndMakeFile(url: string, fileName: string, t : any): Promise<File> {
+async function downloadFileFromS3AndMakeFile(url: string, fileName: string, t: any): Promise<File> {
     // Step 1: Fetch the file
     const response = await fetch(url);
     if (!response.ok) {

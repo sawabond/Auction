@@ -32,7 +32,7 @@ function RegistrationForm({
       confirmPassword: '',
       role: ''
     },
-    validate: validateRegisterForm,
+    validate: (values) => validateRegisterForm(values, t),
     onSubmit: (values) => {
       onSubmit(values);
     },
