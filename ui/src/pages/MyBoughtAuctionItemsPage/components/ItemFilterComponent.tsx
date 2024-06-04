@@ -1,6 +1,7 @@
 import { Button, TextField } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
 
 const ItemFilterComponent = ({ applyFilters, initialValues } : any) => {
   const validationSchema = Yup.object().shape({
@@ -8,6 +9,8 @@ const ItemFilterComponent = ({ applyFilters, initialValues } : any) => {
     minPrice: Yup.number().positive().nullable(),
     maxPrice: Yup.number().positive().nullable()
   });
+
+  const { t } = useTranslation();
 
   const handleSubmit = (values : any) => {
     applyFilters(values);
@@ -24,26 +27,26 @@ const ItemFilterComponent = ({ applyFilters, initialValues } : any) => {
           <Field
             as={TextField}
             name="search"
-            label="Search"
+            label={t('search')}
             type="text"
             fullWidth
           />
           <Field
             as={TextField}
             name="minPrice"
-            label="Min Price"
+            label={t('minPrice')}
             type="number"
             fullWidth
           />
           <Field
             as={TextField}
             name="maxPrice"
-            label="Max Price"
+            label={t('maxPrice')}
             type="number"
             fullWidth
           />
           <Button type="submit" variant="contained" color="primary">
-            Apply Filters
+            {t('applyFilters')}
           </Button>
         </Form>
       </Formik>

@@ -4,6 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import { Typography } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 function ItemListItemEdit({ auctionItem: auctionItem, onDelete, onMove }: 
 { 
@@ -12,6 +13,7 @@ function ItemListItemEdit({ auctionItem: auctionItem, onDelete, onMove }:
   onMove: (auctionItemId: string) => void 
 }) 
 {
+  const { t } = useTranslation();
   const handleDelete = () => {
     onDelete(auctionItem.id);
   };
@@ -26,7 +28,7 @@ function ItemListItemEdit({ auctionItem: auctionItem, onDelete, onMove }:
       <CardMedia
         component="img"
         image={auctionItem.photos[0]?.photoUrl}
-        alt="Your Image"
+        alt={t('Your image')}
         className="w-32 h-32 object-cover"
       />
       <Typography variant="body1">{auctionItem.name}</Typography>

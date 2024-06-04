@@ -2,13 +2,15 @@ import axios from "axios";
 import getTokenFromCookies from "../../../components/utils/getTokenFromCookies";
 
 const getMyBoughtAuctionItems = async (
-  page : any,
-  pageSize : any, 
-  search : any,
-  minPrice : any,
-  maxPrice : any
+  page: any,
+  pageSize: any, 
+  search: any,
+  minPrice: any,
+  maxPrice: any,
+  t: any
   ) => {
     const token = getTokenFromCookies();
+
     let urlParams = {
       page,
       pageSize,
@@ -41,7 +43,7 @@ const getMyBoughtAuctionItems = async (
       });
       return response.data;
     } catch (error) {
-      throw new Error('Network response was not ok');
+      throw new Error(t('networkError'));
     }
   };
   

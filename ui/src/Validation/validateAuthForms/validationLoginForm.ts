@@ -1,14 +1,14 @@
 import { ILoginFormValues } from '../../interfaces/Forms/ILoginFormValues';
 
-function validateLoginForm(values: ILoginFormValues) {
+function validateLoginForm(values: ILoginFormValues, t: any) {
   const errors: Partial<ILoginFormValues> = {};
 
   if (!values.email) {
-    errors.email = 'Email is required';
+    errors.email = t('emailRequired');
   }
 
   if (!values.password) {
-    errors.password = 'Password is required';
+    errors.password = t('passwordRequired');
   }
 
   return errors;

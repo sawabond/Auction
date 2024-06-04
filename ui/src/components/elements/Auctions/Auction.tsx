@@ -1,6 +1,7 @@
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import AuctionItemGroup from '../Items/AuctionItemGroup';
+import { useTranslation } from 'react-i18next';
 
 const OPTIONS: Intl.DateTimeFormatOptions = {
   year: "numeric",
@@ -11,9 +12,10 @@ const OPTIONS: Intl.DateTimeFormatOptions = {
   second: "2-digit",
   hour12: false, // Use 24-hour format
 };
-const LOCALE = "en-US";
 
 function Auction({ auction }: any) {
+  const { t } = useTranslation();
+  const LOCALE = t('localTimeFormat');
   const auctionStartTime: Date = new Date(auction.startTime);
   const formattedAuctionStartTime: string = auctionStartTime.toLocaleString(LOCALE, OPTIONS);
   const auctionEndTime: Date = new Date(auction.endTime);
@@ -23,8 +25,8 @@ function Auction({ auction }: any) {
     <ListItem key={auction.id} className="hover:bg-gray-100 grid grid-cols-3 gap-4">
       <div>      
         <ListItemText primary={auction.name}/>
-        <ListItemText primary={"Starts at " + formattedAuctionStartTime}/>
-        <ListItemText primary={"Ends at " + formattedAuctionEndTime}/>
+        <ListItemText primary={t('startsAt') + formattedAuctionStartTime}/>
+        <ListItemText primary={t('endsAt') + formattedAuctionEndTime}/>
       </div>
       <AuctionItemGroup auctionItems={auction.auctionItems} className="col-span-2"></AuctionItemGroup>
     </ListItem>

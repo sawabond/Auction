@@ -1,7 +1,7 @@
 import axios from 'axios';
 import getTokenFromCookies from '../../../components/utils/getTokenFromCookies';
 
-const editAuctionItem = async ({ formData, auctionId } : any) => {
+const editAuctionItem = async (formData: any, auctionId: any, t: any) => {
   const token = getTokenFromCookies();
 
   try {
@@ -17,7 +17,7 @@ const editAuctionItem = async ({ formData, auctionId } : any) => {
 
     return response.data;
   } catch (error) {
-    throw new Error('Network response was not ok');
+    throw new Error(t('networkError'));
   }
 };
 

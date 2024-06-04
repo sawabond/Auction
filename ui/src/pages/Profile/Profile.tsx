@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import useUserFromToken from '../../hooks/useUserFromToken';
 
 function Profile() {
+  const { t } = useTranslation();
   const [initialValues, setInitialValues] = useState({
     firstName: '',
     lastName: '',
-    patronimic: '',
+    patronymic: '',
     phoneNumber: '',
     city: '',
     department: '',
@@ -21,7 +23,7 @@ function Profile() {
         setInitialValues({
           firstName: response.data.shipmentInformation.firstName || '',
           lastName: response.data.shipmentInformation.lastName || '',
-          patronimic: response.data.shipmentInformation.patronimic || '',
+          patronymic: response.data.shipmentInformation.patronymic || '',
           phoneNumber: response.data.shipmentInformation.phoneNumber || '',
           city: response.data.shipmentInformation.city || '',
           department: response.data.shipmentInformation.department || '',
@@ -43,7 +45,9 @@ function Profile() {
   return (
     <div className="flex items-center justify-center mt-5">
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg w-full">
-        <h2 className="text-2xl font-bold mb-4 text-center">Profile</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          {t('profilePageTitle')}
+        </h2>
         <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
@@ -53,67 +57,67 @@ function Profile() {
             <Form className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block font-semibold">
-                  First Name
+                  {t('firstName')}
                 </label>
                 <Field
                   id="firstName"
                   name="firstName"
-                  placeholder="First Name"
+                  placeholder={t('firstName')}
                   className="mt-1 p-2 w-full border rounded"
                 />
               </div>
               <div>
                 <label htmlFor="lastName" className="block font-semibold">
-                  Last Name
+                  {t('lastName')}
                 </label>
                 <Field
                   id="lastName"
                   name="lastName"
-                  placeholder="Last Name"
+                  placeholder={t('lastName')}
                   className="mt-1 p-2 w-full border rounded"
                 />
               </div>
               <div>
-                <label htmlFor="patronimic" className="block font-semibold">
-                  Patronymic
+                <label htmlFor="patronymic" className="block font-semibold">
+                  {t('patronymic')}
                 </label>
                 <Field
-                  id="patronimic"
-                  name="patronimic"
-                  placeholder="Patronymic"
+                  id="patronymic"
+                  name="patronymic"
+                  placeholder={t('patronymic')}
                   className="mt-1 p-2 w-full border rounded"
                 />
               </div>
               <div>
                 <label htmlFor="phoneNumber" className="block font-semibold">
-                  Phone Number
+                  {t('phoneNumber')}
                 </label>
                 <Field
                   id="phoneNumber"
                   name="phoneNumber"
-                  placeholder="Phone Number"
+                  placeholder={t('phoneNumber')}
                   className="mt-1 p-2 w-full border rounded"
                 />
               </div>
               <div>
                 <label htmlFor="city" className="block font-semibold">
-                  City
+                  {t('city')}
                 </label>
                 <Field
                   id="city"
                   name="city"
-                  placeholder="City"
+                  placeholder={t('city')}
                   className="mt-1 p-2 w-full border rounded"
                 />
               </div>
               <div>
                 <label htmlFor="department" className="block font-semibold">
-                  Department
+                  {t('department')}
                 </label>
                 <Field
                   id="department"
                   name="department"
-                  placeholder="Department"
+                  placeholder={t('department')}
                   className="mt-1 p-2 w-full border rounded"
                 />
               </div>
@@ -123,7 +127,7 @@ function Profile() {
                   disabled={isSubmitting}
                   className="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-700 w-full"
                 >
-                  Save Changes
+                  {t('saveChanges')}
                 </button>
               </div>
             </Form>

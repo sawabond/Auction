@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Accept, FileError, FileRejection, useDropzone } from 'react-dropzone';
 import { SingleFileUploadField } from './SingleFileUploadField';
 import { UploadError } from './UploadError';
+import { useTranslation } from 'react-i18next';
 
 let currentId = 0;
 
@@ -18,7 +19,8 @@ interface UploadableFile {
 
 function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = false, photos = []}: { name: string; onFilesChange: Function, isFormSubmitted?: boolean, photos?: File[] }) {
   const [files, setFiles] = useState<UploadableFile[]>(photos.map(file => ({ id: getNewId(), file, errors: [] })));
-
+  const { t } = useTranslation();
+  
   useEffect(() => {
     onFilesChange(files.map(fileWrapper => fileWrapper.file));
   }, [files]);
@@ -62,7 +64,7 @@ function MultipleFileUploadField({ name, onFilesChange, isFormSubmitted = false,
       <div {...getRootProps({ className: "border-2 border-dashed border-purple-500 "+
       "rounded flex items-center justify-center bg-white h-20 outline-none" })}>
           <input {...getInputProps()} />
-          <p>Drag 'n' drop some files here, or click to select files</p>
+          <p>{t('dragNDrop')}</p>
         </div>
       </Grid>
       <div className="grid grid-cols-3 gap-4 mx-auto my-4 overflow-auto h-90 max-h-[42vh]">

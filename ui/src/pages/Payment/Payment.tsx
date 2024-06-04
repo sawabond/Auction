@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useMutation } from 'react-query';
 import useUserFromToken from '../../hooks/useUserFromToken';
 import Cookies from 'js-cookie';
+import { useTranslation } from 'react-i18next';
 
 function Payment() {
+  const { t } = useTranslation();
   const token = Cookies.get('token');
   const [amount, setAmount] = useState<number>();
   const user = useUserFromToken();
@@ -43,13 +45,15 @@ function Payment() {
   return (
     <div className="flex flex-col items-center justify-center mt-5">
       <div className="max-w-md w-full mx-auto p-8 bg-white shadow-md rounded-lg">
-        <h2 className="text-2xl font-bold mb-4 text-center">Top Up</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          {t('topUpPageTitle')}
+        </h2>
         <div className="mb-4">
           <label
             htmlFor="amount"
             className="block text-sm font-medium text-gray-700"
           >
-            Amount in UAH
+            {t('amountLabel')}
           </label>
           <input
             type="number"
@@ -57,7 +61,7 @@ function Payment() {
             name="amount"
             value={amount}
             onChange={(e) => setAmount(parseFloat(e.target.value))}
-            placeholder="Enter amount"
+            placeholder={t('amountPlaceholder')}
             className="mt-1 p-2 w-full border rounded-md"
           />
         </div>
@@ -67,7 +71,7 @@ function Payment() {
           disabled={topUpMutation.isLoading}
           className="w-full px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         >
-          {topUpMutation.isLoading ? 'Processing...' : 'Proceed to payment'}
+          {topUpMutation.isLoading ? t('processing') : t('proceedToPayment')}
         </button>
       </div>
     </div>

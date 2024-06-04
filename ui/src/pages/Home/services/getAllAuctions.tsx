@@ -1,11 +1,12 @@
 import axios from "axios";
 
 const getAllAuctions = async (
-  cursor : any, 
-  pageSize : any,
-  search : any,
-  description : any,
-  onlyActive : any
+  cursor: any, 
+  pageSize: any,
+  search: any,
+  description: any,
+  onlyActive: any,
+  t: any
 ) => {
 
   let urlParams = {
@@ -35,7 +36,7 @@ const getAllAuctions = async (
     const response = await axios.get(finalUrl);
     return response.data;
   } catch (error) {
-    throw new Error('Network response was not ok');
+    throw new Error(t('networkError'));
   }
 };
 

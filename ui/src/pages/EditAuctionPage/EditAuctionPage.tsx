@@ -11,17 +11,19 @@ import SearchInput from '../../components/elements/Search/Search';
 import ItemListEdit from './components/ItemListEdit/ItemListEdit';
 import deleteAuctionItem from './services/deleteAuctionItem';
 import AddIcon from '@mui/icons-material/Add';
+import { useTranslation } from 'react-i18next';
 
 function EditAuctionPage() {
   const navigate = useNavigate();
   const { auctionId } = useParams();
   const [allAuctionItems, setAuctionItems] = useState<any>([]);
   const [initialValues, setInitialValues] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchAuctionData = async () => {
       try {
-        const currentAuctionData = await getAuction(auctionId);
+        const currentAuctionData = await getAuction(auctionId, t);
         console.log("Fetched auction data:", currentAuctionData);
   
         if (currentAuctionData && Array.isArray(currentAuctionData.auctionItems)) {
@@ -47,18 +49,18 @@ function EditAuctionPage() {
   }, [auctionId]);
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    description: Yup.string().required('Description is required'),
-    startTime: Yup.string().required('Start time is required')
+    name: Yup.string().required(t('nameRequired')),
+    description: Yup.string().required(t('descriptionRequired')),
+    startTime: Yup.string().required(t('startTimeRequired'))
   });
 
-  const mutation = useMutation(editAuction, {
+  const mutation = useMutation((values: any) => editAuction(values, t), {
     onSuccess: () => {
-      toast.success('Auction edited successfully!');
+      toast.success(t('auctionEditedSuccess'));
       navigate('/auctions/my-auctions');
     },
     onError: (error : any) => {
-      toast.error(`Error while editing auction: ${error.message}`);
+      toast.error(t('auctionEditedError'), error.message);
     },
   });
 
@@ -68,13 +70,13 @@ function EditAuctionPage() {
 
   const handleDelete = async (auctionItemId: string) => {
     try {
-      await deleteAuctionItem(auctionId, auctionItemId);
+      await deleteAuctionItem(auctionId, auctionItemId, t);
       const updatedAuctionItems = allAuctionItems.filter(
         (item: { id: string; }) => item.id !== auctionItemId);
 
       setAuctionItems(updatedAuctionItems);
     } catch (error) {
-      console.error('Error deleting auction item:', error);
+      console.error(t('auctionItemDeletedError'), error);
     }
   };
 
@@ -102,7 +104,7 @@ function EditAuctionPage() {
   };
 
   if (!initialValues) {
-    return <div>Loading...</div>;
+    return <div>{t('loading')}</div>;
   }
 
   return (
@@ -119,12 +121,12 @@ function EditAuctionPage() {
       }) => (
         <div className="flex flex-row justify-center items-center h-svh gap-6">
           <Form className="flex flex-col w-4/12 shadow p-8 rounded">
-            <h1 className="text-3xl font-bold mb-4">Edit Auction</h1>
+            <h1 className="text-3xl font-bold mb-4">{t('editAuctionTitle')}</h1>
               <Field
                 as={TextField}
                 className="mb-2"
                 name="name"
-                label="Name"
+                label={t('name')}
                 error={touched.name && !!errors.name}
                 helperText={touched.name && errors.name}
                 sx={{ mb: 1 }}
@@ -132,7 +134,7 @@ function EditAuctionPage() {
               <Field
                 as={TextField}
                 name="description"
-                label="Description"
+                label={t('description')}
                 multiline
                 error={touched.description && !!errors.description}
                 helperText={touched.description && errors.description}
@@ -140,7 +142,7 @@ function EditAuctionPage() {
               />
               <TextField
                 type="datetime-local"
-                label="Start Time"
+                label={t('startTime')}
                 name="startTime"
                 value={values.startTime}
                 onChange={handleChange}
@@ -150,7 +152,7 @@ function EditAuctionPage() {
                 }}
                 sx={{ mb: 1 }}
               />
-              <Button type="submit">Save</Button>
+              <Button type="submit">{t('save')}</Button>
             </Form>
             <div className="flex flex-col">
               <div className="flex flex-row justify-center items-center">

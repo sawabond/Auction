@@ -1,8 +1,8 @@
-async function downloadFileFromS3AndMakeFile(url: string, fileName: string): Promise<File> {
+async function downloadFileFromS3AndMakeFile(url: string, fileName: string, t: any): Promise<File> {
     // Step 1: Fetch the file
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(t('networkError'));
     }
   
     // Step 2: Convert to Blob
