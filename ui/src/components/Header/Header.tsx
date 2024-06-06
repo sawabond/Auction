@@ -12,8 +12,8 @@ import useBalance from './hooks/useBalance';
 import getUserRole from './getUserRole';
 import useUserFromToken from '../../hooks/useUserFromToken';
 import { Roles } from '../enums/roles';
-import SellerPages from './SellerPages';
-import UserPages from './UserPages';
+import SellerPages from './components/SellerPages';
+import UserPages from './components/UserPages';
 
 function Header() {
   const { t, i18n } = useTranslation();
