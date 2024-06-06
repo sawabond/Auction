@@ -65,6 +65,22 @@ function Header() {
               {t('home')}
             </Link>
           </li>
+          <li>
+            <Link
+              to="/auctions/my-auctions"
+              className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
+            >
+              {t('myAuctions')}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/items/my-bought-items"
+              className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
+            >
+              {t('myBoughtItems')}
+            </Link>
+          </li>
         </ul>
       </nav>
       <div className="flex items-center">

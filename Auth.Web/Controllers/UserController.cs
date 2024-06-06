@@ -22,10 +22,28 @@ public class UserController : ControllerBase
         var user = await _context.Users.SingleOrDefaultAsync(x => x.Id == userId.ToString());
         if (user == null)
         {
-            return Ok();
+            return NotFound();
         }
         
         return Ok(user);
+    }
+    
+    [HttpGet("{userId:guid}/role")]
+    public async Task<IActionResult> GetRole(Guid userId)
+    {
+        var userRole = await _context.UserRoles.SingleOrDefaultAsync(x => x.UserId == userId.ToString());
+        if (userRole == null)
+        {
+            return NotFound();
+        }
+
+        var role = await _context.Roles.SingleOrDefaultAsync(x => x.Id == userRole.RoleId);
+        if (role == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(role);
     }
     
     [HttpPut("{userId:guid}/shipment")]
