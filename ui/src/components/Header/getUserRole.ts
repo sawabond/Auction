@@ -6,7 +6,7 @@ async function getUserRole(userId: any) {
     const token = Cookies.get('token');
 
     const response = await axios.get( 
-    `${import.meta.env.VITE_GATEWAY_URL!}/api/auctions/${userId}`, {
+    `${import.meta.env.VITE_GATEWAY_URL!}/api/users/${userId}/role`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

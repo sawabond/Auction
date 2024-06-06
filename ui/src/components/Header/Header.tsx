@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
@@ -9,6 +9,11 @@ import LanguageIcon from '@mui/icons-material/Language';
 import Cookies from 'js-cookie';
 import { useTranslation } from 'react-i18next';
 import useBalance from './hooks/useBalance';
+import getUserRole from './getUserRole';
+import useUserFromToken from '../../hooks/useUserFromToken';
+import { Roles } from '../enums/roles';
+import SellerPages from './SellerPages';
+import UserPages from './UserPages';
 
 function Header() {
   const { t, i18n } = useTranslation();
@@ -17,7 +22,24 @@ function Header() {
   const [langAnchorEl, setLangAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
+  const [roleName, setRoleName] = useState(null);
+  const user = useUserFromToken();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        const role = await getUserRole(user?.id);
+        setRoleName(role.name);
+      } catch (error) {
+        console.error('Failed to fetch user role', error);
+      }
+    };
+
+    if (user) {
+      fetchRole();
+    }
+  }, [user, roleName]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -65,22 +87,12 @@ function Header() {
               {t('home')}
             </Link>
           </li>
-          <li>
-            <Link
-              to="/auctions/my-auctions"
-              className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
-            >
-              {t('myAuctions')}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/items/my-bought-items"
-              className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
-            >
-              {t('myBoughtItems')}
-            </Link>
-          </li>
+          {roleName == Roles.Seller ?
+           <SellerPages></SellerPages> 
+           : roleName == Roles.User ? 
+           <UserPages></UserPages>
+           : <></>
+          }
         </ul>
       </nav>
       <div className="flex items-center">

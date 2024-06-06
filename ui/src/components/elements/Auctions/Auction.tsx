@@ -26,7 +26,10 @@ function Auction({ auction }: any) {
       <div>      
         <ListItemText primary={auction.name}/>
         <ListItemText primary={t('startsAt') + formattedAuctionStartTime}/>
-        <ListItemText primary={t('endsAt') + formattedAuctionEndTime}/>
+        { auction.endTime ? 
+          <ListItemText primary={t('endsAt') + formattedAuctionEndTime}/> 
+          : <></>
+        }
       </div>
       <AuctionItemGroup auctionItems={auction.auctionItems} className="col-span-2"></AuctionItemGroup>
     </ListItem>
