@@ -9,7 +9,6 @@ import LanguageIcon from '@mui/icons-material/Language';
 import Cookies from 'js-cookie';
 import { useTranslation } from 'react-i18next';
 import useBalance from './hooks/useBalance';
-import getUserRole from './getUserRole';
 import useUserFromToken from '../../hooks/useUserFromToken';
 import { Roles } from '../enums/roles';
 import SellerPages from './components/SellerPages';
@@ -29,8 +28,8 @@ function Header() {
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        const role = await getUserRole(user?.id);
-        setRoleName(role.name);
+        //const role = await getUserRole(user?.id);
+        setRoleName(user.roles);
       } catch (error) {
         console.error('Failed to fetch user role', error);
       }
