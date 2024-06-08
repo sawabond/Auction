@@ -47,7 +47,7 @@ function CreateAuctionPage() {
       onSubmit={handleSubmit}
     >
       {({ values, errors, touched, handleChange }) => (
-        <div className="flex flex-col justify-center items-center h-screen">
+        <div className="flex flex-col justify-center items-center h-[90vh]">
           <h1 className="text-3xl font-bold mb-4">{t('createAuctionTitle')}</h1>
           <Form className="flex flex-col w-6/12 shadow p-8 rounded">
             <Field

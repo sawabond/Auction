@@ -24,7 +24,14 @@ function Auction({ auction }: any) {
   return (
     <ListItem key={auction.id} className="hover:bg-gray-100 grid grid-cols-3 gap-4">
       <div>      
-        <ListItemText primary={auction.name}/>
+        <ListItemText 
+          primary={auction.name}           
+          style={{
+            maxWidth: t('itemTextWidth'),
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+          }}
+        />
         <ListItemText primary={t('startsAt') + formattedAuctionStartTime}/>
         { auction.endTime ? 
           <ListItemText primary={t('endsAt') + formattedAuctionEndTime}/> 

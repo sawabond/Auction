@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { applyFilters as applyFiltersUtil } from '../../components/utils/applyFilters';
 import ItemFilterComponent from './components/ItemFilterComponent';
 import getMyBoughtAuctionItems from './services/getMyBoughtAuctionItems';
-import ItemList from './components/ItemList';
+import ItemGroup from './components/ItemGroup';
 
 const PAGE = 1;
 const PAGE_SIZE = 10;
@@ -58,7 +58,7 @@ export default function MyBoughtAuctionItemsPage() {
         <div className="basis-3/5">{t('noItemsFound')}</div>
       ) : (
         <div className="basis-3/5">
-          <ItemList auctionItems={data.items} />
+          <ItemGroup auctionItems={data.items} />
           <Pagination
             count={Math.ceil(data.totalCount / pageSize)}
             page={page}

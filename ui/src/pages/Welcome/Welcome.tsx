@@ -6,7 +6,7 @@ export default function Welcome() {
   const { t } = useTranslation();
 
   return (
-    <div className="h-dvh w-full bg-welcome bg-no-repeat bg-cover bg-center flex flex-col justify-center">
+    <div className="h-[90vh] w-full bg-welcome bg-no-repeat bg-cover bg-center flex flex-col justify-center">
       <div className="welcome relative flex flex-col justify-center items-center h-5/6">
         <div className="title mb-14">
           <p className="text-white text-center text-5xl not-italic font-extrabold uppercase underline-offset-2 underline">

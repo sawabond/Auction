@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { TextField, Button, Fab } from '@mui/material';
+import { TextField, Button} from '@mui/material';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -12,6 +12,7 @@ import ItemListEdit from './components/ItemListEdit/ItemListEdit';
 import deleteAuctionItem from './services/deleteAuctionItem';
 import AddIcon from '@mui/icons-material/Add';
 import { useTranslation } from 'react-i18next';
+import Fab from '@material-ui/core/Fab/Fab';
 
 function EditAuctionPage() {
   const navigate = useNavigate();
@@ -119,7 +120,7 @@ function EditAuctionPage() {
         touched, 
         handleChange 
       }) => (
-        <div className="flex flex-row justify-center items-center h-svh gap-6">
+        <div className="flex flex-row justify-center items-center h-[90vh] gap-6">
           <Form className="flex flex-col w-4/12 shadow p-8 rounded">
             <h1 className="text-3xl font-bold mb-4">{t('editAuctionTitle')}</h1>
               <Field

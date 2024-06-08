@@ -27,15 +27,15 @@ export default function MyAuctionsPage() {
       <AuctionFilterComponent
         applyFilters={applyFilters}
         initialValues={{ nameStartsWith, descriptionContains, onlyActive }}
-        className="basis-2/5"
+
       />
 
       {isLoading ? (
-        <div className="basis-3/5"></div>
+        <div className="basis-2/3"></div>
       ) : currentAuctions.length === 0 ? (
-        <div className="basis-3/5">{t('noAuctions')}</div>
+        <div className="basis-2/3">{t('noAuctions')}</div>
       ) : (
-        <div className="basis-3/5">
+        <div>
           <AuctionGroup auctions={currentAuctions} url={URL} />
           <Stack spacing={2} direction="row" justifyContent="center">
             <Pagination

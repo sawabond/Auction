@@ -117,7 +117,7 @@ function AddAuctionItemPage() {
       onSubmit={handleSubmitSingle}
     >
       {({ errors, touched, values, setSubmitting, resetForm }) => (
-        <div className="flex flex-col justify-center items-center h-screen">
+        <div className="flex flex-col justify-center items-center h-[90vh]">
           <h1 className="text-3xl font-bold mb-4">
             {t('addAuctionItemTitle')}
           </h1>

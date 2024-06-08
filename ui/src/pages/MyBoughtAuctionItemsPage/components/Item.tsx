@@ -3,9 +3,7 @@ import CardMedia from '@mui/material/CardMedia';
 import { Typography } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
-
-
-function ItemListItem({ auctionItem: auctionItem} : { auctionItem: any}) 
+function Item({ auctionItem: auctionItem} : { auctionItem: any}) 
 {
   const { t } = useTranslation();
 
@@ -42,4 +40,4 @@ function ItemListItem({ auctionItem: auctionItem} : { auctionItem: any})
   );
 }
 
-export default ItemListItem;
+export default Item;

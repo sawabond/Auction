@@ -130,7 +130,7 @@ function EditAuctionItemPage() {
       onSubmit={handleSubmit}
     >
       {({ errors, touched }) => (
-        <div className="flex flex-row justify-center items-center h-screen gap-6">
+        <div className="flex flex-row justify-center items-center h-[90vh] gap-6">
           <Form className="flex flex-col w-4/12 shadow p-8 rounded">
             <h1 className="text-3xl font-bold mb-4">
               {t('editAuctionItemTitle')}

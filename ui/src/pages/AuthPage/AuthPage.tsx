@@ -56,7 +56,7 @@ function AuthPage() {
   };
 
   return (
-    <div className="h-screen w-full bg-welcome bg-no-repeat bg-cover bg-center flex justify-center items-center">
+    <div className="h-[90vh] w-full bg-welcome bg-no-repeat bg-cover bg-center flex justify-center items-center">
       {showLoginForm ? (
         <LoginForm
           onSubmit={handleLogin}
