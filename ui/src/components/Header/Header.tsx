@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
@@ -9,14 +9,17 @@ import LanguageIcon from '@mui/icons-material/Language';
 import Cookies from 'js-cookie';
 import { useTranslation } from 'react-i18next';
 import useBalance from './hooks/useBalance';
+import useUserFromToken from '../../hooks/useUserFromToken';
+import { Roles } from '../enums/roles';
+import SellerPages from './components/SellerPages';
+import UserPages from './components/UserPages';
 
 function Header() {
   const { t, i18n } = useTranslation();
   const { data: balance, isLoading, error } = useBalance();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [langAnchorEl, setLangAnchorEl] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
+  const user = useUserFromToken();
   const navigate = useNavigate();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -57,14 +60,23 @@ function Header() {
       </Link>
       <nav className="flex-grow mx-4">
         <ul className="flex justify-center space-x-4">
-          <li>
-            <Link
-              to="/"
-              className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
-            >
-              {t('home')}
-            </Link>
-          </li>
+          {Cookies.get('isAuthenticated') === 'true' ? (
+            <>
+              <li>
+                <Link
+                  to="/"
+                  className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
+                >
+                  {t('home')}
+                </Link>
+              </li>
+              {user && user.roles.includes(Roles.Seller) ? (
+                <SellerPages />
+              ) : user && user.roles.includes(Roles.User) ? (
+                <UserPages />
+              ) : null}
+            </>
+          ) : null}
         </ul>
       </nav>
       <div className="flex items-center">

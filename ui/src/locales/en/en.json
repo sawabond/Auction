@@ -1,5 +1,7 @@
 {
     "home": "Home",
+    "myAuctions": "My auctions",
+    "myBoughtItems": "My bought items",
     "error": "An error occurred",
     "balance": "Balance",
     "profile": "Profile",
