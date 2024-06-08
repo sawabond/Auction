@@ -17,28 +17,10 @@ import UserPages from './components/UserPages';
 function Header() {
   const { t, i18n } = useTranslation();
   const { data: balance, isLoading, error } = useBalance();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [langAnchorEl, setLangAnchorEl] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [roleName, setRoleName] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [langAnchorEl, setLangAnchorEl] = useState<null | HTMLElement>(null);
   const user = useUserFromToken();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchRole = async () => {
-      try {
-        //const role = await getUserRole(user?.id);
-        setRoleName(user.roles);
-      } catch (error) {
-        console.error('Failed to fetch user role', error);
-      }
-    };
-
-    if (user) {
-      fetchRole();
-    }
-  }, [user, roleName]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -78,20 +60,23 @@ function Header() {
       </Link>
       <nav className="flex-grow mx-4">
         <ul className="flex justify-center space-x-4">
-          <li>
-            <Link
-              to="/"
-              className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
-            >
-              {t('home')}
-            </Link>
-          </li>
-          {roleName == Roles.Seller ?
-           <SellerPages></SellerPages> 
-           : roleName == Roles.User ? 
-           <UserPages></UserPages>
-           : <></>
-          }
+          {Cookies.get('isAuthenticated') === 'true' ? (
+            <>
+              <li>
+                <Link
+                  to="/"
+                  className="text-white hover:text-blue-200 transition duration-150 ease-in-out"
+                >
+                  {t('home')}
+                </Link>
+              </li>
+              {user && user.roles.includes(Roles.Seller) ? (
+                <SellerPages />
+              ) : user && user.roles.includes(Roles.User) ? (
+                <UserPages />
+              ) : null}
+            </>
+          ) : null}
         </ul>
       </nav>
       <div className="flex items-center">
