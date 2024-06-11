@@ -34,7 +34,7 @@ function Item({ auctionItem: auctionItem} : { auctionItem: any})
         className="w-1/3 h-32 object-cover"
       />
       <Typography variant="body1" className="text-lg font-semibold">{auctionItem.name}</Typography>
-      <Typography variant="body1">Spent money: {auctionItem.actualPrice}</Typography>
+      <Typography variant="body1">{t('spentMoney')}: {auctionItem.actualPrice}</Typography>
       <Typography variant="body1">{DeliveryStatus[auctionItem.deliveryStatus]}</Typography>
     </Card>
   );

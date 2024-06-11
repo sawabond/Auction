@@ -118,5 +118,6 @@
     "confirmPasswordRequired": "Confirm Password is required",
     "invalidConfirmPassword": "Passwords do not match",
     "roleRequired": "Role must be selected",
+    "spentMoney": "Spent money",
     "itemTextWidth": "220px"
 }
