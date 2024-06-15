@@ -4,11 +4,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import getAllAuctions from './services/getAllAuctions';
 import AuctionGroup from '../../components/elements/Auctions/AuctionGroup';
 import AuctionFilterComponent from '../../components/elements/Auctions/AuctionFilterComponent';
 import { applyFilters as applyFiltersUtil } from '../../components/utils/applyFilters';
-import { useTranslation } from 'react-i18next';
 
 export default function Home() {
   const navigate = useNavigate();
