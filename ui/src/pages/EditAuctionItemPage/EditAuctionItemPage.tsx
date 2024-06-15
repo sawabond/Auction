@@ -80,14 +80,17 @@ function EditAuctionItemPage() {
       .required(t('itemDescriptionRequired')),
   });
 
-  const mutation = useMutation((values: any) => addAuctionItem(values, auctionId, t), {
-    onSuccess: () => {
-      toast.success(t('auctionItemSavedSuccess'));
-    },
-    onError: (error: any) => {
-      toast.error(`${t('auctionItemSavedError')}: ${error.message}`);
-    },
-  });
+  const mutation = useMutation(
+    (values: any) => addAuctionItem(values, auctionId, t),
+    {
+      onSuccess: () => {
+        toast.success(t('auctionItemSavedSuccess'));
+      },
+      onError: (error: any) => {
+        toast.error(`${t('auctionItemSavedError')}: ${error.message}`);
+      },
+    }
+  );
 
   const handleFilesChange = (files: File[]) => {
     setUploadedPhotos(files);
@@ -138,6 +141,7 @@ function EditAuctionItemPage() {
             <Field
               as={TextField}
               className="mb-2"
+              id="startingPrice"
               name="startingPrice"
               label={t('startingPrice')}
               error={touched.startingPrice && !!errors.startingPrice}
@@ -146,6 +150,7 @@ function EditAuctionItemPage() {
             />
             <Field
               as={TextField}
+              id="minimalBid"
               name="minimalBid"
               label={t('minimalBid')}
               error={touched.minimalBid && !!errors.minimalBid}
@@ -154,6 +159,7 @@ function EditAuctionItemPage() {
             />
             <Field
               as={TextField}
+              id="name"
               name="name"
               label={t('itemName')}
               error={touched.name && !!errors.name}
@@ -162,6 +168,7 @@ function EditAuctionItemPage() {
             />
             <Field
               as={TextField}
+              id="description"
               name="description"
               label={t('itemDescription')}
               multiline
