@@ -20,7 +20,7 @@ public class AuctionItem
 
     public bool IsSold { get; set; }
     
-    public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(30);
+    public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(60);
 
     public ICollection<AuctionItemPhoto> Photos { get; set; } = new List<AuctionItemPhoto>();
 

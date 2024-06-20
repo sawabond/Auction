@@ -45,7 +45,7 @@ public class AuctionItemViewModel
 
     public DeliveryStatus DeliveryStatus { get; set; }
 
-    public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(30);
+    public TimeSpan SellingPeriod { get; set; }
 
     public List<AuctionItemPhotoViewModel> Photos { get; set; } = new();
 

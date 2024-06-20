@@ -14,6 +14,7 @@ public class AuctionItemUpdateCommand
     public string Name { get; set; }
 
     public string Description { get; set; }
-    
+    public TimeSpan SellingPeriod { get; set; }
+
     public IFormFileCollection  Photos { get; set; }
 }
