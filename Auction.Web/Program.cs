@@ -2,9 +2,11 @@ using System.Security.Claims;
 using System.Text.Json.Serialization;
 using Auction.Application.Auction;
 using Auction.Application.Auction.AuctionItem;
+using Auction.Application.Auction.AuctionItem.Bid;
 using Auction.Application.Auction.AuctionItem.Create;
+using Auction.Application.Auction.AuctionItem.Update;
 using Auction.Application.Auction.Create;
-using Auction.Application.Auction.Get;
+using Auction.Application.Auction.Update;
 using Auction.Application.AuctionHosting.Extensions;
 using Auction.Application.Common;
 using Auction.Contracts;
@@ -12,16 +14,21 @@ using Auction.Infrastructure;
 using Auction.Infrastructure.Auction.Hubs;
 using Auction.Infrastructure.Common;
 using Auction.Web.Auction;
+using Auction.Web.Auction.AuctionItem.Get;
+using Auction.Web.Auction.AuctionItem.Update;
 using Auction.Web.Auction.Get;
 using Auction.Web.Common.Extensions;
+using Auction.Web.Metrics;
 using Core;
 using Jobs.Extensions;
 using Kafka.Messaging;
 using Logging;
 using Logging.Middlewares;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
 using Payment.Contracts.Clients;
 using Shared;
 
@@ -31,6 +38,15 @@ builder.Services.Configure<JsonOptions>(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // Changed from IgnoreCycles to Preserve
 });
+
+builder.Services
+    .AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics.AddMeter("MethodExecutionMeter")
+            .AddAspNetCoreInstrumentation()
+            .AddPrometheusExporter();
+    });
 
 builder.Services.AddCors(x =>
 {
@@ -45,7 +61,6 @@ builder.Services.AddCors(x =>
 
 builder.Services.AddPaymentClients(builder.Configuration);
 
-builder.Services.AddAuctionFeature();
 builder.Services.AddScheduler(builder.Configuration);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBlobService, AwsS3BucketService>();
@@ -55,7 +70,15 @@ builder.Services.AddDbContext<AuctionDbContext>(x =>
     x.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// TODO: If migration, exclude registration of these services
+builder.Services.AddAuctionFeature();
+builder.Services.DecorateWithMethodMeasurement<IBidService, BidService>();
 builder.Services.AddAuctionHosting();
+
+ builder.AddKafkaInfrastructure(
+     handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
+     eventsAssemblies: typeof(AuctionContractsAssemblyReference).Assembly);
+// END
 
 builder.Services.AddSerilogLogging(builder.Configuration);
 
@@ -90,10 +113,6 @@ builder.Services.AddSwaggerGen(x =>
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSignalR();
 
-builder.AddKafkaInfrastructure(
-    handlersAssembly: typeof(AuctionInfrastructureAssemblyReference).Assembly,
-    eventsAssemblies: typeof(AuctionContractsAssemblyReference).Assembly);
-
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
@@ -101,9 +120,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseGlobalExceptionHandler();
+
 app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseLoggingMiddleware();
 //app.UseSerilogRequestLogging();
@@ -112,7 +134,7 @@ app.UseHttpsRedirection();
 
 app.MapHub<AuctionHub>("/auction-hub").RequireCors("DefaultPolicy");
 
-app.MapPost("/api/auctions", async (
+app.MapPost("/api/auctions", [Authorize(Roles = "Seller")] async (
         AuctionCreateCommand request,
         ClaimsPrincipal user,
         IAuctionService auctionService) =>
@@ -125,7 +147,39 @@ app.MapPost("/api/auctions", async (
     .RequireAuthorization()
     .WithOpenApi();
 
-app.MapGet("/api/user/auctions", async (
+app.MapPut("/api/auctions", [Authorize(Roles = "Seller")] async (
+        AuctionUpdateCommand request,
+        ClaimsPrincipal user,
+        IAuctionService auctionService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionService.Update(request, userId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok();
+        }
+
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapGet("/api/auctions/{auctionId:guid}", async (
+        Guid auctionId,
+        IAuctionService auctionService) =>
+    {
+        var result = await auctionService.GetById(auctionId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value.ToViewModel());
+        }
+
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapGet("/api/user/auctions", [Authorize(Roles = "Seller")] async (
         [AsParameters] GetAuctionsRequest request,
         ClaimsPrincipal user,
         IAuctionService auctionService) =>
@@ -143,6 +197,17 @@ app.MapGet("/api/user/auctions", async (
     .RequireAuthorization()
     .WithOpenApi();
 
+app.MapGet(GetUserBoughtItems.Route, GetUserBoughtItems.Action)
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapGet(GetAuctionItems.Route, GetAuctionItems.Action)
+    .WithOpenApi();
+
+app.MapPatch(UpdateDeliveryStatus.Route, UpdateDeliveryStatus.Action)
+    .RequireAuthorization()
+    .WithOpenApi();
+
 app.MapGet("/api/auctions", async ([AsParameters] GetAuctionsRequest request, [FromServices] IAuctionService auctionService) =>
     {
         var result = await auctionService.Get(request.ToQuery());
@@ -157,7 +222,22 @@ app.MapGet("/api/auctions", async ([AsParameters] GetAuctionsRequest request, [F
     })
     .WithOpenApi();
 
-app.MapPost("/api/auctions/{auctionId:guid}/items", async (
+app.MapGet("/api/auctions/{auctionId:guid}/items/{auctionItemId:guid}", async (
+        Guid auctionItemId,
+        IAuctionItemService auctionItemService) =>
+    {
+        var result = await auctionItemService.GetById(auctionItemId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok(result.Value.ToViewModel());
+        }
+
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .WithOpenApi();
+
+app.MapPost("/api/auctions/{auctionId:guid}/items", [Authorize(Roles = "Seller")] async (
         Guid auctionId,
         ClaimsPrincipal user,
         [FromForm] AuctionItemCreateCommand request,
@@ -172,7 +252,46 @@ app.MapPost("/api/auctions/{auctionId:guid}/items", async (
     .DisableAntiforgery()
     .WithOpenApi();
 
-app.MapDelete("/api/auctions/{auctionId:guid}", async (
+app.MapPut("/api/auctions/{auctionId:guid}/items", [Authorize(Roles = "Seller")] async (
+        Guid auctionId,
+        ClaimsPrincipal user,
+        [FromForm] AuctionItemUpdateCommand request,
+        [FromServices] IAuctionItemService auctionItemService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionItemService.UpdateItem(auctionId, request, userId);
+        if (result.IsSuccess)
+        {
+            return Results.Ok();
+        }
+        
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .DisableAntiforgery()
+    .WithOpenApi();
+
+app.MapDelete("/api/auctions/{auctionId:guid}/items/{itemId:guid}", [Authorize(Roles = "Seller")] async (
+        Guid auctionId,
+        Guid itemId,
+        ClaimsPrincipal user,
+        [FromForm] AuctionItemUpdateCommand request,
+        [FromServices] IAuctionItemService auctionItemService) =>
+    {
+        var userId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+        var result = await auctionItemService.DeleteItem(auctionId, itemId, userId);
+        if (result.IsSuccess)
+        {
+            return Results.NoContent();
+        }
+        
+        return Results.BadRequest(string.Join(Environment.NewLine, result.Errors.Select(x => x.Message)));
+    })
+    .RequireAuthorization()
+    .DisableAntiforgery()
+    .WithOpenApi();
+
+app.MapDelete("/api/auctions/{auctionId:guid}", [Authorize(Roles = "Seller")] async (
         Guid auctionId,
         ClaimsPrincipal user,
         [FromServices] IAuctionService auctionService) =>

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: react-app-deployment
+  name: react-app
   namespace: auction-namespace
   labels:
     app: react-app
@@ -19,11 +19,11 @@ spec:
     spec:
       containers:
         - name: react-app
-          image: oleksandrdotnet777/react-app:latest  # Replace with your Docker image and tag
+          image: oleksandrdotnet777/react-app:20240131161413  # Replace with your Docker image and tag
           ports:
-            - containerPort: 3000
+            - containerPort: 5173
           env:
             - name: NODE_ENV
               value: "development"
             - name: VITE_GATEWAY_URL
-              value: "http://auction-gateway:5167"
+              value: "http://184.72.108.154:30012" # external address of api gateway. TODO: Fix it to use internal

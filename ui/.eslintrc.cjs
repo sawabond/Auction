@@ -26,6 +26,7 @@ module.exports = {
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
     'react/react-in-jsx-scope': 0,
+    'import/prefer-default-export': 'off',
     'jsx-a11y/label-has-associated-control': [
       2,
       {
@@ -35,5 +36,6 @@ module.exports = {
         depth: 3,
       },
     ],
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };

@@ -1,6 +1,7 @@
 ﻿using Auction.Application.Auction.Specifications;
 using Auction.Contracts.Auction.AuctionItem;
 using Core;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -8,7 +9,7 @@ namespace Auction.Application.AuctionHosting;
 
 public interface IAuctionsHost
 {
-    Task StartAuctionById(Guid auctionId);
+    Task<Core.Auction.Entities.Auction> StartAuctionById(Guid auctionId);
 }
 
 public class AuctionsHost(
@@ -16,7 +17,7 @@ public class AuctionsHost(
     IActiveAuctionsStorage _activeAuctionsStorage,
     IServiceScopeFactory _scopeFactory) : IAuctionsHost
 {
-    public async Task StartAuctionById(Guid auctionId)
+    public async Task<Core.Auction.Entities.Auction> StartAuctionById(Guid auctionId)
     { 
         using var scope = _scopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<IRepository<Core.Auction.Entities.Auction>>();
@@ -24,9 +25,8 @@ public class AuctionsHost(
 
         _logger.LogInformation("Starting auction with id {AuctionId}", auctionId);
         
-        var auction = await repository.FirstOrDefaultAsync(new AuctionByIdWithItemsSpec(auctionId));
+        var auction = await repository.FirstOrDefaultAsync(new AuctionByIdAggregateSpec(auctionId));
         await _activeAuctionsStorage.AddAsync(auction);
-        
 
         var firstItem = auction.GetFirstItem();
         _logger.LogInformation("First item to be selling is {@FirstItemToBeSelling}", firstItem);
@@ -42,5 +42,7 @@ public class AuctionsHost(
             StartedAt = DateTime.UtcNow,
             SellingPeriod = firstItem.SellingPeriod,
         });
+
+        return auction;
     }
 }

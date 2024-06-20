@@ -1,4 +1,5 @@
-﻿using Auction.Core.Auction.Enums;
+﻿using Auction.Core.Auction.Entities;
+using Auction.Core.Auction.Enums;
 
 namespace Auction.Application.Auction;
 
@@ -41,8 +42,10 @@ public class AuctionItemViewModel
     public bool IsSellingNow { get; set; }
 
     public bool IsSold { get; set; }
-    
-    public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(30);
+
+    public DeliveryStatus DeliveryStatus { get; set; }
+
+    public TimeSpan SellingPeriod { get; set; }
 
     public List<AuctionItemPhotoViewModel> Photos { get; set; } = new();
 

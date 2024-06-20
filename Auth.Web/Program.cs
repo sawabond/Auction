@@ -3,14 +3,18 @@ using Auth.Contracts;
 using Auth.Core.User.Entities;
 using Auth.Infrastructure;
 using Auth.Infrastructure.User;
+using Core;
 using Kafka.Messaging;
 using Logging;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Serilog;
 using Shared;
 
 var builder = WebApplication.CreateBuilder(args);
+NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
 
 builder.Services.AddCors(x =>
 {
@@ -37,6 +41,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 });
 
 builder.Services.AddIdentityCore<AppUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AuthDbContext>();
 
 builder.AddKafkaInfrastructure(
@@ -72,6 +77,8 @@ builder.Services.AddSwaggerGen(x =>
 });
 
 var app = builder.Build();
+
+app.UseGlobalExceptionHandler();
 
 app.UseCors("DefaultPolicy");
 

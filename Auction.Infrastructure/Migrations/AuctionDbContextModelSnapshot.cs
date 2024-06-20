@@ -74,6 +74,9 @@ namespace Auction.Infrastructure.Migrations
                     b.Property<Guid>("AuctionId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("DeliveryStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");

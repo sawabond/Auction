@@ -4,6 +4,7 @@ using Auth.Contracts;
 using Core;
 using Kafka.Messaging;
 using Logging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Payment.Application.Balance;
@@ -18,6 +19,10 @@ using BalanceService = Payment.Application.Balance.BalanceService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddStackExchangeRedisCache(x =>
+{
+    x.Configuration = "localhost:6379,password=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81";
+});
 builder.Services.AddSerilogLogging(builder.Configuration);
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IBalanceService, BalanceService>();
@@ -63,9 +68,15 @@ builder.AddKafkaInfrastructure(
 
 var app = builder.Build();
 
-app.MapPost("/api/top-up", async (
+app.UseGlobalExceptionHandler();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapPost("/api/top-up", [Authorize] async (
     [FromBody] TopUpCommand topUpRequest,
     [FromQuery] string returnUrl,
+    [FromQuery] string redirectUrl,
     [FromServices] IStripeClient stripeClient) =>
 {
     var sessionCreateOptions = new SessionCreateOptions
@@ -76,7 +87,7 @@ app.MapPost("/api/top-up", async (
             {
                 PriceData = new SessionLineItemPriceDataOptions
                 {
-                    UnitAmount = topUpRequest.Amount,
+                    UnitAmount = topUpRequest.Amount * 100, // stripe requires amount in cents
                     Currency = "UAH",
                     ProductData = new SessionLineItemPriceDataProductDataOptions
                     {
@@ -87,7 +98,7 @@ app.MapPost("/api/top-up", async (
             }
         },
         Mode = "payment",
-        SuccessUrl = $"{returnUrl}/api/success?userId={topUpRequest.UserId}&session_id={{CHECKOUT_SESSION_ID}}",
+        SuccessUrl = $"{returnUrl}/api/success?userId={topUpRequest.UserId}&session_id={{CHECKOUT_SESSION_ID}}&redirectUrl={redirectUrl}",
         CancelUrl = $"{returnUrl}/cancel"
     };
 
@@ -95,23 +106,24 @@ app.MapPost("/api/top-up", async (
     var session = await sessionService.CreateAsync(sessionCreateOptions);
 
     return Results.Ok(new { session.Url });
-});
+}).RequireAuthorization();
 
 app.MapGet("/api/success", async (
     [FromQuery(Name="session_id")] string sessionId,
     [FromQuery] Guid userId,
+    [FromQuery] string redirectUrl,
     [FromServices] IPaymentService paymentService) =>
 {
     var result = await paymentService.CreatePaymentAsync(userId, sessionId);
     if (result.IsSuccess)
     {
-        return Results.Ok();
+        return Results.Redirect(redirectUrl);
     }
 
     return Results.BadRequest();
 });
 
-app.MapGet("/api/balances", async (
+app.MapGet("/api/balances", [Authorize] async (
     ClaimsPrincipal user,
     [FromServices] IBalanceService balanceService) =>
 {
@@ -123,8 +135,9 @@ app.MapGet("/api/balances", async (
     }
 
     return Results.BadRequest();
-});
+}).RequireAuthorization();
 
+// This endpoint is used by the Payment.Contracts.Clients.PaymentClient
 app.MapGet("/api/balances/{userId}", async (
     Guid userId,
     [FromServices] IBalanceService balanceService) =>

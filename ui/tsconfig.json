@@ -5,7 +5,7 @@
       "node",
       "jest",
       "@testing-library/jest-dom",
-      "@vitejs/plugin-react"
+      "vitest/globals"
     ],
     "target": "ESNext",
     "useDefineForClassFields": true,

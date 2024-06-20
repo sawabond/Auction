@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: react-app
+  namespace: auction-namespace
+spec:
+  type: NodePort
+  ports:
+    - name: web
+      port: 5173
+      nodePort: 30100
+  selector:
+    app: react-app

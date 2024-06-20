@@ -66,6 +66,11 @@ jobs:
         run: |
           aws eks --region us-east-1 update-kubeconfig --name auction
 
+      - name: Apply Kubernetes Deployment Configurations
+        run: |
+          kubectl apply -f ./infrastructure/auction-deployment.yaml
+          kubectl apply -f ./infrastructure/auction-service.yaml
+
       - name: Update Kubernetes Deployment
         run: |
           kubectl set image deployment/auction-service auction-service=${{ secrets.DOCKER_HUB_USERNAME }}/auction-web:${{ needs.build_auction_web.outputs.image_tag }} --namespace=auction-namespace

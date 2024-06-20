@@ -25,6 +25,9 @@ public class AuctionHub(
 
     public async Task JoinGroup(string auctionId)
     {
+        if (string.IsNullOrWhiteSpace(auctionId))
+            return;
+        
         await Groups.AddToGroupAsync(Context.ConnectionId, auctionId);
         
         var auction = await _activeAuctionsStorage.GetAsync(Guid.Parse(auctionId));

@@ -20,13 +20,15 @@ public class AuctionItem
 
     public bool IsSold { get; set; }
     
-    public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(30);
+    public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(60);
 
     public ICollection<AuctionItemPhoto> Photos { get; set; } = new List<AuctionItemPhoto>();
 
     public IReadOnlyCollection<Bid> Bids => _bids;
     
     public Auction Auction { get; set; }
+    
+    public DeliveryStatus DeliveryStatus { get; set; } = DeliveryStatus.NotStarted;
 
     public Bid AddBid(Guid userId, decimal amount, DateTime date)
     {
@@ -38,4 +40,11 @@ public class AuctionItem
 
         return bid;
     }
+}
+
+public enum DeliveryStatus
+{
+    NotStarted = 0,
+    InProgress = 1,
+    Delivered = 2
 }

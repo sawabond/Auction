@@ -1,3 +1,4 @@
+using Core;
 using Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,8 @@ builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.Build();
+
+app.UseGlobalExceptionHandler();
 
 app.UseCors("DefaultPolicy");
 

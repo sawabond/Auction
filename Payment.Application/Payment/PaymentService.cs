@@ -1,5 +1,8 @@
 ﻿using Core;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Payment.Application.Balance;
 using Payment.Contracts.Balance;
 using Stripe;
 using Stripe.Checkout;
@@ -12,12 +15,13 @@ public interface IPaymentService
 }
 
 public class PaymentService(
+    IDistributedCache _cache,
+    IBalanceService _balanceService,
     IRepository<Core.Payment> _paymentRepository,
     IRepository<Core.Balance> _balanceRepository,
     IPublisher _publisher,
     IStripeClient _stripeClient) : IPaymentService
 {
-    // TODO: refactor this method to user repositories
     public async Task<Result> CreatePaymentAsync(Guid userId, string sessionId)
     {
         var sessionService = new SessionService(_stripeClient);
@@ -39,11 +43,21 @@ public class PaymentService(
             SessionId = sessionId
         });
         
-        var balance = await _balanceRepository.GetByIdAsync(userId);
+        var balance = await _balanceService.GetUserBalance(userId);
         if (balance is not null)
         {
-            balance.Amount += decimalAmount;
-            await _balanceRepository.UpdateAsync(balance);
+            try
+            {
+                balance.Amount += decimalAmount;
+                await _balanceRepository.UpdateAsync(balance);
+            }
+            catch (DbUpdateException ex)
+            {
+                await _cache.RemoveAsync($"balance_{userId}");
+                
+                // Retry a few times, then publish that payment failed
+                throw;
+            }
         }
         else
         {
@@ -56,6 +70,7 @@ public class PaymentService(
         
         await _paymentRepository.SaveChangesAsync();
         await _balanceRepository.SaveChangesAsync();
+        await _cache.RemoveAsync($"balance_{userId}");
 
         //await transaction.CommitAsync();
         await _publisher.Publish(userId, new BalanceChangedEvent
@@ -69,4 +84,6 @@ public class PaymentService(
 
         return Result.Ok();
     }
+    
+    
 }
