@@ -1,9 +1,9 @@
+import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { TextField, Button } from '@material-ui/core';
 import * as yup from 'yup';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MultipleFileUploadField from '../../components/elements/Drag and drop/MultipleFileUploadField';
@@ -42,14 +42,17 @@ function AddAuctionItemPage() {
       .required(t('itemDescriptionRequired')),
   });
 
-  const mutation = useMutation((values: any) => addAuctionItem(values, auctionId, t), {
-    onSuccess: () => {
-      toast.success(t('auctionItemAddedSuccess'));
-    },
-    onError: (error: any) => {
-      toast.error(`${t('auctionItemAddedError')}: ${error.message}`);
-    },
-  });
+  const mutation = useMutation(
+    (values: any) => addAuctionItem(values, auctionId, t),
+    {
+      onSuccess: () => {
+        toast.success(t('auctionItemAddedSuccess'));
+      },
+      onError: (error: any) => {
+        toast.error(`${t('auctionItemAddedError')}: ${error.message}`);
+      },
+    }
+  );
 
   const handleFilesChange = (files: File[]) => {
     setUploadedPhotos(files);
@@ -124,6 +127,7 @@ function AddAuctionItemPage() {
           <Form className="flex flex-col w-6/12 shadow p-8 rounded">
             <Field
               as={TextField}
+              id="startingPrice"
               className="mb-2"
               name="startingPrice"
               label={t('startingPrice')}
@@ -133,6 +137,7 @@ function AddAuctionItemPage() {
             />
             <Field
               as={TextField}
+              id="minimalBid"
               name="minimalBid"
               label={t('minimalBid')}
               error={touched.minimalBid && !!errors.minimalBid}
@@ -141,6 +146,7 @@ function AddAuctionItemPage() {
             />
             <Field
               as={TextField}
+              id="name"
               name="name"
               label={t('itemName')}
               error={touched.name && !!errors.name}
@@ -149,6 +155,7 @@ function AddAuctionItemPage() {
             />
             <Field
               as={TextField}
+              id="description"
               name="description"
               label={t('itemDescription')}
               multiline

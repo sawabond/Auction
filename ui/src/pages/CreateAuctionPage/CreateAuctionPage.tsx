@@ -4,15 +4,15 @@ import { TextField, Button } from '@mui/material';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import createAuction from './services/createAuction';
 import { useTranslation } from 'react-i18next';
+import createAuction from './services/createAuction';
 
 const ENGLISH_TYPE = 0;
 
 function CreateAuctionPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+
   const initialValues = {
     name: '',
     description: '',
@@ -23,7 +23,7 @@ function CreateAuctionPage() {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required(t('nameRequired')),
     description: Yup.string().required(t('descriptionRequired')),
-    startTime: Yup.string().required(t('startTimeRequired'))
+    startTime: Yup.string().required(t('startTimeRequired')),
   });
 
   const mutation = useMutation((values: any) => createAuction(values, t), {
@@ -32,7 +32,7 @@ function CreateAuctionPage() {
       navigate('/auctions/my-auctions');
     },
     onError: (error: any) => {
-      toast.error(t('auctionCreatedError') + ': ' + error.message);
+      toast.error(`${t('auctionCreatedError')}: ${error.message}`);
     },
   });
 

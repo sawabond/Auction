@@ -1,5 +1,5 @@
-import { Card, CardMedia, Typography } from "@material-ui/core";
-import { useTranslation } from "react-i18next";
+import { Card, CardMedia, Typography } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 function AuctionItem({ auctionItem }: any) {
   const { t } = useTranslation();
@@ -11,7 +11,9 @@ function AuctionItem({ auctionItem }: any) {
         alt={t('yourImage')}
         className="object-cover w-24 h-24"
       />
-      <Typography variant="body1" className="text-sm font-semibold">{auctionItem.name}</Typography>
+      <Typography variant="body1" className="text-sm font-semibold">
+        {auctionItem.name}
+      </Typography>
     </Card>
   );
 }

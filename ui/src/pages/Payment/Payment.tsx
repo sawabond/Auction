@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useMutation } from 'react-query';
-import useUserFromToken from '../../hooks/useUserFromToken';
 import Cookies from 'js-cookie';
 import { useTranslation } from 'react-i18next';
+import useUserFromToken from '../../hooks/useUserFromToken';
 
 function Payment() {
   const { t } = useTranslation();

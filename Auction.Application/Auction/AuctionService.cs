@@ -60,116 +60,121 @@ public class AuctionService(
         var auction = command.ToEntity();
         auction.UserId = userId;
         
-        auction.AuctionItems.Add(
-            new Core.Auction.Entities.AuctionItem
-            {
-                Id = Guid.NewGuid(),
-                ActualPrice = 100m,
-                Description = "Gucci Jeans", 
-                IsSellingNow = false,
-                MinimalBid = 20m,
-                Name = "Gucci Jeans",
-                StartingPrice = 100,
-                SellingPeriod = TimeSpan.FromSeconds(60),
-                Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
-                {
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo",
-                        PhotoUrl = "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    },
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo2",
-                        PhotoUrl = "https://images.pexels.com/photos/3979134/pexels-photo-3979134.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    }
-                }
-            });
-        auction.AuctionItems.Add(
-            new Core.Auction.Entities.AuctionItem
-            {
-                Id = Guid.NewGuid(),
-                ActualPrice = 100m,
-                Description = "Luis Vuitton T-Shirt", 
-                IsSellingNow = false,
-                MinimalBid = 30m,
-                Name = "Luis Vuitton T-Shirt",
-                StartingPrice = 100m,
-                SellingPeriod = TimeSpan.FromSeconds(60),
-                Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
-                {
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo",
-                        PhotoUrl = "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    },
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo2",
-                        PhotoUrl = "https://images.pexels.com/photos/3979134/pexels-photo-3979134.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    }
-                }
-                });
-        auction.AuctionItems.Add(
-            new Core.Auction.Entities.AuctionItem
-            {
-                Id = Guid.NewGuid(),
-                ActualPrice = 100m,
-                Description = "Versace T-Shirt", 
-                IsSellingNow = false,
-                MinimalBid = 30m,
-                Name = "Versace T-Shirt",
-                StartingPrice = 100m,
-                SellingPeriod = TimeSpan.FromSeconds(60),
-                Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
-                {
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo",
-                        PhotoUrl = "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    },
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo2",
-                        PhotoUrl = "https://images.pexels.com/photos/3979134/pexels-photo-3979134.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    }
-                    
-                }
-            });
-        auction.AuctionItems.Add(
-            new Core.Auction.Entities.AuctionItem
-            {
-                Id = Guid.NewGuid(),
-                ActualPrice = 100m,
-                Description = "Armani T-Shirt", 
-                IsSellingNow = false,
-                MinimalBid = 30m,
-                Name = "Armani T-Shirt",
-                StartingPrice = 100m,
-                SellingPeriod = TimeSpan.FromSeconds(60),
-                Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
-                {
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo",
-                        PhotoUrl = "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    },
-                    new()
-                    {
-                        Id = 0,
-                        Name = "Test photo2",
-                        PhotoUrl = "https://images.pexels.com/photos/3979134/pexels-photo-3979134.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    }
-                }
-            });
-        auction.StartTime = DateTime.UtcNow.AddSeconds(10);
+        #region Testing auction creation
+        
+        // auction.AuctionItems.Add(
+        //     new Core.Auction.Entities.AuctionItem
+        //     {
+        //         Id = Guid.NewGuid(),
+        //         ActualPrice = 100m,
+        //         Description = "Gucci Jeans", 
+        //         IsSellingNow = false,
+        //         MinimalBid = 20m,
+        //         Name = "Gucci Jeans",
+        //         StartingPrice = 100,
+        //         SellingPeriod = TimeSpan.FromSeconds(60),
+        //         Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
+        //         {
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo",
+        //                 PhotoUrl = "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        //             },
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo2",
+        //                 PhotoUrl = "https://images.pexels.com/photos/3979134/pexels-photo-3979134.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        //             }
+        //         }
+        //     });
+        // auction.AuctionItems.Add(
+        //     new Core.Auction.Entities.AuctionItem
+        //     {
+        //         Id = Guid.NewGuid(),
+        //         ActualPrice = 100m,
+        //         Description = "Luis Vuitton T-Shirt", 
+        //         IsSellingNow = false,
+        //         MinimalBid = 30m,
+        //         Name = "Luis Vuitton T-Shirt",
+        //         StartingPrice = 100m,
+        //         SellingPeriod = TimeSpan.FromSeconds(60),
+        //         Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
+        //         {
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo",
+        //                 PhotoUrl = "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        //             },
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo2",
+        //                 PhotoUrl = "https://images.pexels.com/photos/3979134/pexels-photo-3979134.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        //             }
+        //         }
+        //         });
+        // auction.AuctionItems.Add(
+        //     new Core.Auction.Entities.AuctionItem
+        //     {
+        //         Id = Guid.NewGuid(),
+        //         ActualPrice = 100m,
+        //         Description = "Versace T-Shirt", 
+        //         IsSellingNow = false,
+        //         MinimalBid = 30m,
+        //         Name = "Versace T-Shirt",
+        //         StartingPrice = 100m,
+        //         SellingPeriod = TimeSpan.FromSeconds(60),
+        //         Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
+        //         {
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo",
+        //                 PhotoUrl = "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        //             },
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo2",
+        //                 PhotoUrl = "https://images.pexels.com/photos/3979134/pexels-photo-3979134.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        //             }
+        //             
+        //         }
+        //     });
+        // auction.AuctionItems.Add(
+        //     new Core.Auction.Entities.AuctionItem
+        //     {
+        //         Id = Guid.NewGuid(),
+        //         ActualPrice = 100m,
+        //         Description = "Armani T-Shirt", 
+        //         IsSellingNow = false,
+        //         MinimalBid = 30m,
+        //         Name = "Armani T-Shirt",
+        //         StartingPrice = 100m,
+        //         SellingPeriod = TimeSpan.FromSeconds(60),
+        //         Photos = new List<Core.Auction.Entities.AuctionItemPhoto>
+        //         {
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo",
+        //                 PhotoUrl = "https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        //             },
+        //             new()
+        //             {
+        //                 Id = 0,
+        //                 Name = "Test photo2",
+        //                 PhotoUrl = "https://images.pexels.com/photos/3979134/pexels-photo-3979134.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        //             }
+        //         }
+        //     });
+        // auction.StartTime = DateTime.UtcNow.AddSeconds(10);
+        //
+        
+        #endregion
         
         var result = await _repository.AddAsync(auction);
         await _publisher.Publish(auction.Id, auction.ToAuctionCreatedEvent());

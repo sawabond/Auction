@@ -76,6 +76,8 @@ public class AuctionItemService(
         }
 
         var auctionItem = command.ToEntity();
+        auctionItem.SellingPeriod =
+            auctionItem.SellingPeriod == default ? TimeSpan.FromSeconds(60) : auctionItem.SellingPeriod;
         
         await FillItemPhotos(command.Photos, auctionId, auctionItem);
 

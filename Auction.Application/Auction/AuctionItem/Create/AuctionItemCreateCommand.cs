@@ -12,5 +12,7 @@ public sealed class AuctionItemCreateCommand
 
     public string Description { get; set; }
 
+    public TimeSpan SellingPeriod { get; set; } = TimeSpan.FromSeconds(60);
+
     public IFormFileCollection  Photos { get; set; }
 }
