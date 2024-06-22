@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, useField } from 'formik';
 import { TextField, Button } from '@material-ui/core';
 import * as yup from 'yup';
 import { useMutation } from 'react-query';
@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MultipleFileUploadField from '../../components/elements/Drag and drop/MultipleFileUploadField';
 import addAuctionItem from './services/addAuctionItem';
+import TimeInputField from '../../components/elements/TimeInputField';
 
 function AddAuctionItemPage() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ function AddAuctionItemPage() {
     minimalBid: '',
     name: '',
     description: '',
+    sellingPeriod: '', // Add initial value for sellingPeriod
     photos: [],
   };
 
@@ -40,10 +42,17 @@ function AddAuctionItemPage() {
       .string()
       .max(500, t('itemDescriptionMax'))
       .required(t('itemDescriptionRequired')),
+    sellingPeriod: yup
+      .string()
+      .matches(
+        /^([0-1]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
+        t('sellingPeriodFormat')
+      )
+      .required(t('sellingPeriodRequired')), // Add validation for sellingPeriod
   });
 
   const mutation = useMutation(
-    (values: any) => addAuctionItem(values, auctionId, t),
+    (formData: FormData) => addAuctionItem(formData, auctionId, t),
     {
       onSuccess: () => {
         toast.success(t('auctionItemAddedSuccess'));
@@ -69,18 +78,19 @@ function AddAuctionItemPage() {
     formData.append('minimalBid', values.minimalBid);
     formData.append('name', values.name);
     formData.append('description', values.description);
+    formData.append('sellingPeriod', values.sellingPeriod);
 
     for (let index = 0; index < uploadedPhotos.length; index++) {
       const file = uploadedPhotos[index];
-
       if (file.name.match(/(.jpg|.jpeg|.png|.jfif|.pjpeg|.pjp)$/gm)) {
-        formData.append(`photos[${index}]`, file);
+        formData.append(`photos`, file);
       } else {
         return;
       }
     }
+
     try {
-      await mutation.mutateAsync({ formData, auctionId, t });
+      await mutation.mutateAsync(formData);
       resetForm();
       clearFiles();
       setIsFormSubmitted(true);
@@ -161,6 +171,16 @@ function AddAuctionItemPage() {
               multiline
               error={touched.description && !!errors.description}
               helperText={touched.description && errors.description}
+              sx={{ mb: 1 }}
+            />
+            <Field
+              as={TimeInputField}
+              id="sellingPeriod"
+              name="sellingPeriod"
+              label={t('sellingPeriod')}
+              placeholder="HH:MM:SS"
+              error={touched.sellingPeriod && !!errors.sellingPeriod}
+              helperText={touched.sellingPeriod && errors.sellingPeriod}
               sx={{ mb: 1 }}
             />
             <MultipleFileUploadField

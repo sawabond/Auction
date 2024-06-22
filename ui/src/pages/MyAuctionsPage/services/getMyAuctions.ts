@@ -26,6 +26,9 @@ const getMyAuctions = async (
     if (value == "null") {
       keysForDel.push(key);
     }
+    // if (value == "false") {
+    //   keysForDel.push(key);
+    // }
   });
   keysForDel.forEach(key => {
     params.delete(key);

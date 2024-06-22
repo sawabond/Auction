@@ -119,5 +119,6 @@
     "invalidConfirmPassword": "Паролі не співпадають",
     "roleRequired": "Вибір ролі обов'язковий",
     "spentMoney": "Витрачено",
+    "sellingPeriod": "Період продажу",
     "itemTextWidth": "250px"
 }

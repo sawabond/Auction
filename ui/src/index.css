@@ -3,6 +3,6 @@
 @tailwind utilities;
 @layer base {
   html {
-    font-family: Poppins;
+    font-family: Poppins, Montserrat, sans-serif;
   }
 }

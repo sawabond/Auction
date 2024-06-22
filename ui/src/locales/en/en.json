@@ -119,5 +119,6 @@
     "invalidConfirmPassword": "Passwords do not match",
     "roleRequired": "Role must be selected",
     "spentMoney": "Spent money",
+    "sellingPeriod": "Selling period",
     "itemTextWidth": "220px"
 }

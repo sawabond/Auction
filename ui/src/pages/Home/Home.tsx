@@ -22,7 +22,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
-  const applyFilters = (filters) => {
+  const applyFilters = (filters : any) => {
     applyFiltersUtil(filters, navigate);
   };
 

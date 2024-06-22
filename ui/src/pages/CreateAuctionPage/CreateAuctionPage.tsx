@@ -27,9 +27,10 @@ function CreateAuctionPage() {
   });
 
   const mutation = useMutation((values: any) => createAuction(values, t), {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const auctionId = data; // Assuming the response data contains auctionId
       toast.success(t('auctionCreatedSuccess'));
-      navigate('/auctions/my-auctions');
+      navigate(`/auctions/${auctionId}/items/add`);
     },
     onError: (error: any) => {
       toast.error(`${t('auctionCreatedError')}: ${error.message}`);
@@ -37,7 +38,11 @@ function CreateAuctionPage() {
   });
 
   const handleSubmit = (values: any) => {
-    mutation.mutate(values);
+    const adjustedValues = {
+      ...values,
+      startTime: new Date(values.startTime).toISOString(), // Convert to ISO 8601 format
+    };
+    mutation.mutate(adjustedValues);
   };
 
   return (

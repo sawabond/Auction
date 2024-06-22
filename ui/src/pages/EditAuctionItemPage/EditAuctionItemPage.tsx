@@ -10,6 +10,7 @@ import MultipleFileUploadField from '../../components/elements/Drag and drop/Mul
 import addAuctionItem from './services/editAuctionItem';
 import getAuctionItem from './services/getAuctionItem';
 import downloadFileFromS3AndMakeFile from './services/downloadFileFromS3AndMakeFile';
+import TimeInputField from '../../components/elements/TimeInputField';
 
 function EditAuctionItemPage() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ function EditAuctionItemPage() {
   const [itemPhotos, setUploadedPhotos] = useState<any>([]);
   const [initialValues, setInitialValues] = useState(null);
   const { t } = useTranslation();
+  
   useEffect(() => {
     const fetchAuctionData = async () => {
       try {
@@ -59,7 +61,7 @@ function EditAuctionItemPage() {
     };
 
     fetchAuctionData();
-  }, []);
+  }, [auctionId, auctionItemId, t]);
 
   const validationSchema = yup.object().shape({
     startingPrice: yup
@@ -81,10 +83,11 @@ function EditAuctionItemPage() {
   });
 
   const mutation = useMutation(
-    (values: any) => addAuctionItem(values, auctionId, t),
+    (values: any) => addAuctionItem(values.formData, auctionId, t),
     {
       onSuccess: () => {
         toast.success(t('auctionItemSavedSuccess'));
+        navigate(`/auctions/${auctionId}/edit`);
       },
       onError: (error: any) => {
         toast.error(`${t('auctionItemSavedError')}: ${error.message}`);
@@ -103,6 +106,7 @@ function EditAuctionItemPage() {
     formData.append('minimalBid', values.minimalBid);
     formData.append('name', values.name);
     formData.append('description', values.description);
+    formData.append('sellingPeriod', values.sellingPeriod);
 
     for (let index = 0; index < itemPhotos.length; index++) {
       const file = itemPhotos[index];
@@ -113,10 +117,9 @@ function EditAuctionItemPage() {
         return;
       }
     }
-    try {
-      await mutation.mutateAsync({ formData, auctionId, t });
 
-      navigate(`/auctions/${auctionId}/edit`);
+    try {
+      await mutation.mutateAsync({ formData });
     } catch (error: any) {
       console.error('Error while creating auction item:', error.message);
     }
@@ -176,7 +179,16 @@ function EditAuctionItemPage() {
               helperText={touched.description && errors.description}
               sx={{ mb: 1 }}
             />
-
+            <Field
+              as={TimeInputField}
+              id="sellingPeriod"
+              name="sellingPeriod"
+              label={t('sellingPeriod')}
+              placeholder="HH:MM:SS"
+              error={touched.sellingPeriod && !!errors.sellingPeriod}
+              helperText={touched.sellingPeriod && errors.sellingPeriod}
+              sx={{ mb: 1 }}
+            />
             <Button type="submit" name="button_add_one">
               {t('save')}
             </Button>
