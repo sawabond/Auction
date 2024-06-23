@@ -5,14 +5,14 @@ const useFieldRegistrationConfig = () => {
 
   return [
     {
-      id: 'name',
-      name: 'name',
+      id: 'firstName',
+      name: 'firstName',
       label: t('firstName'),
       type: 'text',
     },
     {
-      id: 'surname',
-      name: 'surname',
+      id: 'lastName',
+      name: 'lastName',
       label: t('lastName'),
       type: 'text',
     },

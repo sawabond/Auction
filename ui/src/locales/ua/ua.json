@@ -78,8 +78,8 @@
     "loading": "Завантаження...",
     "minPrice": "Мінімальна ціна",
     "maxPrice": "Максимальна ціна",
-    "startsAt": "Розпочинається о ",
-    "endsAt": "Закінчується о ",
+    "startsAt": "Початок о ",
+    "endsAt": "Кінець о ",
     "localTimeFormat": "uk-UA",
     "delete": "Видалити",
     "dragNDrop": "Перетягніть кілька фото сюди або клацніть, щоб вибрати фото",
@@ -89,7 +89,7 @@
     "email": "Електронна пошта",
     "currency": "грн",
     "networkError": "Відповідь мережі не була нормальною",
-    "notStarted": "Не розпочався",
+    "notStarted": "Не надіслано",
     "photo": "Фото",
     "actualPrice": "Поточна ціна",
     "remainingTime": "До кінця продажу залишилося",
@@ -120,5 +120,6 @@
     "roleRequired": "Вибір ролі обов'язковий",
     "spentMoney": "Витрачено",
     "sellingPeriod": "Період продажу",
+    "lastBidUserEmail": "Пошта покупця",
     "itemTextWidth": "250px"
 }

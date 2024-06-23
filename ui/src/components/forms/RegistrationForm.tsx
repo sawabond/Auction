@@ -30,7 +30,7 @@ function RegistrationForm({
       email: '',
       password: '',
       confirmPassword: '',
-      role: ''
+      role: '', // Ensure role is initialized
     },
     validate: (values) => validateRegisterForm(values, t),
     onSubmit: (values) => {
@@ -47,7 +47,7 @@ function RegistrationForm({
     >
       <div className="flex flex-col justify-center items-center gap-2 p-8">
         <h1 className="text-black text-center text-lg not-italic font-semibold uppercase">
-        {t('registerTitle')}
+          {t('registerTitle')}
         </h1>
         {fieldRegistrationConfig.map((field) => (
           <CustomTextField field={field} formik={formik} key={field.id} />
@@ -61,11 +61,11 @@ function RegistrationForm({
             variant="outlined"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            value={formik.values.role || t('selectRole')}
+            value={formik.values.role} // Ensure value is controlled
             error={formik.touched.role && Boolean(formik.errors.role)}
             helperText={formik.touched.role && formik.errors.role}
           >
-            <MenuItem value={t('selectRole')} style={{ display: 'none' }}>
+            <MenuItem value="" style={{ display: 'none' }}>
               <em>{t('selectRole')}</em>
             </MenuItem>
             {Object.values(Roles).map((role) => (
@@ -76,14 +76,14 @@ function RegistrationForm({
           </TextField>
         </FormControl>
         <button
-          type="submit"
+          type="submit" // Ensure button type is submit
           className={`w-9/12 h-10 rounded text-white uppercase transition-transform ${
             isClicked ? 'transform scale-105' : ''
           }`}
           style={{ background: 'rgba(5, 81, 81, 0.80)' }}
           onClick={handleButtonClick}
         >
-          Sign up
+          {t('signUp')}
         </button>
         <p className="text-blue-500">
           <button

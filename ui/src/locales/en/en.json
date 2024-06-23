@@ -78,8 +78,8 @@
     "loading": "Loading...",
     "minPrice": "Min price",
     "maxPrice": "Max price",
-    "startsAt": "Starts at ",
-    "endsAt": "Ends at ",
+    "startsAt": "Start at ",
+    "endsAt": "End at ",
     "localTimeFormat": "en-US",
     "delete": "Delete",
     "dragNDrop": "Drag 'n' drop some photos here, or click to select photos",
@@ -89,7 +89,7 @@
     "email": "Email",
     "currency": "UAH",
     "networkError": "Network response was not ok",
-    "notStarted": "Not started",
+    "notStarted": "Not sent",
     "photo": "Photo",
     "actualPrice": "Actual price",
     "remainingTime": "Remaining time",
@@ -120,5 +120,6 @@
     "roleRequired": "Role must be selected",
     "spentMoney": "Spent money",
     "sellingPeriod": "Selling period",
+    "lastBidUserEmail": "Buyer email",
     "itemTextWidth": "220px"
 }

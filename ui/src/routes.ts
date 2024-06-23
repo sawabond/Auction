@@ -11,6 +11,7 @@ import MyAuctionsPage from './pages/MyAuctionsPage/MyAuctionsPage';
 import EditAuctionPage from './pages/EditAuctionPage/EditAuctionPage';
 import EditAuctionItemPage from './pages/EditAuctionItemPage/EditAuctionItemPage';
 import MyBoughtAuctionItemsPage from './pages/MyBoughtAuctionItemsPage/MyBoughtAuctionItemsPage';
+import SoldAuctionItemsPage from './pages/SoldItemsPage/SoldItemsPage';
 
 const routes: IRoute[] = [
   {
@@ -96,6 +97,13 @@ const routes: IRoute[] = [
     path: '/items/my-bought-items',
     enabled: true,
     component: MyBoughtAuctionItemsPage,
+  },
+  {
+    key: 'sold-items',
+    title: 'Sold items',
+    path: '/auctions/:auctionId/items/sold',
+    enabled: true,
+    component: SoldAuctionItemsPage,
   },
 ];
 

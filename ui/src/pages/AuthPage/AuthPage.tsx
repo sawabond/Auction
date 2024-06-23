@@ -49,9 +49,8 @@ function AuthPage() {
       await registrationMutation.mutateAsync(values);
       await handleLogin(values);
     } catch (error: any) {
-      toast.error(
-        error.response?.data ?? t('registrationSuccess')
-      );
+      const errorMessage = error.response?.data ?? t('registrationSuccess');
+      toast.error(errorMessage);
     }
   };
 

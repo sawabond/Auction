@@ -28,6 +28,18 @@ public class UserController : ControllerBase
         return Ok(user);
     }
     
+    [HttpGet("{userId:guid}/email")]
+    public async Task<IActionResult> GetEmail(Guid userId)
+    {
+        var user = await _context.Users.SingleOrDefaultAsync(x => x.Id == userId.ToString());
+        if (user == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(user.Email);
+    }
+    
     [HttpGet("{userId:guid}/role")]
     public async Task<IActionResult> GetRole(Guid userId)
     {

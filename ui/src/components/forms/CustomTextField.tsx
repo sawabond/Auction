@@ -3,8 +3,7 @@ import { ICustomTextFieldProps } from '../../interfaces/Forms/ICustomTextFieldPr
 
 function CustomTextField<T>({ field, formik }: ICustomTextFieldProps<T>) {
   const { id, name, label, type } = field;
-  const error =
-    formik.touched[name as keyof T] && formik.errors[name as keyof T];
+  const error = formik.touched[name as keyof T] && formik.errors[name as keyof T];
   const helperText = error ? String(error) : '';
 
   return (
@@ -17,7 +16,7 @@ function CustomTextField<T>({ field, formik }: ICustomTextFieldProps<T>) {
         variant="outlined"
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        value={formik.values[name as keyof T]}
+        value={formik.values[name as keyof T] || ''}  // Ensure value is always a string
         error={Boolean(error)}
         helperText={helperText}
         className="w-full"

@@ -30,7 +30,7 @@ export default function MyBoughtAuctionItemsPage() {
     setPage(newPage);
   };
 
-  const applyFilters = (filters) => {
+  const applyFilters = (filters: any) => {
     applyFiltersUtil(filters, navigate);
   };
 
